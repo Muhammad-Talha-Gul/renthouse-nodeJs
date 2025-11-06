@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Badge, Button } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom'; // Added for navigation
+import { useNavigate } from 'react-router-dom';
 import './PropertyCard.css';
 
 const PropertyCard = ({
@@ -20,9 +20,9 @@ const PropertyCard = ({
     },
     onFavoriteClick = () => { },
     onContactAgent = () => { },
-    onViewDetails = () => { } // Kept for backward compatibility, but now handled internally
+    onViewDetails = () => { }
 }) => {
-    const navigate = useNavigate(); // Hook for navigation
+    const navigate = useNavigate();
 
     const formatPrice = (price) => {
         return new Intl.NumberFormat('en-US', {
@@ -34,13 +34,14 @@ const PropertyCard = ({
 
     const getStatusColor = (status) => {
         const statusColors = {
-            'premium': '#10B981',
+            'premium': '#059669', // Emerald
             'featured': '#8B5CF6',
             'new': '#0EA5E9',
             'sold': '#F59E0B',
-            'hot': '#EF4444'
+            'hot': '#EF4444',
+            'luxury': '#059669' // Emerald for luxury
         };
-        return statusColors[status?.toLowerCase()] || 'var(--text-muted)';
+        return statusColors[status?.toLowerCase()] || '#6B7280'; // Default to gray
     };
 
     const getStatusEmoji = (status) => {
@@ -49,7 +50,8 @@ const PropertyCard = ({
             'featured': '⭐',
             'new': '🆕',
             'sold': '✅',
-            'hot': '🔥'
+            'hot': '🔥',
+            'luxury': '🏰'
         };
         return statusEmojis[status?.toLowerCase()] || '🏠';
     };
@@ -60,9 +62,18 @@ const PropertyCard = ({
         onViewDetails(property.id); 
     };
 
-    // Handler for card click (entire card navigates)
     const handleCardClick = () => {
         navigate(`/property/${property.id}`);
+    };
+
+    const handleContactClick = (e) => {
+        e.stopPropagation();
+        onContactAgent(property.id);
+    };
+
+    const handleFavoriteClick = (e) => {
+        e.stopPropagation();
+        onFavoriteClick(property.id);
     };
 
     return (
@@ -91,7 +102,8 @@ const PropertyCard = ({
                         className="property-status"
                         style={{
                             color: getStatusColor(property.status),
-                            background: `rgba(255, 255, 255, 0.95)`
+                            background: 'rgba(255, 255, 255, 0.95)',
+                            border: `1px solid ${getStatusColor(property.status)}20`
                         }}
                     >
                         {getStatusEmoji(property.status)} {property.status}
@@ -100,10 +112,7 @@ const PropertyCard = ({
 
                 <button
                     className={`favorite-btn ${property.favorite ? 'active' : ''}`}
-                    onClick={(e) => {
-                        e.stopPropagation(); // Prevent card navigation
-                        onFavoriteClick(property.id);
-                    }}
+                    onClick={handleFavoriteClick}
                     aria-label={property.favorite ? "Remove from favorites" : "Add to favorites"}
                 >
                     {property.favorite ? '❤️' : '🤍'}
@@ -112,8 +121,7 @@ const PropertyCard = ({
 
             <Card.Body className="property-body">
                 <div className="property-price">
-                    {property.price}
-                    {/* {formatPrice(property.price)} */}
+                    {formatPrice(property.price)}
                 </div>
 
                 <Card.Title className="property-title">
@@ -142,16 +150,13 @@ const PropertyCard = ({
                 <div className="property-actions">
                     <Button
                         className="view-details-btn"
-                        onClick={handleViewDetails} // Now navigates
+                        onClick={handleViewDetails}
                     >
                         Explore
                     </Button>
                     <Button
                         className="contact-btn"
-                        onClick={(e) => {
-                            e.stopPropagation(); // Prevent card navigation
-                            onContactAgent(property.id);
-                        }}
+                        onClick={handleContactClick}
                     >
                         Contact
                     </Button>

@@ -8,3 +8,37 @@ body {
   margin: 0;
   box-sizing: border-box;
 }
+
+/* Index.css */
+:root {
+    /* Primary Colors - Charcoal & Emerald Only */
+    --primary-dark: #1f2937;
+    --primary: #374151;
+    --accent-dark: #047857;
+    --accent: #059669;
+    --accent-light: #10b981;
+    
+    /* Neutrals */
+    --white: #ffffff;
+    --cream: #f9fafb;
+    --light-gray: #f3f4f6;
+    --medium-gray: #e5e7eb;
+    --dark-gray: #4b5563;
+    
+    /* Text */
+    --text-dark: #111827;
+    --text-medium: #374151;
+    --text-light: #6b7280;
+    --text-lighter: #9ca3af;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent) 100%);
+    --gradient-accent: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+    --gradient-dark: linear-gradient(135deg, #111827 0%, var(--accent-dark) 100%);
+    
+    /* Shadows */
+    --shadow-light: 0 4px 20px rgba(31, 41, 55, 0.08);
+    --shadow-medium: 0 8px 30px rgba(31, 41, 55, 0.12);
+    --shadow-heavy: 0 12px 40px rgba(31, 41, 55, 0.15);
+    --shadow-accent: 0 8px 30px rgba(5, 150, 105, 0.15);
+}

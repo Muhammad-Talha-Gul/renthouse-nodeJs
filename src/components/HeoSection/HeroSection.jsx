@@ -116,7 +116,7 @@ const HeroSection = ({
                                         className="search-submit-btn"
                                         size="lg"
                                     >
-                                        Search
+                                        Search Properties
                                     </Button>
                                 </div>
                             </Form>
@@ -132,7 +132,7 @@ const HeroSection = ({
                                 key={index}
                                 onClick={button.onClick}
                                 variant={button.variant || 'primary'}
-                                className="hero-btn"
+                                className={`hero-btn ${button.variant || 'primary'}`}
                                 style={button.style}
                                 size="lg"
                             >
@@ -146,8 +146,6 @@ const HeroSection = ({
                 {/* Custom Children */}
                 {children}
             </div>
-
-
         </section>
     );
 };
