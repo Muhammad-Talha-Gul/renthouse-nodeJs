@@ -4,6 +4,7 @@ import { fetchIndexData } from "../../redux/actions/IndexActions";
 import HeroSection from "../../components/HeoSection/HeroSection";
 import { Col, Container, Row } from "react-bootstrap";
 import PropertyCard from "../../components/PropertyCard/PropertyCard";
+import './Index.css'; // Make sure to import your CSS file
 
 const Index = () => {
     const dispatch = useDispatch();
@@ -68,7 +69,6 @@ const Index = () => {
             maxPrice: ""
         });
     };
-
 
     const dummyIndexData = {
         featuredProperties: [
@@ -137,32 +137,44 @@ const Index = () => {
             {
                 value: "apartment",
                 label: "Apartments",
-                icon: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=50&q=80"  // Placeholder icon URL; use FontAwesome or custom icons
+                description: "Modern apartments in prime locations",
+                count: 245,
+                icon: "🏢"
             },
             {
                 value: "house",
                 label: "Houses",
-                icon: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&auto=format&fit=crop&w=50&q=80"
+                description: "Spacious family homes with yards",
+                count: 189,
+                icon: "🏠"
             },
             {
                 value: "villa",
                 label: "Villas",
-                icon: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=50&q=80"
+                description: "Luxury villas with premium amenities",
+                count: 67,
+                icon: "🏡"
             },
             {
                 value: "condo",
                 label: "Condos",
-                icon: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=50&q=80"
+                description: "Contemporary condominium living",
+                count: 156,
+                icon: "🏘️"
             },
             {
                 value: "studio",
                 label: "Studios",
-                icon: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=50&q=80"
+                description: "Compact and efficient living spaces",
+                count: 98,
+                icon: "📐"
             },
             {
                 value: "townhouse",
                 label: "Townhouses",
-                icon: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=50&q=80"
+                description: "Multi-level urban residences",
+                count: 112,
+                icon: "🏛️"
             }
         ],
         testimonials: [
@@ -186,23 +198,26 @@ const Index = () => {
             {
                 title: "Top 10 Tips for Buying Your First Home",
                 excerpt: "Learn essential advice for first-time homebuyers, from budgeting to inspections.",
-                image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+                image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+                date: "May 15, 2024"
             },
             {
                 title: "Market Trends in Real Estate for 2023",
                 excerpt: "Discover the latest trends shaping the property market this year.",
-                image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+                image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+                date: "May 12, 2024"
             },
             {
                 title: "How to Stage Your Home for a Quick Sale",
                 excerpt: "Practical tips to make your property more appealing to buyers.",
-                image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+                image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+                date: "May 10, 2024"
             }
         ]
     };
 
     return (
-        <React.Fragment>
+        <div className="index-page">
             <HeroSection
                 // 🔤 TEXT CONTENT
                 title="Find Your Dream Home"
@@ -298,7 +313,8 @@ const Index = () => {
                 }
             />
 
-            <section className="stats-section">
+            {/* Stats Section */}
+            <section className="stats-section-modern">
                 <Container>
                     <Row className="g-4">
                         <Col lg={3} md={6} className="text-center">
@@ -333,7 +349,7 @@ const Index = () => {
                 </Container>
             </section>
 
-
+            {/* Featured Properties */}
             <section className="featured-properties-section">
                 <Container>
                     <Row className="mb-5">
@@ -370,6 +386,7 @@ const Index = () => {
                 </Container>
             </section>
 
+            {/* Property Types */}
             <section className="property-types-section">
                 <Container>
                     <Row className="mb-5">
@@ -384,28 +401,18 @@ const Index = () => {
                         {dummyIndexData?.propertyTypes?.map((type, index) => (
                             <div key={index} className="category-card-modern" onClick={() => handleInputChange('propertyType', type.value)}>
                                 <div className="category-icon">
-                                    <i className={type.icon}></i>
+                                    {type.icon}
                                 </div>
                                 <h5>{type.label}</h5>
                                 <p>{type.description}</p>
                                 <span className="category-count">{type.count}+ Properties</span>
                             </div>
-                        )) || (
-                                <>
-                                    {['🏠', '🏢', '🏡', '🏘️'].map((icon, index) => (
-                                        <div key={index} className="category-card-modern">
-                                            <div className="category-icon">{icon}</div>
-                                            <h5>{['Apartments', 'Condos', 'Villas', 'Townhouses'][index]}</h5>
-                                            <p>Beautiful {['Apartments', 'Condos', 'Villas', 'Townhouses'][index].toLowerCase()} in prime locations</p>
-                                            <span className="category-count">{Math.floor(Math.random() * 100) + 50}+ Properties</span>
-                                        </div>
-                                    ))}
-                                </>
-                            )}
+                        ))}
                     </div>
                 </Container>
             </section>
 
+            {/* Why Choose Us */}
             <section className="why-chose-modern">
                 <Container>
                     <Row className="mb-5">
@@ -422,7 +429,7 @@ const Index = () => {
 
                     <Row className="g-4">
                         <Col lg={4} md={6}>
-                            <div className="feature-card-modern" data-aos="fade-up">
+                            <div className="feature-card-modern">
                                 <div className="feature-icon-wrapper">
                                     <div className="feature-icon-bg"></div>
                                     <div className="feature-icon-main">🏆</div>
@@ -438,7 +445,7 @@ const Index = () => {
                         </Col>
 
                         <Col lg={4} md={6}>
-                            <div className="feature-card-modern" data-aos="fade-up" data-aos-delay="100">
+                            <div className="feature-card-modern">
                                 <div className="feature-icon-wrapper">
                                     <div className="feature-icon-bg"></div>
                                     <div className="feature-icon-main">🔒</div>
@@ -454,7 +461,7 @@ const Index = () => {
                         </Col>
 
                         <Col lg={4} md={6}>
-                            <div className="feature-card-modern" data-aos="fade-up" data-aos-delay="200">
+                            <div className="feature-card-modern">
                                 <div className="feature-icon-wrapper">
                                     <div className="feature-icon-bg"></div>
                                     <div className="feature-icon-main">🚀</div>
@@ -482,6 +489,7 @@ const Index = () => {
                 </Container>
             </section>
 
+            {/* Testimonials */}
             <section className="testimonials-section">
                 <Container>
                     <Row className="mb-5">
@@ -507,27 +515,12 @@ const Index = () => {
                                     </div>
                                 </div>
                             </div>
-                        )) || (
-                                <>
-                                    {[1, 2, 3].map((_, index) => (
-                                        <div key={index} className="testimonial-card-modern">
-                                            <p>"RentEase made finding our dream home incredibly easy. The service was exceptional and the team was very professional."</p>
-                                            <div className="testimonial-rating">★★★★★</div>
-                                            <div className="testimonial-author">
-                                                <div className="author-avatar">JD</div>
-                                                <div className="author-info">
-                                                    <h6>John Doe</h6>
-                                                    <small>New York, NY</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </>
-                            )}
+                        ))}
                     </div>
                 </Container>
             </section>
 
+            {/* Blog Section */}
             <section className="blog-section">
                 <Container>
                     <Row className="mb-5">
@@ -551,31 +544,12 @@ const Index = () => {
                                     </a>
                                 </div>
                             </div>
-                        )) || (
-                                <>
-                                    {[1, 2, 3].map((_, index) => (
-                                        <div key={index} className="blog-card-modern">
-                                            <img
-                                                src={`https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80`}
-                                                alt="Real Estate"
-                                                className="blog-image"
-                                            />
-                                            <div className="blog-content">
-                                                <div className="blog-date">May 15, 2024</div>
-                                                <h5>Market Trends: What to Expect in 2024</h5>
-                                                <p>Discover the latest real estate market trends and predictions for the coming year.</p>
-                                                <a href="#" className="read-more-modern">
-                                                    Read More <span>→</span>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </>
-                            )}
+                        ))}
                     </div>
                 </Container>
             </section>
 
+            {/* Final CTA */}
             <section className="cta-compact">
                 <Container>
                     <Row>
@@ -641,7 +615,7 @@ const Index = () => {
                     </Row>
                 </Container>
             </section>
-        </React.Fragment>
+        </div>
     )
 }
 

@@ -1,8 +1,10 @@
+
+
 /* Modern Clean Header Styles */
 .modern-header {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    border-bottom: 1px solid var(--medium-gray);
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -12,8 +14,8 @@
 
 .modern-header.scrolled {
     background: rgba(255, 255, 255, 0.98);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border-bottom-color: rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-medium);
+    border-bottom-color: var(--light-gray);
 }
 
 .custom-navbar {
@@ -41,16 +43,16 @@
 }
 
 .logo-icon-container {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: var(--gradient-accent);
     border-radius: 10px;
     padding: 10px;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    box-shadow: var(--shadow-accent);
     transition: all 0.3s ease;
 }
 
 .logo-brand:hover .logo-icon-container {
     transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 6px 20px rgba(5, 150, 105, 0.3);
 }
 
 .logo-emoji {
@@ -68,7 +70,7 @@
 .logo-main {
     font-size: 24px;
     font-weight: 800;
-    color: #1a202c;
+    color: var(--text-dark);
     margin: 0;
     line-height: 1;
     letter-spacing: -0.5px;
@@ -76,12 +78,12 @@
 }
 
 .logo-brand:hover .logo-main {
-    color: #667eea;
+    color: var(--accent);
 }
 
 .logo-subtitle {
     font-size: 9px;
-    color: #718096;
+    color: var(--text-light);
     font-weight: 600;
     letter-spacing: 0.8px;
     text-transform: uppercase;
@@ -102,7 +104,7 @@
 }
 
 .nav-item {
-    color: #4a5568 !important;
+    color: var(--text-medium) !important;
     text-decoration: none;
     font-weight: 600;
     font-size: 15px;
@@ -115,8 +117,8 @@
 }
 
 .nav-item:hover {
-    color: #667eea !important;
-    background: rgba(102, 126, 234, 0.05) !important;
+    color: var(--accent) !important;
+    background: rgba(5, 150, 105, 0.05) !important;
     transform: translateY(-1px);
 }
 
@@ -127,7 +129,7 @@
     left: 50%;
     width: 0;
     height: 2px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: var(--gradient-accent);
     transition: all 0.3s ease;
     transform: translateX(-50%);
 }
@@ -137,8 +139,8 @@
 }
 
 .nav-item.active {
-    color: #667eea !important;
-    background: rgba(102, 126, 234, 0.08) !important;
+    color: var(--accent) !important;
+    background: rgba(5, 150, 105, 0.08) !important;
 }
 
 .nav-item.active::after {
@@ -165,29 +167,29 @@
 
 .login-btn {
     background: transparent !important;
-    color: #4a5568 !important;
-    border-color: #e2e8f0 !important;
+    color: var(--text-medium) !important;
+    border-color: var(--medium-gray) !important;
 }
 
 .login-btn:hover {
-    background: #f7fafc !important;
-    border-color: #cbd5e0 !important;
-    color: #2d3748 !important;
+    background: var(--light-gray) !important;
+    border-color: var(--dark-gray) !important;
+    color: var(--text-dark) !important;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-light);
 }
 
 .register-btn {
-    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+    background: var(--gradient-accent) !important;
     border-color: transparent !important;
-    color: white !important;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    color: var(--white) !important;
+    box-shadow: var(--shadow-accent);
 }
 
 .register-btn:hover {
-    background: linear-gradient(135deg, #5a67d8, #6b46c1) !important;
+    background: linear-gradient(135deg, var(--accent-dark), var(--accent)) !important;
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 6px 20px rgba(5, 150, 105, 0.3);
     border-color: transparent !important;
 }
 
@@ -198,12 +200,12 @@
     background: transparent !important;
     border-radius: 6px;
     transition: all 0.3s ease;
-    border: 1px solid #e2e8f0 !important;
+    border: 1px solid var(--medium-gray) !important;
 }
 
 .nav-toggle:hover {
-    background: #f7fafc !important;
-    border-color: #cbd5e0 !important;
+    background: var(--light-gray) !important;
+    border-color: var(--dark-gray) !important;
 }
 
 .nav-toggle:focus {
@@ -214,7 +216,7 @@
     display: block;
     width: 20px;
     height: 2px;
-    background: #4a5568;
+    background: var(--text-medium);
     margin: 4px 0;
     transition: all 0.3s ease;
     border-radius: 1px;
@@ -222,6 +224,7 @@
 
 .nav-toggle[aria-expanded="true"] .toggle-line:nth-child(1) {
     transform: rotate(45deg) translate(5px, 5px);
+    background: var(--accent);
 }
 
 .nav-toggle[aria-expanded="true"] .toggle-line:nth-child(2) {
@@ -230,17 +233,66 @@
 
 .nav-toggle[aria-expanded="true"] .toggle-line:nth-child(3) {
     transform: rotate(-45deg) translate(7px, -6px);
+    background: var(--accent);
 }
 
-/* Responsive Design */
-@media (max-width: 991.98px) {
+/* Responsive Design - 300px to 575px */
+@media (max-width: 575px) {
+    .modern-header {
+        padding: 0.5rem 0;
+    }
+
+    .logo-content {
+        gap: 8px;
+    }
+
+    .logo-main {
+        font-size: 18px;
+    }
+
+    .logo-subtitle {
+        font-size: 8px;
+    }
+
+    .logo-icon-container {
+        padding: 8px;
+    }
+
+    .logo-emoji {
+        font-size: 16px;
+    }
+
+    .auth-btn {
+        padding: 8px 16px !important;
+        font-size: 12px;
+    }
+}
+
+/* 576px to 767px */
+@media (min-width: 576px) and (max-width: 767px) {
+    .logo-main {
+        font-size: 20px;
+    }
+
+    .logo-subtitle {
+        font-size: 8px;
+    }
+
+    .nav-item {
+        font-size: 14px;
+        padding: 10px 16px !important;
+    }
+}
+
+/* 768px to 991px */
+@media (min-width: 768px) and (max-width: 991px) {
     .nav-collapse {
-        background: white;
+        background: var(--white);
         border-radius: 12px;
         margin-top: 1rem;
         padding: 1.5rem;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        border: 1px solid #e2e8f0;
+        box-shadow: var(--shadow-heavy);
+        border: 1px solid var(--medium-gray);
     }
 
     .main-navigation {
@@ -270,44 +322,39 @@
     }
 }
 
-@media (max-width: 768px) {
-    .modern-header {
-        padding: 0.5rem 0;
-    }
-
-    .logo-main {
-        font-size: 20px;
-    }
-
-    .logo-subtitle {
-        font-size: 8px;
-    }
-
-    .logo-icon-container {
-        padding: 8px;
-    }
-
-    .logo-emoji {
-        font-size: 18px;
+/* 992px to 1199px */
+@media (min-width: 992px) and (max-width: 1199px) {
+    .nav-item {
+        padding: 12px 18px !important;
+        font-size: 14px;
     }
 
     .auth-btn {
-        padding: 12px 20px !important;
-        font-size: 14px;
+        padding: 10px 20px !important;
     }
 }
 
-@media (max-width: 480px) {
-    .logo-content {
-        gap: 8px;
+/* 1200px to 1499px */
+@media (min-width: 1200px) and (max-width: 1499px) {
+    .main-navigation {
+        gap: 12px;
     }
 
-    .logo-main {
-        font-size: 18px;
+    .nav-item {
+        padding: 12px 22px !important;
+        font-size: 15px;
+    }
+}
+
+/* 1500px and above */
+@media (min-width: 1500px) {
+    .main-navigation {
+        gap: 16px;
     }
 
-    .logo-text {
-        gap: 1px;
+    .nav-item {
+        padding: 12px 24px !important;
+        font-size: 16px;
     }
 }
 
@@ -317,13 +364,13 @@
     padding: 0 2rem;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1199px) {
     .container-fluid {
         padding: 0 1.5rem;
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .container-fluid {
         padding: 0 1rem;
     }
@@ -349,6 +396,29 @@
 .nav-item:focus-visible,
 .auth-btn:focus-visible,
 .nav-toggle:focus-visible {
-    outline: 2px solid #667eea;
+    outline: 2px solid var(--accent);
     outline-offset: 2px;
+}
+
+/* Additional responsive adjustments for very small screens */
+@media (max-width: 380px) {
+    .logo-content {
+        gap: 6px;
+    }
+
+    .logo-main {
+        font-size: 16px;
+    }
+
+    .logo-subtitle {
+        font-size: 7px;
+    }
+
+    .logo-icon-container {
+        padding: 6px;
+    }
+
+    .logo-emoji {
+        font-size: 14px;
+    }
 }

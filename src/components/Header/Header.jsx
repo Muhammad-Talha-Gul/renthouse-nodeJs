@@ -49,17 +49,20 @@ const Header = () => {
                             <Nav.Link as={Link} to="/" className="nav-item">
                                 Home
                             </Nav.Link>
-                            <Nav.Link as={Link} to="/listings" className="nav-item">
-                                Listings
+                            <Nav.Link as={Link} to="/search" className="nav-item">
+                                Search
                             </Nav.Link>
                             <Nav.Link as={Link} to="/agents" className="nav-item">
                                 Agents
                             </Nav.Link>
-                            <Nav.Link as={Link} to="/about" className="nav-item">
+                            <Nav.Link as={Link} to="/about_us" className="nav-item">
                                 About
                             </Nav.Link>
-                            <Nav.Link as={Link} to="/contact" className="nav-item">
+                            <Nav.Link as={Link} to="/contact_us" className="nav-item">
                                 Contact
+                            </Nav.Link>
+                            <Nav.Link as={Link} to="/admin" className="nav-item">
+                                Admin
                             </Nav.Link>
                         </Nav>
 
