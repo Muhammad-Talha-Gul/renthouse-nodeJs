@@ -121,7 +121,8 @@ const PropertyCard = ({
 
             <Card.Body className="property-body">
                 <div className="property-price">
-                    {formatPrice(property.price)}
+                    {property.price}
+                    {/* {formatPrice(property.price)} */}
                 </div>
 
                 <Card.Title className="property-title">

@@ -1,7 +1,6 @@
-
 /* ===== About Us Page Styles ===== */
 .about-us {
-    padding-top: 80px;
+    padding-top: 0px;
     background: var(--white);
 }
 
@@ -306,7 +305,8 @@
     margin-bottom: 1.5rem;
 }
 
-.experience, .specialty {
+.experience,
+.specialty {
     font-size: 0.9rem;
     color: var(--text-light);
     display: flex;
@@ -440,7 +440,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: 
+    background:
         radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
         radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
 }
@@ -513,27 +513,47 @@
     .container {
         padding: 0 1rem;
     }
-    
+
     .stats-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
-    
+
     .story-grid {
         grid-template-columns: 1fr;
         gap: 2rem;
     }
-    
+
     .visual-placeholder {
         height: 250px;
     }
-    
+
     .section-header h2 {
         font-size: 2rem;
     }
-    
+
     .cta-content h2 {
         font-size: 2rem;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+    }
+
+    .stats-grid {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .stat-card {
+        max-width: 48%;
+        width: 100%;
+        display: inline-block;
+    }
+    .stat-label{
+        font-size:16px;
     }
 }
 
@@ -542,14 +562,23 @@
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-    
+
     .story-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .values-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    .stat-number {
+        font-size: 2rem;
+    }
+    .stat-label{
+        font-size:18px;
+    }
+
+
 }
 
 /* 768px to 991px */
@@ -557,7 +586,7 @@
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-    
+
     .team-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -589,12 +618,12 @@
     .timeline::before {
         left: 30px;
     }
-    
+
     .timeline-item {
         width: calc(100% - 60px);
         left: 60px !important;
     }
-    
+
     .timeline-item.left .timeline-dot,
     .timeline-item.right .timeline-dot {
         left: -46px;
@@ -605,12 +634,12 @@
     .timeline-content {
         padding: 1.5rem;
     }
-    
+
     .cta-buttons {
         flex-direction: column;
         align-items: center;
     }
-    
+
     .cta-btn {
         width: 100%;
         max-width: 300px;
@@ -629,6 +658,7 @@
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);

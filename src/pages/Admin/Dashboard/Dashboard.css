@@ -69,6 +69,7 @@
     position: relative;
     overflow: hidden;
     height: 100%;
+    padding: 0 !important;
 }
 
 .stat-card-modern:hover {
@@ -83,9 +84,6 @@
 }
 
 .stat-content {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
 }
 
 .stat-icon-wrapper {
@@ -133,6 +131,7 @@
 .stat-change.up {
     color: var(--accent);
     background: rgba(5, 150, 105, 0.1);
+    margin: 20px auto 0px;
 }
 
 .stat-change.down {

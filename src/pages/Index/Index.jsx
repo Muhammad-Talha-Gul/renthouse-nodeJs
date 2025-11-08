@@ -227,7 +227,6 @@ const Index = () => {
                 backgroundImage="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1973&q=80"
                 overlay={true}
                 overlayOpacity={0.4}
-                height="80vh"
                 textAlign="center"
                 titleColor="#ffffff"
                 subtitleColor="#f8fafc"
@@ -317,28 +316,28 @@ const Index = () => {
             <section className="stats-section-modern">
                 <Container>
                     <Row className="g-4">
-                        <Col lg={3} md={6} className="text-center">
+                        <Col lg={3} md={6} sm={6} className="text-center">
                             <div className="stat-card-modern">
                                 <div className="stat-icon-modern">🏠</div>
                                 <div className="stat-number-modern">1,200+</div>
                                 <div className="stat-label-modern">Properties Listed</div>
                             </div>
                         </Col>
-                        <Col lg={3} md={6} className="text-center">
+                        <Col lg={3} md={6} sm={6} className="text-center">
                             <div className="stat-card-modern">
                                 <div className="stat-icon-modern">👥</div>
                                 <div className="stat-number-modern">500+</div>
                                 <div className="stat-label-modern">Happy Clients</div>
                             </div>
                         </Col>
-                        <Col lg={3} md={6} className="text-center">
+                        <Col lg={3} md={6} sm={6} className="text-center">
                             <div className="stat-card-modern">
                                 <div className="stat-icon-modern">🌍</div>
                                 <div className="stat-number-modern">50+</div>
                                 <div className="stat-label-modern">Cities Covered</div>
                             </div>
                         </Col>
-                        <Col lg={3} md={6} className="text-center">
+                        <Col lg={3} md={6} sm={6} className="text-center">
                             <div className="stat-card-modern">
                                 <div className="stat-icon-modern">⭐</div>
                                 <div className="stat-number-modern">4.9</div>
@@ -419,8 +418,8 @@ const Index = () => {
                         <Col>
                             <div className="section-header text-center">
                                 <div className="title-wrapper">
-                                    <h2 className="section-title-glitch">Why Choose RentEase?</h2>
-                                    <div className="title-bg">Why Choose RentEase?</div>
+                                    <h2 className="section-title-glitch why-choose-title">Why Choose RentEase?</h2>
+                                    <div className="title-bg why-choose-title-subtitle">Why Choose RentEase?</div>
                                 </div>
                                 <p className="section-subtitle-modern">Experience the future of real estate with cutting-edge technology and personalized service</p>
                             </div>

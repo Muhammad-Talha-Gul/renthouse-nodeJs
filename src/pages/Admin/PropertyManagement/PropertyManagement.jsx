@@ -186,7 +186,7 @@ const PropertyManagement = () => {
                 </Row>
 
                 <Card>
-                    <Card.Header>
+                    <Card.Header className='table-card-header'>
                         <h5 className="mb-0">All Properties ({properties.length})</h5>
                     </Card.Header>
                     <Card.Body className="p-0">
