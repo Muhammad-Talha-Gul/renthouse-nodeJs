@@ -1,0 +1,61 @@
+.property-management {
+    background: var(--cream);
+    min-height: 100vh;
+}
+
+.property-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.property-thumb {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.property-details {
+    flex: 1;
+}
+
+.property-title {
+    color: var(--text-dark);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.property-category {
+    color: var(--text-light);
+    font-size: 0.8rem;
+}
+
+.property-specs {
+    display: flex;
+    gap: 1rem;
+}
+
+.property-specs span {
+    color: var(--text-light);
+    font-size: 0.8rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.action-buttons .btn {
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+}
+
+.form-check-input:checked {
+    background-color: var(--accent);
+    border-color: var(--accent);
+}
+.table-card-header{
+    padding: 15px 0px !important;
+    color: var(--white) !important;
+}

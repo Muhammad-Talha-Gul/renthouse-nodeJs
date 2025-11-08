@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "renthouse-nodejs",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,8 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "axios": "^1.13.1",
+    "bootstrap": "^5.3.8",
+    "react": "^18.3.1",
+    "react-bootstrap": "^2.10.10",
+    "react-dom": "^18.3.1",
+    "react-redux": "^9.2.0",
+    "react-router-dom": "^7.9.5",
+    "recharts": "^3.3.0",
+    "redux": "^5.0.1",
+    "redux-thunk": "^3.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

@@ -1,0 +1,56 @@
+.user-management {
+    background: var(--cream);
+    min-height: 100vh;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    background: var(--gradient-accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.user-name {
+    color: var(--text-dark);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.user-email {
+    color: var(--text-light);
+    font-size: 0.8rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.action-buttons .btn {
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+}
+
+.table th {
+    background: var(--light-gray);
+    color: var(--text-dark);
+    font-weight: 600;
+    border-bottom: 1px solid var(--medium-gray);
+}
+
+.table td {
+    vertical-align: middle;
+    padding: 1rem 0.75rem;
+}

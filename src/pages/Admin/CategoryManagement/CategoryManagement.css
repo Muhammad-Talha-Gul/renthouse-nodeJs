@@ -1,0 +1,107 @@
+.category-management {
+    background: var(--cream);
+    min-height: 100vh;
+}
+
+.category-card-admin {
+    background: var(--white);
+    border: 1px solid var(--medium-gray);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-light);
+    height: 100%;
+}
+
+.category-card-admin:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-medium);
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.category-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--gradient-accent);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.category-info {
+    flex: 1;
+}
+
+.category-name {
+    color: var(--text-dark);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.category-description {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+}
+
+.category-stats {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.property-count {
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.category-slug {
+    color: var(--text-lighter);
+    font-size: 0.8rem;
+}
+
+.category-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.category-actions .btn {
+    flex: 1;
+    padding: 0.5rem;
+    font-size: 0.8rem;
+}
+
+.icon-selector {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.icon-option {
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--medium-gray);
+    border-radius: 8px;
+    background: var(--white);
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.icon-option:hover,
+.icon-option.selected {
+    border-color: var(--accent);
+    background: var(--accent-light);
+    transform: scale(1.1);
+}
