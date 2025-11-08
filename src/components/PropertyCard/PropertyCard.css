@@ -207,9 +207,9 @@
     gap: 10px;
 }
 
-.view-details-btn {
+.property-actions .view-details-btn {
     background: transparent;
-    border: 2px solid var(--accent);
+    border: 2px solid var(--white);
     color: var(--accent);
     border-radius: 12px;
     font-weight: 700;
@@ -219,9 +219,10 @@
     flex: 1;
     position: relative;
     overflow: hidden;
+    box-shadow: var(--shadow-accent);
 }
 
-.view-details-btn::before {
+.property-actions .view-details-btn::before {
     content: '';
     position: absolute;
     top: 0;
@@ -232,18 +233,19 @@
     transition: left 0.5s ease;
 }
 
-.view-details-btn:hover::before {
+.property-actions .view-details-btn:hover::before {
     left: 100%;
 }
 
-.view-details-btn:hover {
+.property-actions .view-details-btn:hover {
     background: var(--accent);
     color: var(--white);
     transform: translateY(-2px);
     box-shadow: var(--shadow-accent);
+    border-color: var(--accent);
 }
 
-.contact-btn {
+.property-actions .contact-btn {
     background: var(--gradient-accent);
     border: none;
     border-radius: 12px;
@@ -258,7 +260,7 @@
     color: var(--white);
 }
 
-.contact-btn::before {
+.property-actions .contact-btn::before {
     content: '';
     position: absolute;
     top: 0;
@@ -269,11 +271,11 @@
     transition: left 0.5s ease;
 }
 
-.contact-btn:hover::before {
+.property-actions .contact-btn:hover::before {
     left: 100%;
 }
 
-.contact-btn:hover {
+.property-actions .contact-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 30px rgba(5, 150, 105, 0.4);
     background: linear-gradient(135deg, var(--accent-dark), var(--accent));
@@ -293,7 +295,7 @@
     box-shadow: var(--shadow-light);
 }
 
-.property-image-container::after {
+/* .property-image-container::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -302,8 +304,12 @@
     height: 40%;
     background: linear-gradient(transparent, rgba(0, 0, 0, 0.1));
     pointer-events: none;
-}
+} */
 
+.property-card.card{
+    border: none !important;
+    border-radius: 20px 20px 20px 20px !important;
+}
 /* Responsive Design */
 @media (max-width: 575px) {
     .property-card {

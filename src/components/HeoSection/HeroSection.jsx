@@ -8,7 +8,6 @@ const HeroSection = ({
     backgroundImage = "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1973&q=80",
     overlay = true,
     overlayOpacity = 0.4,
-    height = "80vh",
     textAlign = "center",
     titleColor = "#ffffff",
     subtitleColor = "#ffffff",
@@ -23,7 +22,6 @@ const HeroSection = ({
             className="hero-section"
             style={{
                 backgroundImage: `url(${backgroundImage})`,
-                height: height,
                 textAlign: textAlign
             }}
         >

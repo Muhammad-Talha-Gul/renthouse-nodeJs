@@ -55,3 +55,7 @@
     background-color: var(--accent);
     border-color: var(--accent);
 }
+.table-card-header{
+    padding: 15px 0px !important;
+    color: var(--white) !important;
+}

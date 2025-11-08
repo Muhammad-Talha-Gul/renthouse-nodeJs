@@ -38,39 +38,39 @@ const Dashboard = () => {
     ];
 
     const statsCards = [
-        { 
-            title: 'Total Properties', 
-            value: '1,247', 
-            change: '+12%', 
+        {
+            title: 'Total Properties',
+            value: '1,247',
+            change: '+12%',
             trend: 'up',
-            icon: '🏠', 
+            icon: '🏠',
             color: 'var(--accent)',
             gradient: 'var(--gradient-accent)'
         },
-        { 
-            title: 'Active Users', 
-            value: '856', 
-            change: '+8%', 
+        {
+            title: 'Active Users',
+            value: '856',
+            change: '+8%',
             trend: 'up',
-            icon: '👥', 
+            icon: '👥',
             color: 'var(--accent-light)',
             gradient: 'linear-gradient(135deg, var(--accent-light) 0%, #34d399 100%)'
         },
-        { 
-            title: 'Categories', 
-            value: '12', 
-            change: '+2', 
+        {
+            title: 'Categories',
+            value: '12',
+            change: '+2',
             trend: 'up',
-            icon: '📊', 
+            icon: '📊',
             color: 'var(--accent-dark)',
             gradient: 'linear-gradient(135deg, var(--accent-dark) 0%, var(--accent) 100%)'
         },
-        { 
-            title: 'Revenue', 
-            value: '$2.4M', 
-            change: '+23%', 
+        {
+            title: 'Revenue',
+            value: '$2.4M',
+            change: '+23%',
             trend: 'up',
-            icon: '💰', 
+            icon: '💰',
             color: 'var(--primary-dark)',
             gradient: 'var(--gradient-primary)'
         },
@@ -138,7 +138,7 @@ const Dashboard = () => {
                                 <Card.Body>
                                     <div className="stat-content">
                                         <div className="stat-icon-wrapper">
-                                            <div 
+                                            <div
                                                 className="stat-icon-modern"
                                                 style={{ background: stat.gradient }}
                                             >
@@ -157,7 +157,7 @@ const Dashboard = () => {
                                         </div>
                                     </div>
                                     <div className="stat-background">
-                                        <div 
+                                        <div
                                             className="stat-bg-shape"
                                             style={{ background: stat.gradient }}
                                         ></div>
@@ -179,15 +179,15 @@ const Dashboard = () => {
                                     <p>Monthly listings and sales analytics</p>
                                 </div>
                                 <div className="chart-actions">
-                                    <Button 
-                                        variant={timeRange === 'monthly' ? 'primary' : 'outline-primary'} 
+                                    <Button
+                                        variant={timeRange === 'monthly' ? 'primary' : 'outline-primary'}
                                         size="sm"
                                         onClick={() => setTimeRange('monthly')}
                                     >
                                         Monthly
                                     </Button>
-                                    <Button 
-                                        variant={timeRange === 'quarterly' ? 'primary' : 'outline-primary'} 
+                                    <Button
+                                        variant={timeRange === 'quarterly' ? 'primary' : 'outline-primary'}
                                         size="sm"
                                         onClick={() => setTimeRange('quarterly')}
                                     >
@@ -199,26 +199,26 @@ const Dashboard = () => {
                                 <ResponsiveContainer width="100%" height={300}>
                                     <BarChart data={propertyStats}>
                                         <CartesianGrid strokeDasharray="3 3" stroke="var(--medium-gray)" />
-                                        <XAxis 
-                                            dataKey="name" 
+                                        <XAxis
+                                            dataKey="name"
                                             stroke="var(--text-light)"
                                             fontSize={12}
                                         />
-                                        <YAxis 
+                                        <YAxis
                                             stroke="var(--text-light)"
                                             fontSize={12}
                                         />
                                         <Tooltip content={<CustomTooltip />} />
                                         <Legend />
-                                        <Bar 
-                                            dataKey="listed" 
-                                            fill="var(--accent)" 
+                                        <Bar
+                                            dataKey="listed"
+                                            fill="var(--accent)"
                                             name="Properties Listed"
                                             radius={[4, 4, 0, 0]}
                                         />
-                                        <Bar 
-                                            dataKey="sold" 
-                                            fill="var(--accent-light)" 
+                                        <Bar
+                                            dataKey="sold"
+                                            fill="var(--accent-light)"
                                             name="Properties Sold"
                                             radius={[4, 4, 0, 0]}
                                         />
@@ -241,22 +241,22 @@ const Dashboard = () => {
                                             <AreaChart data={revenueData}>
                                                 <defs>
                                                     <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                                                        <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.8}/>
-                                                        <stop offset="95%" stopColor="var(--accent)" stopOpacity={0.1}/>
+                                                        <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.8} />
+                                                        <stop offset="95%" stopColor="var(--accent)" stopOpacity={0.1} />
                                                     </linearGradient>
                                                 </defs>
-                                                <Area 
-                                                    type="monotone" 
-                                                    dataKey="revenue" 
-                                                    stroke="var(--accent)" 
-                                                    fillOpacity={1} 
-                                                    fill="url(#revenueGradient)" 
+                                                <Area
+                                                    type="monotone"
+                                                    dataKey="revenue"
+                                                    stroke="var(--accent)"
+                                                    fillOpacity={1}
+                                                    fill="url(#revenueGradient)"
                                                 />
-                                                <Line 
-                                                    type="monotone" 
-                                                    dataKey="target" 
-                                                    stroke="var(--primary-dark)" 
-                                                    strokeDasharray="3 3" 
+                                                <Line
+                                                    type="monotone"
+                                                    dataKey="target"
+                                                    stroke="var(--primary-dark)"
+                                                    strokeDasharray="3 3"
                                                     strokeWidth={2}
                                                 />
                                             </AreaChart>
@@ -305,8 +305,8 @@ const Dashboard = () => {
                                         <div className="category-legend">
                                             {categoryData.map((category, index) => (
                                                 <div key={index} className="legend-item">
-                                                    <div 
-                                                        className="legend-color" 
+                                                    <div
+                                                        className="legend-color"
                                                         style={{ backgroundColor: category.color }}
                                                     ></div>
                                                     <span>{category.name}</span>
@@ -367,8 +367,8 @@ const Dashboard = () => {
                                                 <span className="metric-label">{metric.label}</span>
                                                 <span className="metric-value">{metric.value}%</span>
                                             </div>
-                                            <ProgressBar 
-                                                now={metric.value} 
+                                            <ProgressBar
+                                                now={metric.value}
                                                 max={100}
                                                 className="metric-progress"
                                                 variant={metric.value >= metric.target ? "success" : "warning"}
