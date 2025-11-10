@@ -1,56 +1,27 @@
 // src/components/Admin/CategoryManagement.jsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Table, Button, Form, Modal, Badge } from 'react-bootstrap';
 import './CategoryManagement.css';
+import { adminCategoryStore, fetchAdminCategories } from '../../../redux/actions/adminCategoriesActions';
+import { useDispatch, useSelector } from 'react-redux';
 
 const CategoryManagement = () => {
+    const dispatch = useDispatch();
     const [showModal, setShowModal] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
-    const [categories, setCategories] = useState([
-        {
-            id: 1,
-            name: 'Apartments',
-            slug: 'apartments',
-            description: 'Modern apartments in prime locations',
-            icon: '🏢',
-            propertyCount: 245,
-            status: 'active'
-        },
-        {
-            id: 2,
-            name: 'Houses',
-            slug: 'houses',
-            description: 'Spacious family homes with yards',
-            icon: '🏠',
-            propertyCount: 189,
-            status: 'active'
-        },
-        {
-            id: 3,
-            name: 'Villas',
-            slug: 'villas',
-            description: 'Luxury villas with premium amenities',
-            icon: '🏡',
-            propertyCount: 67,
-            status: 'active'
-        },
-        {
-            id: 4,
-            name: 'Condos',
-            slug: 'condos',
-            description: 'Contemporary condominium living',
-            icon: '🏘️',
-            propertyCount: 156,
-            status: 'inactive'
-        }
-    ]);
+
+    useEffect(() => {
+        dispatch(fetchAdminCategories());
+    }, [dispatch]);
+    const categories = useSelector(state => state.categories.categories) || [];
+    console.log("Categories from Redux:", categories);
 
     const [formData, setFormData] = useState({
         name: '',
         slug: '',
-        description: '',
+        details: '',
         icon: '🏠',
-        status: 'active'
+        status: '0'
     });
 
     const handleShowModal = (category = null) => {
@@ -59,7 +30,7 @@ const CategoryManagement = () => {
             setFormData({
                 name: category.name,
                 slug: category.slug,
-                description: category.description,
+                details: category.details,
                 icon: category.icon,
                 status: category.status
             });
@@ -68,9 +39,9 @@ const CategoryManagement = () => {
             setFormData({
                 name: '',
                 slug: '',
-                description: '',
+                details: '',
                 icon: '🏠',
-                status: 'active'
+                status: '0'
             });
         }
         setShowModal(true);
@@ -83,22 +54,7 @@ const CategoryManagement = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (editingCategory) {
-            // Update category
-            setCategories(categories.map(cat => 
-                cat.id === editingCategory.id 
-                    ? { ...cat, ...formData }
-                    : cat
-            ));
-        } else {
-            // Add new category
-            const newCategory = {
-                id: categories.length + 1,
-                ...formData,
-                propertyCount: 0
-            };
-            setCategories([...categories, newCategory]);
-        }
+        dispatch(adminCategoryStore(formData));
         handleCloseModal();
     };
 
@@ -125,7 +81,7 @@ const CategoryManagement = () => {
                     <Col>
                         <div className="d-flex justify-content-between align-items-center">
                             <div>
-                                <h2>Category Management</h2>
+                                <h2>Category Management: {categories.length}</h2>
                                 <p className="text-muted">Manage property categories and types</p>
                             </div>
                             <Button variant="success" onClick={() => handleShowModal()}>
@@ -151,7 +107,7 @@ const CategoryManagement = () => {
                                             </Badge>
                                         </div>
                                     </div>
-                                    <p className="category-description">{category.description}</p>
+                                    <p className="category-description">{category.details}</p>
                                     <div className="category-stats">
                                         <span className="property-count">
                                             {category.propertyCount} properties
@@ -159,15 +115,15 @@ const CategoryManagement = () => {
                                         <span className="category-slug">/{category.slug}</span>
                                     </div>
                                     <div className="category-actions">
-                                        <Button 
-                                            variant="outline-primary" 
+                                        <Button
+                                            variant="outline-primary"
                                             size="sm"
                                             onClick={() => handleShowModal(category)}
                                         >
                                             Edit
                                         </Button>
-                                        <Button 
-                                            variant="outline-danger" 
+                                        <Button
+                                            variant="outline-danger"
                                             size="sm"
                                             onClick={() => handleDelete(category.id)}
                                         >
@@ -203,7 +159,7 @@ const CategoryManagement = () => {
                                 <Form.Control
                                     type="text"
                                     value={formData.slug}
-                                    onChange={(e) => setFormData({...formData, slug: e.target.value})}
+                                    onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                                     required
                                 />
                                 <Form.Text className="text-muted">
@@ -215,8 +171,8 @@ const CategoryManagement = () => {
                                 <Form.Control
                                     as="textarea"
                                     rows={3}
-                                    value={formData.description}
-                                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                                    value={formData.details}
+                                    onChange={(e) => setFormData({ ...formData, details: e.target.value })}
                                     required
                                 />
                             </Form.Group>
@@ -228,7 +184,7 @@ const CategoryManagement = () => {
                                             key={icon}
                                             type="button"
                                             className={`icon-option ${formData.icon === icon ? 'selected' : ''}`}
-                                            onClick={() => setFormData({...formData, icon: icon})}
+                                            onClick={() => setFormData({ ...formData, icon: icon })}
                                         >
                                             {icon}
                                         </button>
@@ -239,10 +195,10 @@ const CategoryManagement = () => {
                                 <Form.Label>Status</Form.Label>
                                 <Form.Select
                                     value={formData.status}
-                                    onChange={(e) => setFormData({...formData, status: e.target.value})}
+                                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                                 >
-                                    <option value="active">Active</option>
-                                    <option value="inactive">Inactive</option>
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
                                 </Form.Select>
                             </Form.Group>
                         </Modal.Body>
