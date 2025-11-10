@@ -11,9 +11,9 @@ function App() {
 
   return (
     <Router>
-      <Header /> {/* This renders the Header */}
+       {/* This renders the Header */}
       <AppRoutes /> {/* This renders your routes */}
-      <Footer />
+      
     </Router>
   );
 }

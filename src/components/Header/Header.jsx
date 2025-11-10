@@ -61,16 +61,13 @@ const Header = () => {
                             <Nav.Link as={Link} to="/contact_us" className="nav-item">
                                 Contact
                             </Nav.Link>
-                            <Nav.Link as={Link} to="/admin" className="nav-item">
-                                Admin
-                            </Nav.Link>
                         </Nav>
 
                         {/* Auth Buttons */}
                         <div className="auth-section">
-                            <Button variant="outline-dark" className="auth-btn login-btn">
+                            <Link to="/login" className="auth-btn login-btn">
                                 Login
-                            </Button>
+                            </Link>
                             <Button variant="primary" className="auth-btn register-btn">
                                 Sign Up
                             </Button>

@@ -7,20 +7,28 @@ import ContactUs from "../pages/ContactUs/ContactUs";
 import AboutUs from "../pages/AboutUs/AboutUs";
 import SearchPage from "../pages/SearchProperties/SearchPage";
 import AdminPanel from "../pages/Admin/AdminPanel/AdminPanel";
+import Header from "../components/Header/Header";
+import Footer from "../components/Footer/Footer";
+import Login from "../pages/Auth/Login";
+import Register from "../pages/Auth/Register";
 
 function AppRoutes() {
     return (
-        <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/property/:id" element={<PropertyDetails />} />
-            <Route path="/agents" element={<Agents />} />
-            <Route path="/contact_us" element={<ContactUs />} />
-            <Route path="/about_us" element={<AboutUs />} />
-            <Route path="/search" element={<SearchPage />} />
-
-            {/* Admin Side Route */}
-            <Route path="/admin" element={<AdminPanel />} />
-        </Routes>
+        <>
+            <Header />
+            <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/property/:id" element={<PropertyDetails />} />
+                <Route path="/agents" element={<Agents />} />
+                <Route path="/contact_us" element={<ContactUs />} />
+                <Route path="/about_us" element={<AboutUs />} />
+                <Route path="/search" element={<SearchPage />} />
+                <Route path="/admin" element={<AdminPanel />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+            </Routes>
+            <Footer />
+        </>
     );
 }
 
