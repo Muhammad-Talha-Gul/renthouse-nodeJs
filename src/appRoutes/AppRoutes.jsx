@@ -12,6 +12,7 @@ import Footer from "../components/Footer/Footer";
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 
+
 function AppRoutes() {
     return (
         <>
