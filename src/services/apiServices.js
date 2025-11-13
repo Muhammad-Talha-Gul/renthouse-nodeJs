@@ -15,7 +15,7 @@ const apiServices = async (endpoint, method = "get", data = null, params = {}) =
         }
         return response.data;
     } catch (error) {
-
+        throw error?.response?.data || { message: "An unexpected error occurred" };
     }
 }
 

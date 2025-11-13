@@ -49,6 +49,7 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const response = await dispatch(register(formData));
+        console.log("Register response view file:", response);
 
         if (!validateForm()) {
             return;
@@ -75,9 +76,9 @@ const Register = () => {
             });
 
             // Redirect to login after 3 seconds
-            setTimeout(() => {
-                navigate('/login');
-            }, 3000);
+            // setTimeout(() => {
+            //     navigate('/login');
+            // }, 3000);
 
         } catch (err) {
             setError('An error occurred. Please try again.');
