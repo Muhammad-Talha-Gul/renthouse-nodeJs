@@ -6,20 +6,25 @@ export const login = (credentials) => async (dispatch) => {
     dispatch({ type: "LOGIN_START" });
     try {
         const response = await apiServices('/api/auth/login', 'post', credentials);
+        console.log("login response view file:", response.message); // ✅ use response.message
         dispatch({ type: "LOGIN_SUCCESS", payload: response });
+        alert(response.message); // ✅ use response.message
         return response;
 
     } catch (error) {
+          alert( error.message); // ✅ safer logging // ✅ corrected syntax
         dispatch({ type: "LOGIN_FAILURE" });
     }
 }
 
+
 export const register = (userInfo) => async (dispatch) => {
-    console.log("actions is calling correctly");
     dispatch({ type: "REGISTER_START" });
     try {
+        console.log("actions is calling correctly DDDD", userInfo);
         const response = await apiServices('/api/auth/register', 'post', userInfo);
         dispatch({ type: "REGISTER_SUCCESS", payload: response });
+        alert("Registration successful!");
         return response;
 
     } catch (error) {

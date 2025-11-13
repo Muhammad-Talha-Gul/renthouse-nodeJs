@@ -1,7 +1,7 @@
 const db = require('../../config/db');
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
-const login = async (req, res) => {
+exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -17,7 +17,7 @@ const login = async (req, res) => {
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(401).json({ message: "Invalid credentials" });
+            return res.status(404).json({ message: "Invalid credentials" });
         }
 
         const token = jwt.sign(
@@ -35,32 +35,46 @@ const login = async (req, res) => {
         // ✅ Return success response
         return res.status(200).json({
             message: "Login successful",
-            status : true,
+            status: true,
             user: { id: user.id, name: user.name, email: user.email },
         });
     } catch (error) {
-        console.error("authController.login error:", error);
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({
+            message: 'Internal Server Error',
+            error: error.message || error
+        });
     }
 };
 
-const register = async (req, res) => {
+exports.register = async (req, res) => {
     try {
-
         const { fullName, email, password, phone } = req.body;
+
+        if (!fullName || !email || !password) {
+            return res.status(400).json({ message: 'Full Name, Email, and Password are required' });
+        }
+
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-        const result = await db.query(
+
+        const [result] = await db.query(
             "INSERT INTO users (name, email, password, phone_number) VALUES (?, ?, ?, ?)",
             [fullName, email, hashedPassword, phone]
         );
-        return res.json({ message: 'User registered successfully', userId: result });
+
+        return res.status(201).json({
+            message: 'User registered successfully',
+            userId: result.insertId
+        });
+
     } catch (error) {
         console.error('authController.register error:', error);
-    }
-}
 
-module.exports = {
-    login,
-    register
-};
+        // Return detailed error for debugging
+        return res.status(500).json({
+            message: 'Internal Server Error',
+            error: error.message || error
+        });
+    }
+
+}
