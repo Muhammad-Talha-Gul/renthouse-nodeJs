@@ -3,11 +3,11 @@ const express = require('express');
 const cors = require('cors');
 const apiRoutes = require('./src/routes/api');
 const db = require('./config/db');
-
+const cookieParser = require('cookie-parser');
 const initializeDatabase = require("./Models/initializeDatabase");
 
 const app = express();
-
+app.use(cookieParser());
 // Server port from .env or fallback to 5000
 const PORT = process.env.PORT || 5000;
 
