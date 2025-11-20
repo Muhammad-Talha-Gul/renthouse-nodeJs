@@ -1,7 +1,9 @@
 const db = require('../../config/db');
+const jwt = require("jsonwebtoken");
+
 const index = async (req, res) => {
     try {
-        const [rows] = await db.query("SELECT * FROM categories WHERE active_status = ?", [1]);
+        const [rows] = await db.query("SELECT * FROM categories WHERE active_status = ?", [0]);
         res.status(200).json({ message: "Admin Categories Controller is working!", results: rows });
     } catch (error) {
         if (process.env.NODE_ENV === 'production') {
@@ -23,11 +25,19 @@ const index = async (req, res) => {
 const store = async (req, res) => {
     try {
         const { name, details, status, icon } = req.body;
-        const result = await req.db.query(
+
+        const { id, email } = req.user;
+
+        const [insertResult] = await req.db.query(
             "INSERT INTO categories (user_id, name, details, active_status, icon) VALUES (?, ?, ?, ?, ?)",
-            [1, name, details, status, icon] // Assuming user_id is 1 for now
+            [id, name, details, status, icon] // Assuming user_id is 1 for now
         );
-        res.status(200).json({ message: "Category created successfully!", result: result });
+
+        const [rows] = await req.db.query(
+            "SELECT * FROM categories WHERE id = ?",
+            [insertResult.insertId]
+        );
+        res.status(200).json({ message: "Category created successfully!", data: rows[0] });
     } catch (error) {
         console.error('adminCategoriesController.store error:', error);
         if (process.env.NODE_ENV === 'production') {

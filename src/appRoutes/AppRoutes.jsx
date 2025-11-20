@@ -11,6 +11,7 @@ import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
+import ProtectedRoute from "./ProtectedRoute";
 
 
 function AppRoutes() {
@@ -24,7 +25,11 @@ function AppRoutes() {
                 <Route path="/contact_us" element={<ContactUs />} />
                 <Route path="/about_us" element={<AboutUs />} />
                 <Route path="/search" element={<SearchPage />} />
-                <Route path="/admin" element={<AdminPanel />} />
+                {/* Protected Admin Route */}
+                <Route
+                    path="/admin"
+                    element={<ProtectedRoute element={<AdminPanel />} />}
+                />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
             </Routes>

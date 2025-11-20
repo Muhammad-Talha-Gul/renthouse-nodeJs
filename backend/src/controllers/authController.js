@@ -22,7 +22,7 @@ exports.login = async (req, res) => {
 
         const token = jwt.sign(
             { id: user.id, email: user.email },
-            process.env.SECRET_KEY,
+            process.env.JWT_SECRET,
             { expiresIn: "1d" } // token expires in 1 day
         );
         res.cookie("token", token, {
@@ -32,10 +32,11 @@ exports.login = async (req, res) => {
             maxAge: 24 * 60 * 60 * 1000 // 1 day
         });
 
-        // ✅ Return success response
+        // ✅ Return success response with token
         return res.status(200).json({
             message: "Login successful",
             status: true,
+            token: token,
             user: { id: user.id, name: user.name, email: user.email },
         });
     } catch (error) {

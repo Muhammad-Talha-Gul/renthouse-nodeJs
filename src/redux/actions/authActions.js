@@ -7,6 +7,12 @@ export const login = (credentials) => async (dispatch) => {
     try {
         const response = await apiServices('/api/auth/login', 'post', credentials);
         console.log("login response view file:", response.message); // ✅ use response.message
+        
+        // Store token in localStorage
+        if (response.token) {
+            localStorage.setItem('token', response.token);
+        }
+        
         dispatch({ type: "LOGIN_SUCCESS", payload: response });
         alert(response.message); // ✅ use response.message
         return response;
@@ -35,6 +41,9 @@ export const logout = () => async (dispatch) => {
     console.log("logout action is calling correctly");
     dispatch({ type: "LOGOUT_START" });
     try {
+        // Remove token from localStorage
+        localStorage.removeItem('token');
+        
         await apiServices('/api/logout', 'post');
         dispatch({ type: "LOGOUT_SUCCESS" });
     } catch (error) {

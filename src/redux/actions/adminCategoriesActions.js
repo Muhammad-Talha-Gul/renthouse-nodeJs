@@ -16,7 +16,7 @@ export const fetchAdminCategories = (page, filters = {}) => async (dispatch) => 
 export const adminCategoryStore = (data) => async (dispatch) => {
     try {
         const response = await apiServices('/api/categories/store', 'post', data);
-        dispatch({ type: "FETCH_ADMIN_CATEGORIES_SUCCESS", payload: response });
+        dispatch({ type: "FETCH_ADMIN_STORE_SUCCESS", payload: response?.data });
         return response;
 
     } catch (error) {

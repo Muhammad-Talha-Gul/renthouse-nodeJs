@@ -1,17 +1,15 @@
-// src/components/Auth/ProtectedRoute.jsx
 import React from "react";
 import { Navigate } from "react-router-dom";
-import Cookies from "js-cookie";
 
 const ProtectedRoute = ({ element }) => {
-  const token = Cookies.get("token"); // 👈 get token from cookies
-
-  // If no token, redirect to login page
+  const token = localStorage.getItem("token"); // get token from localStorage
+  console.log("token console", token);
+  // If no token, redirect to login
   if (!token) {
     return <Navigate to="/login" replace />;
   }
 
-  // If token exists, render the element (protected page)
+  // If token exists, render the element (admin/dashboard)
   return element;
 };
 

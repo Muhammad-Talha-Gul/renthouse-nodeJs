@@ -15,13 +15,13 @@ const adminCategoriesReducer = (state = initialState, action) => {
             return { ...state, loading: false, error: action.error };
 
 
-        // case 'FETCH_ADMIN_CATEGORIES_SUCCESS':
-        //     return {
-        //         ...state, loading: false, error: action.error,
-        //         categories: categories.map(cat =>
-        //             cat.id === action.payload.id ? action.payload : cat
-        //         ),
-        //     };
+        case 'FETCH_ADMIN_STORE_SUCCESS':
+            console.log("New category inserted:", action.payload);
+            return {
+                ...state,
+                categories: [...state.categories, action.payload], // add new category
+            };
+
         default:
             return state;
     }
