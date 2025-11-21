@@ -1,142 +1,97 @@
-// src/components/Admin/AdminPanel.jsx
-import React, { useState } from 'react';
-import { Container, Row, Col, Nav, Button } from 'react-bootstrap';
-import './AdminPanel.css';
-import Dashboard from '../Dashboard/Dashboard';
-import UserManagement from '../UserManagement/UserManagement';
-import CategoryManagement from '../CategoryManagement/CategoryManagement';
-import PropertyManagement from '../PropertyManagement/PropertyManagement';
-
+import React, { useState } from "react";
+import { Container, Row, Col, Nav, Button } from "react-bootstrap";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
+import "./AdminPanel.css";
+import { adminRoutes } from "../../../appRoutes/AppRoutes";
 const AdminPanel = () => {
-    const [activeTab, setActiveTab] = useState('dashboard');
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const userDetailsString = localStorage.getItem("userSession");
+    const userSession = userDetailsString ? JSON.parse(userDetailsString) : null;
+    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const location = useLocation();
 
-    const renderContent = () => {
-        switch (activeTab) {
-            case 'dashboard':
-                return <Dashboard />;
-            case 'users':
-                return <UserManagement />;
-            case 'categories':
-                return <CategoryManagement />;
-            case 'properties':
-                return <PropertyManagement />;
-            default:
-                return <Dashboard />;
-        }
-    };
+    const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
-    const toggleSidebar = () => {
-        setSidebarOpen(!sidebarOpen);
-    };
+    // Get current route to display dynamic header
+    const currentRoute = adminRoutes.find((r) =>
+        location.pathname.endsWith(r.path)
+    );
 
-    const handleNavClick = (tab) => {
-        setActiveTab(tab);
-        // Auto-close sidebar on mobile after navigation
-        if (window.innerWidth < 992) {
-            setSidebarOpen(false);
-        }
+    const handleNavClick = () => {
+        if (window.innerWidth < 992) setSidebarOpen(false);
     };
 
     return (
         <div className="admin-panel">
-            <Container fluid>
-                <Row>
-                    {/* Sidebar */}
-                    <Col lg={sidebarOpen ? 2 : 0} className={`sidebar-col ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
-                        <div className={`admin-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
-                            <div className="sidebar-header">
-                                <div className="sidebar-header-content">
-                                    <h3>🏠 RentEase</h3>
-                                    <p>Admin Panel</p>
-                                </div>
-                                <Button 
-                                    variant="link" 
-                                    className="sidebar-close-btn"
-                                    onClick={toggleSidebar}
-                                >
-                                    ✕
-                                </Button>
+            <Row>
+                {/* Sidebar */}
+                <Col
+                    lg={2}
+                    className={`sidebar-col ${sidebarOpen ? "sidebar-open" : "sidebar-closed"}`}
+                >
+                    <div className={`admin-sidebar ${sidebarOpen ? "open" : "closed"}`}>
+                        <div className="sidebar-header">
+                            <div className="sidebar-header-content">
+                                <h3>🏠 RentEase</h3>
+                                <p>{userSession?.user_details?.user_full_name}</p>
                             </div>
-                            <Nav className="flex-column sidebar-nav">
-                                <Nav.Link 
-                                    className={activeTab === 'dashboard' ? 'active' : ''}
-                                    onClick={() => handleNavClick('dashboard')}
-                                >
-                                    <span className="nav-icon">📊</span>
-                                    <span className="nav-text">Dashboard</span>
-                                </Nav.Link>
-                                <Nav.Link 
-                                    className={activeTab === 'properties' ? 'active' : ''}
-                                    onClick={() => handleNavClick('properties')}
-                                >
-                                    <span className="nav-icon">🏠</span>
-                                    <span className="nav-text">Properties</span>
-                                </Nav.Link>
-                                <Nav.Link 
-                                    className={activeTab === 'categories' ? 'active' : ''}
-                                    onClick={() => handleNavClick('categories')}
-                                >
-                                    <span className="nav-icon">🏷️</span>
-                                    <span className="nav-text">Categories</span>
-                                </Nav.Link>
-                                <Nav.Link 
-                                    className={activeTab === 'users' ? 'active' : ''}
-                                    onClick={() => handleNavClick('users')}
-                                >
-                                    <span className="nav-icon">👥</span>
-                                    <span className="nav-text">Users</span>
-                                </Nav.Link>
-                                <Nav.Link>
-                                    <span className="nav-icon">📈</span>
-                                    <span className="nav-text">Analytics</span>
-                                </Nav.Link>
-                                <Nav.Link>
-                                    <span className="nav-icon">⚙️</span>
-                                    <span className="nav-text">Settings</span>
-                                </Nav.Link>
-                            </Nav>
+                            {/* <Button
+                                variant="outline-secondary"
+                                className="sidebar-toggle-btn"
+                                onClick={toggleSidebar}
+                            >
+                                {sidebarOpen ? "✕" : "☰"}
+                            </Button> */}
                         </div>
-                        
-                        {/* Overlay for mobile */}
-                        {sidebarOpen && (
-                            <div className="sidebar-overlay" onClick={toggleSidebar} />
-                        )}
-                    </Col>
 
-                    {/* Main Content */}
-                    <Col lg={sidebarOpen ? 10 : 12} className={`main-content-col ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
-                        <div className="admin-main-content">
-                            {/* Header with toggle button */}
-                            <div className="content-header">
-                                <Button 
-                                    variant="outline-secondary"
-                                    className="sidebar-toggle-btn"
-                                    onClick={toggleSidebar}
+                        <Nav className="flex-column sidebar-nav">
+                            {adminRoutes.map((route) => (
+                                <Nav.Link
+                                    key={route.path}
+                                    as={NavLink}
+                                    to={`/admin/${route.path}`}
+                                    onClick={handleNavClick}
                                 >
-                                    ☰
-                                </Button>
-                                <div className="header-title">
-                                    <h2>
-                                        {activeTab === 'dashboard' && 'Dashboard'}
-                                        {activeTab === 'properties' && 'Property Management'}
-                                        {activeTab === 'categories' && 'Category Management'}
-                                        {activeTab === 'users' && 'User Management'}
-                                    </h2>
-                                    <p className="breadcrumb">
-                                        Admin Panel / {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-                                    </p>
-                                </div>
-                            </div>
+                                    <span className="nav-icon">{route.icon}</span>
+                                    <span className="nav-text">{route.title}</span>
+                                </Nav.Link>
+                            ))}
+                        </Nav>
+                    </div>
 
-                            {/* Main Content */}
-                            <div className="content-area">
-                                {renderContent()}
+                    {sidebarOpen && (
+                        <div className="sidebar-overlay" onClick={toggleSidebar} />
+                    )}
+                </Col>
+
+                {/* Main content */}
+                <Col
+                    lg={10}
+                    className={`main-content-col ${sidebarOpen ? "sidebar-open" : "sidebar-closed"}`}
+                >
+                    <div className="admin-main-content">
+                        <div className="content-header">
+                            <Button
+                                variant="outline-secondary"
+                                className="sidebar-toggle-btn"
+                                onClick={toggleSidebar}
+                            >
+                                {sidebarOpen ? "✕" : "☰"}
+                            </Button>
+                            <div className="header-title">
+                                <h2>{currentRoute ? currentRoute.title : "Admin Panel"}</h2>
                             </div>
                         </div>
-                    </Col>
-                </Row>
-            </Container>
+
+                        <div className="content-area">
+                            {/* Render page component via nested routes */}
+                            <Outlet context={{ userSession }}/>
+                        </div>
+                    </div>
+                    {/* <div className="" style={{ padding: "30px 20px", color: "#fff", background: "linear-gradient(135deg, #059669 0%, #10b981 100%)" }}>
+                        <h1>This is Footer Text</h1>
+                    </div> */}
+                </Col>
+            </Row>
         </div>
     );
 };

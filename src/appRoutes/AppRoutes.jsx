@@ -12,12 +12,20 @@ import Footer from "../components/Footer/Footer";
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 import ProtectedRoute from "./ProtectedRoute";
+import Dashboard from "../pages/Admin/Dashboard/Dashboard";
+import CategoryManagement from "../pages/Admin/CategoryManagement/CategoryManagement";
 
-
+export const adminRoutes = [
+    { path: "dashboard", component: <Dashboard />, title: "Dashboard", icon: "📊" },
+    { path: "categories", component: <CategoryManagement />, title: "Categories", icon: "🏷️" },
+    // Add more admin routes here
+];
 function AppRoutes() {
+    const token = localStorage.getItem("token"); // Check if user is logged in
+    console.log("token console", token);
     return (
         <>
-            <Header />
+            {!token && <Header />}
             <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/property/:id" element={<PropertyDetails />} />
@@ -25,15 +33,23 @@ function AppRoutes() {
                 <Route path="/contact_us" element={<ContactUs />} />
                 <Route path="/about_us" element={<AboutUs />} />
                 <Route path="/search" element={<SearchPage />} />
-                {/* Protected Admin Route */}
-                <Route
-                    path="/admin"
-                    element={<ProtectedRoute element={<AdminPanel />} />}
-                />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+
+
+
+                <Route path="/admin" element={<ProtectedRoute element={<AdminPanel />} />}>
+                    <Route index element={<Dashboard />} />
+                    {adminRoutes.map((route) => (
+                        <Route
+                            key={route.path}
+                            path={route.path}
+                            element={route.component}
+                        />
+                    ))}
+                </Route>
             </Routes>
-            <Footer />
+            {!token && <Footer />}
         </>
     );
 }
