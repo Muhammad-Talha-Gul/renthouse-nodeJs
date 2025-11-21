@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 
 const index = async (req, res) => {
     try {
-        const [rows] = await db.query("SELECT * FROM categories WHERE active_status = ?", [0]);
+        const [rows] = await db.query("SELECT * FROM categories WHERE active_status = ?", [1]);
         res.status(200).json({ message: "Admin Categories Controller is working!", results: rows });
     } catch (error) {
         if (process.env.NODE_ENV === 'production') {

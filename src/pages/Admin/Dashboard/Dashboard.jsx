@@ -6,6 +6,7 @@ import {
     PieChart, Pie, Cell, LineChart, Line, AreaChart, Area
 } from 'recharts';
 import './Dashboard.css';
+import AdminPanel from '../AdminPanel/AdminPanel';
 
 const Dashboard = () => {
     const [timeRange, setTimeRange] = useState('monthly');
@@ -108,9 +109,8 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="admin-dashboard-modern">
-            <Container fluid>
-                {/* Header */}
+        <>
+            <div className="admin-dashboard-modern">
                 <Row className="admin-header-modern">
                     <Col>
                         <div className="header-content">
@@ -385,37 +385,37 @@ const Dashboard = () => {
                 </Row>
 
                 {/* Quick Actions */}
-                <Row className="mt-4">
-                    <Col>
-                        <Card className="quick-actions-modern">
-                            <Card.Body>
-                                <div className="quick-actions-content">
-                                    <h5>Quick Actions</h5>
-                                    <div className="action-buttons">
-                                        <Button variant="primary" className="action-btn-modern">
-                                            <span className="btn-icon">📊</span>
-                                            View Analytics
-                                        </Button>
-                                        <Button variant="outline-primary" className="action-btn-modern">
-                                            <span className="btn-icon">📝</span>
-                                            Add Property
-                                        </Button>
-                                        <Button variant="outline-primary" className="action-btn-modern">
-                                            <span className="btn-icon">👥</span>
-                                            Manage Users
-                                        </Button>
-                                        <Button variant="outline-primary" className="action-btn-modern">
-                                            <span className="btn-icon">🏷️</span>
-                                            Categories
-                                        </Button>
+                {/* <Row className="mt-4">
+                        <Col>
+                            <Card className="quick-actions-modern">
+                                <Card.Body>
+                                    <div className="quick-actions-content">
+                                        <h5>Quick Actions</h5>
+                                        <div className="action-buttons">
+                                            <Button variant="primary" className="action-btn-modern">
+                                                <span className="btn-icon">📊</span>
+                                                View Analytics
+                                            </Button>
+                                            <Button variant="outline-primary" className="action-btn-modern">
+                                                <span className="btn-icon">📝</span>
+                                                Add Property
+                                            </Button>
+                                            <Button variant="outline-primary" className="action-btn-modern">
+                                                <span className="btn-icon">👥</span>
+                                                Manage Users
+                                            </Button>
+                                            <Button variant="outline-primary" className="action-btn-modern">
+                                                <span className="btn-icon">🏷️</span>
+                                                Categories
+                                            </Button>
+                                        </div>
                                     </div>
-                                </div>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                </Row>
-            </Container>
-        </div>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                    </Row> */}
+            </div>
+        </>
     );
 };
 

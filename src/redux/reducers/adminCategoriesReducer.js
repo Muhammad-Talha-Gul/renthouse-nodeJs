@@ -10,7 +10,7 @@ const adminCategoriesReducer = (state = initialState, action) => {
         case 'FETCH_ADMIN_CATEGORIES_REQUEST':
             return { ...state, loading: true };
         case 'FETCH_ADMIN_CATEGORIES_SUCCESS':
-            return { ...state, loading: false, categories: action.payload };
+            return { ...state, loading: false, categories: action.payload || [] };
         case 'FETCH_ADMIN_CATEGORIES_FAILURE':
             return { ...state, loading: false, error: action.error };
 
