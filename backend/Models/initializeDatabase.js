@@ -34,6 +34,7 @@ async function initializeDatabase() {
         details TEXT,
         active_status INT DEFAULT 0,
         icon VARCHAR(10) DEFAULT NULL,
+        slug VARCHAR(10) DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )

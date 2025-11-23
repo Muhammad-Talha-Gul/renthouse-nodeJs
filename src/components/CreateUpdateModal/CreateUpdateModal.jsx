@@ -45,6 +45,7 @@ const CreateUpdateModal = ({
             onChange={onFormChange}
             required={required}
             disabled={disabled}
+            className="custom-form-select"
           >
             <option value="">Select {label}</option>
             {options.map(option => (
@@ -66,6 +67,7 @@ const CreateUpdateModal = ({
             placeholder={placeholder}
             required={required}
             disabled={disabled}
+            className="custom-form-control"
           />
         );
 
@@ -97,6 +99,7 @@ const CreateUpdateModal = ({
             placeholder={placeholder}
             required={required}
             disabled={disabled}
+            className="custom-form-control"
           />
         );
 
@@ -110,6 +113,7 @@ const CreateUpdateModal = ({
             placeholder={placeholder}
             required={required}
             disabled={disabled}
+            className="custom-form-control"
           />
         );
     }
@@ -117,22 +121,24 @@ const CreateUpdateModal = ({
 
   return (
     <Modal show={show} onHide={onHide} centered size={size} className="create-update-modal">
-      <Modal.Header closeButton>
-        <Modal.Title>{title}</Modal.Title>
+      <Modal.Header closeButton className="modal-header-custom">
+        <Modal.Title className="modal-title-custom">
+          {title}
+        </Modal.Title>
       </Modal.Header>
       <Form onSubmit={handleSubmit}>
-        <Modal.Body>
+        <Modal.Body className="modal-body-custom">
           <Row>
             {configFields.map((field, index) => (
               <Col key={index} md={field.colSize || 12}>
-                <Form.Group className="mb-3">
-                  <Form.Label>
-                    {field.label} {/* Fixed: changed 'label' to 'field.label' */}
-                    {field.required && <span className="text-danger">*</span>}
+                <Form.Group className="mb-3 form-group-custom">
+                  <Form.Label className="form-label-custom">
+                    {field.label}
+                    {field.required && <span className="required-asterisk">*</span>}
                   </Form.Label>
                   {renderField(field)}
                   {field.helpText && (
-                    <Form.Text className="text-muted">
+                    <Form.Text className="form-help-text">
                       {field.helpText}
                     </Form.Text>
                   )}
@@ -141,12 +147,29 @@ const CreateUpdateModal = ({
             ))}
           </Row>
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={onHide} disabled={loading}>
+        <Modal.Footer className="modal-footer-custom">
+          <Button
+            variant="outline"
+            onClick={onHide}
+            disabled={loading}
+            className="btn-cancel"
+          >
             {cancelText}
           </Button>
-          <Button variant="success" type="submit" disabled={loading}>
-            {loading ? 'Processing...' : submitText}
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={loading}
+            className="btn-submit"
+          >
+            {loading ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Processing...
+              </>
+            ) : (
+              submitText
+            )}
           </Button>
         </Modal.Footer>
       </Form>
