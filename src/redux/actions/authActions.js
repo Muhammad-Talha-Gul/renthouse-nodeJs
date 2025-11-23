@@ -7,18 +7,26 @@ export const login = (credentials) => async (dispatch) => {
     try {
         const response = await apiServices('/api/auth/login', 'post', credentials);
         console.log("login response view file:", response.message); // ✅ use response.message
-        
+
         // Store token in localStorage
         if (response.token) {
             localStorage.setItem('token', response.token);
         }
-        
+        // Store user in localStorage (for displaying name/profile)
+        if (response.user) {
+            try {
+                localStorage.setItem('user', JSON.stringify(response.user));
+            } catch (e) {
+                console.warn('Failed to save user to localStorage', e);
+            }
+        }
+
         dispatch({ type: "LOGIN_SUCCESS", payload: response });
         alert(response.message); // ✅ use response.message
         return response;
 
     } catch (error) {
-          alert( error.message); // ✅ safer logging // ✅ corrected syntax
+        alert(error.message); // ✅ safer logging // ✅ corrected syntax
         dispatch({ type: "LOGIN_FAILURE" });
     }
 }
@@ -43,7 +51,7 @@ export const logout = () => async (dispatch) => {
     try {
         // Remove token from localStorage
         localStorage.removeItem('token');
-        
+
         await apiServices('/api/logout', 'post');
         dispatch({ type: "LOGOUT_SUCCESS" });
     } catch (error) {

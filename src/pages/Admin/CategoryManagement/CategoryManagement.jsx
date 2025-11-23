@@ -5,6 +5,7 @@ import './CategoryManagement.css';
 import { adminCategoryStore, fetchAdminCategories } from '../../../redux/actions/adminCategoriesActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useOutletContext } from "react-router-dom";
+import CreateUpdateModal from '../../../components/CreateUpdateModal/CreateUpdateModal';
 const CategoryManagement = () => {
     const { userSession } = useOutletContext();
 
@@ -78,6 +79,68 @@ const CategoryManagement = () => {
     };
 
     const iconOptions = ['🏠', '🏢', '🏡', '🏘️', '🏛️', '📐', '🌆', '🏙️', '🏗️', '💎'];
+    const fieldsConfig = [
+        {
+            name: 'name',
+            label: 'Category Name',
+            type: 'text',
+            required: true,
+            placeholder: 'Enter category name',
+            colSize: 12,
+        },
+        {
+            name: 'slug',
+            label: 'Slug',
+            type: 'text',
+            required: true,
+            placeholder: 'auto-generated from name',
+            colSize: 12,
+            helpText: 'URL-friendly version of the name'
+        },
+        {
+            name: 'details',
+            label: 'Description',
+            type: 'textarea',
+            rows: 3,
+            required: true,
+            placeholder: 'Enter category details',
+            colSize: 12
+        },
+        {
+            name: 'icon',
+            label: 'Icon',
+            type: 'icon-selector',
+            options: ['🏠', '🏢', '🏡', '🏘️', '🏛️', '📐', '🌆', '🏙️', '🏗️', '💎'],
+            colSize: 12
+        },
+        {
+            name: 'status',
+            label: 'Status',
+            type: 'select',
+            required: true,
+            options: [
+                { value: '1', label: 'Active' },
+                { value: '0', label: 'Inactive' }
+            ],
+            colSize: 12
+        }
+    ];
+    const handleFormChange = (e) => {
+        let { name, value } = e.target;
+
+        // Auto-generate slug when changing name
+        if (name === "name") {
+            setFormData({
+                ...formData,
+                name: value,
+                slug: value.toLowerCase().replace(/[^a-z0-9]+/g, "-")
+            });
+            return;
+        }
+
+        setFormData({ ...formData, [name]: value });
+    };
+
 
     return (
         <div className="category-management">
@@ -180,81 +243,17 @@ const CategoryManagement = () => {
             </Row>
 
             {/* Add/Edit Category Modal */}
-            <Modal show={showModal} onHide={handleCloseModal} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>
-                        {editingCategory ? 'Edit Category' : 'Add New Category'}
-                    </Modal.Title>
-                </Modal.Header>
-                <Form onSubmit={handleSubmit}>
-                    <Modal.Body>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Category Name</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={formData.name}
-                                onChange={(e) => handleNameChange(e.target.value)}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Slug</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={formData.slug}
-                                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                                required
-                            />
-                            <Form.Text className="text-muted">
-                                URL-friendly version of the name
-                            </Form.Text>
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Description</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                rows={3}
-                                value={formData.details}
-                                onChange={(e) => setFormData({ ...formData, details: e.target.value })}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Icon</Form.Label>
-                            <div className="icon-selector">
-                                {iconOptions.map(icon => (
-                                    <button
-                                        key={icon}
-                                        type="button"
-                                        className={`icon-option ${formData.icon === icon ? 'selected' : ''}`}
-                                        onClick={() => setFormData({ ...formData, icon: icon })}
-                                    >
-                                        {icon}
-                                    </button>
-                                ))}
-                            </div>
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Status</Form.Label>
-                            <Form.Select
-                                value={formData.status}
-                                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                            >
-                                <option value="1">Active</option>
-                                <option value="0">Inactive</option>
-                            </Form.Select>
-                        </Form.Group>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleCloseModal}>
-                            Cancel
-                        </Button>
-                        <Button variant="success" type="submit">
-                            {editingCategory ? 'Update Category' : 'Add Category'}
-                        </Button>
-                    </Modal.Footer>
-                </Form>
-            </Modal>
+            <CreateUpdateModal
+                show={showModal}
+                onHide={handleCloseModal}
+                title={editingCategory ? "Edit Category" : "Add New Category"}
+                formData={formData}
+                configFields={fieldsConfig}
+                onFormChange={handleFormChange}
+                onSubmit={() => dispatch(adminCategoryStore(formData))}
+                submitText={editingCategory ? "Update Category" : "Add Category"}
+            />
+
         </div>
     );
 };
