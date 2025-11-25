@@ -1,12 +1,15 @@
 import apiServices from "../../services/apiServices";
 
 
-export const fetchAdminCategories = (page, filters = {}) => async (dispatch) => {
+export const fetchAdminCategories = (page = 1, filters = {}) => async (dispatch) => {
     console.log("actions is calling correctly");
     dispatch({ type: "FETCH_ADMIN_CATEGORIES_REQUEST" });
     try {
-        const response = await apiServices('/api/categories/index', 'get', null);
-        dispatch({ type: "FETCH_ADMIN_CATEGORIES_SUCCESS", payload: response.results });
+        // pass page and filters as query params
+        const params = { page, ...filters };
+        console.log("console params data", params);
+        const response = await apiServices('/api/categories/index', 'get', null, params);
+        dispatch({ type: "FETCH_ADMIN_CATEGORIES_SUCCESS", payload: response });
         return response;
 
     } catch (error) {
@@ -16,10 +19,32 @@ export const fetchAdminCategories = (page, filters = {}) => async (dispatch) => 
 export const adminCategoryStore = (data) => async (dispatch) => {
     try {
         const response = await apiServices('/api/categories/store', 'post', data);
-        dispatch({ type: "FETCH_ADMIN_STORE_SUCCESS", payload: response?.data });
+        dispatch({ type: "STORE_ADMIN_CATEGORY_SUCCESS", payload: response?.data });
         return response;
 
     } catch (error) {
         dispatch({ type: "FETCH_ADMIN_CATEGORIES_FAILURE" });
+    }
+}
+export const adminCategoryUpdate = (id, data) => async (dispatch) => {
+    try {
+        const response = await apiServices(`/api/categories/update/${id}`, 'put', data);
+        dispatch({ type: "UPDATE_ADMIN_CATEGORY_SUCCESS", payload: response?.data });
+        return response;
+
+    } catch (error) {
+        dispatch({ type: "FETCH_ADMIN_CATEGORIES_UPDATE_FAILURE" });
+    }
+}
+export const adminCategoryDelete = (id) => async (dispatch) => {
+    try {
+        const response = await apiServices(`/api/categories/distroy/${id}`, 'delete', null);
+        // prefer id from response.data if present, otherwise fallback to response.id or the id we passed
+        const deletedId = response?.data?.id ?? response?.id ?? id;
+        dispatch({ type: "DELETE_ADMIN_CATEGORY_SUCCESS", payload: deletedId });
+        return response;
+
+    } catch (error) {
+        dispatch({ type: "FETCH_ADMIN_CATEGORIES_DELETE_FAILURE" });
     }
 }

@@ -18,7 +18,7 @@ const CreateUpdateModal = ({
 }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit(e);  // Pass the event back to parent
   };
 
   const renderField = (field) => {
@@ -35,6 +35,7 @@ const CreateUpdateModal = ({
     } = field;
 
     const value = formData[name] || '';
+    console.log("values console", value);
 
     switch (type) {
       case 'select':
