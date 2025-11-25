@@ -1,24 +1,29 @@
 // src/components/Admin/CategoryManagement.jsx
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Table, Button, Form, Modal, Badge } from 'react-bootstrap';
+import { Container, Row, Col, Card, Table, Button, Form, Modal, Badge, Pagination } from 'react-bootstrap';
 import './CategoryManagement.css';
-import { adminCategoryStore, fetchAdminCategories } from '../../../redux/actions/adminCategoriesActions';
+import { adminCategoryDelete, adminCategoryStore, adminCategoryUpdate, fetchAdminCategories } from '../../../redux/actions/adminCategoriesActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useOutletContext } from "react-router-dom";
 import CreateUpdateModal from '../../../components/CreateUpdateModal/CreateUpdateModal';
+import Filter from '../../../components/Filter/Filter';
+import CustomPagination from '../../../components/Pagination/Pagination';
+
 const CategoryManagement = () => {
     const { userSession } = useOutletContext();
-
-    console.log("Category user session", userSession);
     const dispatch = useDispatch();
     const [showModal, setShowModal] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
+    const [showFilter, setShowFilter] = useState(false);
 
-    useEffect(() => {
-        dispatch(fetchAdminCategories());
-    }, [dispatch]);
+    const [filterData, setFilterData] = useState({
+        name: '',
+        status: ''
+    });
+
     const categories = useSelector(state => state.categories.categories) || [];
-    console.log("Categories from Redux:", categories);
+    const pagination = useSelector(state => state.categories.pagination) || {};
+    const [currentPage, setCurrentPage] = useState(pagination?.page || 1);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -28,6 +33,55 @@ const CategoryManagement = () => {
         status: '0'
     });
 
+    // ---- Filter handlers ----
+    const filterFields = [
+        { name: 'name', label: 'Category Name', type: 'text', colSize: 2 },
+        {
+            name: 'status', label: 'Status', type: 'select', colSize: 2, options: [
+                { value: '1', label: 'Active' },
+                { value: '0', label: 'Inactive' }
+            ]
+        }
+    ];
+
+    useEffect(() => {
+        // Initial load without filters
+        dispatch(fetchAdminCategories(1, {}));
+    }, [dispatch]);
+
+    useEffect(() => {
+        // Update current page when pagination changes
+        if (pagination?.page) {
+            setCurrentPage(pagination.page);
+        }
+    }, [pagination]);
+
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilterData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleFilterSubmit = (data) => {
+        // Fetch page 1 with filters
+        setCurrentPage(1);
+        dispatch(fetchAdminCategories(1, data));
+    };
+
+    const handleFilterReset = (resetData) => {
+        setFilterData(resetData);
+        setCurrentPage(1);
+        dispatch(fetchAdminCategories(1, {}));
+    };
+
+    const handlePageChange = (newPage) => {
+        if (!newPage || newPage < 1) return;
+        const totalPages = pagination?.total_pages || 1;
+        if (newPage > totalPages) return;
+
+        setCurrentPage(newPage);
+        dispatch(fetchAdminCategories(newPage, filterData));
+    };
+
     const handleShowModal = (category = null) => {
         if (category) {
             setEditingCategory(category);
@@ -36,7 +90,7 @@ const CategoryManagement = () => {
                 slug: category.slug,
                 details: category.details,
                 icon: category.icon,
-                status: category.status
+                status: String(category.active_status)
             });
         } else {
             setEditingCategory(null);
@@ -56,29 +110,69 @@ const CategoryManagement = () => {
         setEditingCategory(null);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        dispatch(adminCategoryStore(formData));
-        handleCloseModal();
-    };
+        try {
+            let response;
+            if (editingCategory?.id) {
+                response = await dispatch(adminCategoryUpdate(editingCategory.id, formData));
+            } else {
+                response = await dispatch(adminCategoryStore(formData));
+            }
 
-    const handleDelete = (categoryId) => {
-        if (window.confirm('Are you sure you want to delete this category?')) {
-            // Note: You'll need to implement actual delete functionality
-            // For now, this just filters locally
-            // dispatch(deleteCategory(categoryId));
+            if (response.status === 200) {
+                alert("Category created successfully!");
+                handleCloseModal();
+                // Refresh current page after successful operation
+                dispatch(fetchAdminCategories(currentPage, filterData));
+            } else {
+                alert("Request completed but with non-200 status:", response.status);
+            }
+        } catch (error) {
+            console.error("Error in handleSubmit:", error);
+            console.log("Error status:", error.response?.status);
         }
     };
 
-    const handleNameChange = (name) => {
-        setFormData({
-            ...formData,
-            name: name,
-            slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
-        });
+    const handleDelete = async (categoryId) => {
+        if (window.confirm('Are you sure you want to delete this category?')) {
+            try {
+                const response = await dispatch(adminCategoryDelete(categoryId, null));
+                if (response.status === 200) {
+                    alert("Category deleted successfully!");
+                    // Refresh current page after deletion
+                    // If this was the last item on the page, go to previous page
+                    const remainingItems = categories.length - 1;
+                    if (remainingItems === 0 && currentPage > 1) {
+                        handlePageChange(currentPage - 1);
+                    } else {
+                        dispatch(fetchAdminCategories(currentPage, filterData));
+                    }
+                } else {
+                    alert("Request completed but with non-200 status:", response.status);
+                }
+            } catch (error) {
+                console.error("Error deleting category:", error);
+            }
+        }
     };
 
-    const iconOptions = ['🏠', '🏢', '🏡', '🏘️', '🏛️', '📐', '🌆', '🏙️', '🏗️', '💎'];
+    const handleFormChange = (e) => {
+        let { name, value } = e.target;
+
+        // Auto-generate slug when changing name
+        if (name === "name") {
+            setFormData({
+                ...formData,
+                name: value,
+                slug: value.toLowerCase().replace(/[^a-z0-9]+/g, "-")
+            });
+            return;
+        }
+
+        setFormData({ ...formData, [name]: value });
+    };
+
     const fieldsConfig = [
         {
             name: 'name',
@@ -125,36 +219,33 @@ const CategoryManagement = () => {
             colSize: 12
         }
     ];
-    const handleFormChange = (e) => {
-        let { name, value } = e.target;
-
-        // Auto-generate slug when changing name
-        if (name === "name") {
-            setFormData({
-                ...formData,
-                name: value,
-                slug: value.toLowerCase().replace(/[^a-z0-9]+/g, "-")
-            });
-            return;
-        }
-
-        setFormData({ ...formData, [name]: value });
-    };
-
 
     return (
         <div className="category-management">
             <Row className="mb-4">
-                <Col className='text-right'>
-                    {/* <div>
-                                <h2>Category Management</h2>
-                                <p className="text-muted">Manage property categories and types</p>
-                            </div> */}
+                <Col className='text-right d-flex justify-content-end gap-2'>
                     <Button variant="success" onClick={() => handleShowModal()}>
                         ➕ Add Category
                     </Button>
+                    <Button variant={showFilter ? 'outline-secondary' : 'secondary'} onClick={() => setShowFilter(s => !s)}>
+                        {showFilter ? 'Hide Filters' : 'Show Filters'}
+                    </Button>
                 </Col>
             </Row>
+
+            {showFilter && (
+                <Row className="mb-3">
+                    <Col>
+                        <Filter
+                            filterFields={filterFields}
+                            filterData={filterData}
+                            onFilterChange={handleFilterChange}
+                            onFilterSubmit={() => handleFilterSubmit(filterData)}
+                            onReset={(resetData) => handleFilterReset(resetData)}
+                        />
+                    </Col>
+                </Row>
+            )}
 
             <Row>
                 <Col>
@@ -237,6 +328,13 @@ const CategoryManagement = () => {
                                     )}
                                 </tbody>
                             </Table>
+
+                            {/* Pagination Component */}
+                            <CustomPagination
+                                pagination={pagination}
+                                onPageChange={handlePageChange}
+                                className="mt-4"
+                            />
                         </Card.Body>
                     </Card>
                 </Col>
@@ -250,10 +348,9 @@ const CategoryManagement = () => {
                 formData={formData}
                 configFields={fieldsConfig}
                 onFormChange={handleFormChange}
-                onSubmit={() => dispatch(adminCategoryStore(formData))}
+                onSubmit={handleSubmit}
                 submitText={editingCategory ? "Update Category" : "Add Category"}
             />
-
         </div>
     );
 };

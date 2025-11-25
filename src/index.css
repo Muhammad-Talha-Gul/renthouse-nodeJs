@@ -42,3 +42,22 @@ body {
     --shadow-heavy: 0 12px 40px rgba(31, 41, 55, 0.15);
     --shadow-accent: 0 8px 30px rgba(5, 150, 105, 0.15);
 }
+
+
+
+/* Compact Theme Pagination */
+.theme-pagination.compact {
+    padding: 8px 16px;
+    border-radius: 10px;
+}
+
+.theme-pagination.compact .page-link {
+    padding: 6px 12px;
+    font-size: 13px;
+    min-width: 36px;
+    border-radius: 6px;
+}
+
+.theme-pagination.compact .pagination {
+    gap: 4px;
+}

@@ -1,3 +1,10 @@
+.aggrid-table-wrapper {
+  font-size: 0.9rem;
+}
+.ag-actions-cell button {
+  padding: 0.25rem 0.45rem;
+  font-size: 0.78rem;
+}
 /* src/components/Common/DataTable/DataTable.css */
 .data-table-container {
     width: 100%;
