@@ -164,22 +164,26 @@
 .pagination-wrapper {
     padding-top: 0.75rem;
     padding-bottom: 0.25rem;
-    border-top: 1px solid rgba(0,0,0,0.05);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
+
 .pagination-wrapper .pagination-info {
     font-size: 0.95rem;
     color: var(--text-muted, #6c757d);
 }
+
 .pagination-wrapper .per-page select {
     min-width: 72px;
     border-radius: 6px;
 }
+
 .pagination-wrapper .page-item.active .page-link {
     background: linear-gradient(90deg, #6c63ff, #00c6ff);
     border: none;
     color: #fff;
-    box-shadow: 0 4px 12px rgba(108,99,255,0.18);
+    box-shadow: 0 4px 12px rgba(108, 99, 255, 0.18);
 }
+
 .pagination-wrapper .page-link {
     border-radius: 6px;
     margin: 0 3px;
@@ -238,17 +242,17 @@
     .category-table {
         font-size: 0.9rem;
     }
-    
+
     .table-actions {
         flex-direction: column;
         gap: 0.25rem;
     }
-    
+
     .table-actions .btn {
         font-size: 0.75rem;
         padding: 0.25rem 0.5rem;
     }
-    
+
     .category-description-table {
         max-width: 150px;
     }

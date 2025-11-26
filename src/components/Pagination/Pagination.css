@@ -98,7 +98,7 @@
 
 /* Arrow buttons specific styling */
 .theme-pagination .pagination-arrow .page-link {
-    background: var(--white);
+    /* background: var(--white); */
     border: 1px solid var(--medium-gray);
     font-weight: 600;
 }

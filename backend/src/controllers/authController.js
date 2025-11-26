@@ -8,6 +8,7 @@ exports.login = async (req, res) => {
         if (!email || !password) {
             return res.status(400).json({ message: "Email and password are required" });
         }
+
         const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
         const user = rows[0];
 
@@ -25,19 +26,38 @@ exports.login = async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: "1d" } // token expires in 1 day
         );
+
         res.cookie("token", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production", // secure only in production
+            secure: process.env.NODE_ENV === "production",
             sameSite: "strict",
-            maxAge: 24 * 60 * 60 * 1000 // 1 day
+            maxAge: 24 * 60 * 60 * 1000
         });
 
-        // ✅ Return success response with token
+        // ✅ Decode permissions safely
+        let decodedPermissions = {};
+        try {
+            decodedPermissions = JSON.parse(user.permissions);
+        } catch (err) {
+            console.error("Failed to parse permissions:", err);
+            decodedPermissions = {};
+        }
+
+        // Optional: split pipe-separated permissions into arrays
+        const formattedPermissions = Object.fromEntries(
+            Object.entries(decodedPermissions).map(([key, value]) => [key, value.split('|')])
+        );
+
         return res.status(200).json({
             message: "Login successful",
             status: true,
             token: token,
-            user: { id: user.id, name: user.name, email: user.email },
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                permissions: formattedPermissions
+            },
         });
     } catch (error) {
         return res.status(500).json({
@@ -46,6 +66,7 @@ exports.login = async (req, res) => {
         });
     }
 };
+
 
 exports.register = async (req, res) => {
     try {
