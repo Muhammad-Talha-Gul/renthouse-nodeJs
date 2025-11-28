@@ -75,8 +75,8 @@ const CategoryManagement = () => {
         { key: 'user_id', label: 'Employee Name', index: 0, hidden: true },
         { key: 'icon', label: 'Icon', index: 1 },
         { key: 'name', label: 'Category Name', index: 2 },
-        { key: 'details', label: 'Description', index: 3 },
-        { key: 'slug', label: 'Slug', index: 4 }, // hidden column
+        { key: 'slug', label: 'Slug', index: 3 },
+        { key: 'details', label: 'Description', index: 4 },
         {
             key: 'active_status',
             label: 'Status',

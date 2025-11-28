@@ -1,56 +1,119 @@
+/* UserManagement.css - Main Component Styles */
 .user-management {
-    background: var(--cream);
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
     min-height: 100vh;
+    padding: 2rem 0;
 }
 
-.user-info {
+.user-management .page-header {
+    margin-bottom: 2rem;
+}
+
+.user-management .page-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.user-management .page-subtitle {
+    color: #64748b;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.user-management .header-actions {
     display: flex;
-    align-items: center;
     gap: 1rem;
-}
-
-.user-avatar {
-    width: 40px;
-    height: 40px;
-    background: var(--gradient-accent);
-    border-radius: 50%;
-    display: flex;
     align-items: center;
-    justify-content: center;
-    color: var(--white);
+}
+
+.user-management .filter-toggle {
+    border: 2px solid #e2e8f0;
+    background: white;
+    color: #475569;
     font-weight: 600;
-    font-size: 0.8rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
 }
 
-.user-name {
-    color: var(--text-dark);
+.user-management .filter-toggle:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.1);
+}
+
+.user-management .add-user-btn {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+    border: none;
     font-weight: 600;
-    margin-bottom: 0.25rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
 }
 
-.user-email {
-    color: var(--text-light);
-    font-size: 0.8rem;
+.user-management .add-user-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(5, 150, 105, 0.3);
 }
 
-.action-buttons {
-    display: flex;
-    gap: 0.5rem;
+/* Users Grid */
+.users-grid {
+    margin-top: 1.5rem;
 }
 
-.action-buttons .btn {
-    padding: 0.25rem 0.5rem;
-    border-radius: 6px;
+/* Empty State */
+.user-management .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.table th {
-    background: var(--light-gray);
-    color: var(--text-dark);
-    font-weight: 600;
-    border-bottom: 1px solid var(--medium-gray);
+.user-management .empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
 }
 
-.table td {
-    vertical-align: middle;
-    padding: 1rem 0.75rem;
+.user-management .empty-state-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.user-management .empty-state-text {
+    color: #64748b;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .user-management {
+        padding: 1rem 0;
+    }
+
+    .user-management .page-title {
+        font-size: 1.75rem;
+    }
+
+    .user-management .header-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.75rem;
+    }
+
+    .user-management .header-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
 }
