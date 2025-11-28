@@ -1,0 +1,266 @@
+/* UserDetailsModal.css */
+.modal-content {
+    border: none;
+    border-radius: 20px;
+    box-shadow: var(--shadow-heavy);
+    overflow: hidden;
+}
+
+.modal-header {
+    background: var(--gradient-dark);
+    color: var(--white);
+    padding: 24px;
+    position: relative;
+}
+
+.modal-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 24px;
+    right: 24px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--accent-light) 50%, transparent 100%);
+}
+
+.modal-title {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.modal-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--gradient-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--white);
+    border: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+.modal-title h4 {
+    color: var(--white);
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.modal-title .text-muted {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.modal-body {
+    padding: 24px;
+    background: var(--cream);
+}
+
+.modal-footer {
+    background: var(--white);
+    padding: 20px 24px;
+    border-top: 1px solid var(--medium-gray);
+}
+
+/* Status Bar */
+.status-bar {
+    margin-bottom: 24px;
+}
+
+.status-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--medium-gray);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.status-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-medium);
+}
+
+.status-icon {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.status-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+}
+
+.status-label {
+    font-size: 12px;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Contact Information */
+.contact-info {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--shadow-light);
+}
+
+.section-title {
+    color: var(--text-dark);
+    font-weight: 600;
+    font-size: 18px;
+    position: relative;
+    padding-bottom: 12px;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background: var(--gradient-accent);
+    border-radius: 2px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.info-item:hover {
+    background: var(--light-gray);
+}
+
+.info-icon {
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+    margin-top: 2px;
+}
+
+.info-content {
+    flex: 1;
+}
+
+.info-label {
+    font-size: 12px;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+.info-value {
+    font-size: 14px;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+/* Modal Buttons */
+.modal-footer .btn {
+    border-radius: 12px;
+    padding: 10px 24px;
+    font-weight: 500;
+    border: 2px solid;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-secondary {
+    border-color: var(--dark-gray);
+    color: var(--dark-gray);
+    background: var(--white);
+}
+
+.btn-outline-secondary:hover {
+    background: var(--dark-gray);
+    border-color: var(--dark-gray);
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-light);
+}
+
+.btn-primary {
+    background: var(--gradient-accent);
+    border: none;
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-accent);
+    background: var(--gradient-accent);
+}
+
+/* Close Button */
+.btn-close {
+    filter: invert(1);
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.btn-close:hover {
+    opacity: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .modal-header {
+        padding: 20px;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .status-card {
+        padding: 16px;
+    }
+    
+    .contact-info {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .modal-title {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .modal-avatar {
+        margin-bottom: 12px;
+        margin-right: 0;
+    }
+    
+    .modal-footer {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .modal-footer .btn {
+        width: 100%;
+    }
+}

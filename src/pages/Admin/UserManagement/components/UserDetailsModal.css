@@ -1,0 +1,473 @@
+/* UserDetailsModal.css - Modern Design */
+.modern-details-modal .modal-content {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.modern-details-modal .modal-dialog {
+    max-width: 700px;
+}
+
+/* Modern Modal Header */
+.modal-header-modern {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-bottom: none;
+    padding: 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+.modal-header-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.modal-header-modern .btn-close {
+    filter: invert(1);
+    opacity: 0.8;
+    position: relative;
+    z-index: 2;
+}
+
+.modal-header-modern .btn-close:hover {
+    opacity: 1;
+}
+
+.user-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+    z-index: 2;
+    width: 100%;
+}
+
+.profile-avatar-section {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.profile-avatar-modern {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.profile-status-badge {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: white;
+    color: #1f2937;
+    border: 2px solid white;
+}
+
+.profile-status-badge.active { background: #10b981; color: white; }
+.profile-status-badge.inactive { background: #6b7280; color: white; }
+.profile-status-badge.suspended { background: #ef4444; color: white; }
+
+.profile-info-modern {
+    flex: 1;
+}
+
+.profile-name-modern {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: white;
+    line-height: 1.2;
+}
+
+.profile-email-modern {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 16px;
+    font-weight: 500;
+}
+
+.profile-meta-modern {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.profile-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.meta-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.meta-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+}
+
+.role-tag-modern {
+    padding: 4px 12px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+/* Modern Modal Body */
+.modal-body-modern {
+    padding: 0;
+    background: #f8fafc;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.info-section-modern {
+    background: white;
+    padding: 24px 30px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.info-section-modern:last-child {
+    border-bottom: none;
+}
+
+.section-title-modern {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.title-icon {
+    font-size: 20px;
+    width: 40px;
+    height: 40px;
+    background: #f1f5f9;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.section-title-modern h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+
+.section-content-modern {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.info-row-modern {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+}
+
+.info-label-modern {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.label-icon {
+    font-size: 16px;
+    width: 24px;
+    text-align: center;
+}
+
+.info-value-modern {
+    font-size: 14px;
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.role-display, .status-display {
+    padding: 6px 16px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.role-display.bg-success { background: #d1fae5; color: #065f46; }
+.role-display.bg-primary { background: #dbeafe; color: #1e40af; }
+.role-display.bg-warning { background: #fef3c7; color: #92400e; }
+.role-display.bg-info { background: #cffafe; color: #155e75; }
+
+.status-display.active { background: #d1fae5; color: #065f46; }
+.status-display.inactive { background: #f3f4f6; color: #6b7280; }
+.status-display.suspended { background: #fef2f2; color: #dc2626; }
+
+/* Actions Grid */
+.actions-grid-modern {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+}
+
+.action-card {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    width: 100%;
+}
+
+.action-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.primary-action {
+    border-color: #3b82f6;
+    background: #3b82f6;
+    color: white;
+}
+
+.primary-action:hover {
+    background: #2563eb;
+    border-color: #2563eb;
+}
+
+.secondary-action {
+    border-color: #e5e7eb;
+    background: white;
+    color: #374151;
+}
+
+.secondary-action:hover {
+    border-color: #d1d5db;
+    background: #f8fafc;
+}
+
+.warning-action {
+    border-color: #f59e0b;
+    background: white;
+    color: #92400e;
+}
+
+.warning-action:hover {
+    background: #fef3c7;
+}
+
+.danger-action {
+    border-color: #ef4444;
+    background: white;
+    color: #dc2626;
+}
+
+.danger-action:hover {
+    background: #fef2f2;
+}
+
+.action-card-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+}
+
+.action-icon-modern {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.action-text-modern {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.action-title {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.action-description {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+/* Modern Modal Footer */
+.modal-footer-modern {
+    background: white;
+    border-top: 1px solid #f1f5f9;
+    padding: 20px 30px;
+}
+
+.footer-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.footer-btn {
+    padding: 10px 24px;
+    border-radius: 10px;
+    border: 2px solid;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.cancel-btn {
+    background: white;
+    border-color: #e5e7eb;
+    color: #374151;
+}
+
+.cancel-btn:hover {
+    background: #f8fafc;
+    border-color: #d1d5db;
+}
+
+.footer-primary-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.primary-btn {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+.primary-btn:hover {
+    background: #2563eb;
+    border-color: #2563eb;
+}
+
+.secondary-btn {
+    background: white;
+    border-color: #e5e7eb;
+    color: #374151;
+}
+
+.secondary-btn:hover {
+    background: #f8fafc;
+    border-color: #d1d5db;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .user-profile-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+    }
+    
+    .profile-meta-modern {
+        justify-content: center;
+    }
+    
+    .info-row-modern {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .actions-grid-modern {
+        grid-template-columns: 1fr;
+    }
+    
+    .footer-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .footer-primary-actions {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .footer-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .modal-header-modern {
+        padding: 24px 20px;
+    }
+    
+    .info-section-modern {
+        padding: 20px;
+    }
+    
+    .modal-footer-modern {
+        padding: 16px 20px;
+    }
+    
+    .profile-avatar-modern {
+        width: 60px;
+        height: 60px;
+        font-size: 20px;
+    }
+    
+    .profile-name-modern {
+        font-size: 24px;
+    }
+    
+    .action-card {
+        padding: 16px;
+    }
+    
+    .action-card-content {
+        gap: 12px;
+    }
+    
+    .action-icon-modern {
+        font-size: 20px;
+    }
+}

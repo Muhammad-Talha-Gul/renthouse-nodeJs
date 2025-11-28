@@ -13,10 +13,12 @@ import ProtectedRoute from "./ProtectedRoute";
 import Dashboard from "../pages/Admin/Dashboard/Dashboard";
 import CategoryManagement from "../pages/Admin/CategoryManagement/CategoryManagement";
 import PublicLayout from "./PublicLayout";
+import UserManagement from "../pages/Admin/UserManagement/UserManagement";
 
 export const adminRoutes = [
     { path: "dashboard", component: <Dashboard />, title: "Dashboard", icon: "📊" },
     { path: "categories", component: <CategoryManagement />, title: "Categories", icon: "🏷️" },
+    { path: "users", component: <UserManagement />, title: "Users", icon: "🏷️" },
     // Add more admin routes here
 ];
 function AppRoutes() {

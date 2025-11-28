@@ -1,0 +1,243 @@
+/* PermissionsModal.css - Permissions Modal Styles */
+.permissions-modal .modal-content {
+    border: none;
+    border-radius: 24px;
+    box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.15),
+        0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.permissions-modal .modal-header {
+    border-bottom: 1px solid rgba(241, 245, 249, 0.8);
+    padding: 2rem 2.5rem 1.5rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    position: relative;
+}
+
+.permissions-modal .modal-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, var(--accent) 100%);
+}
+
+.permissions-modal .modal-title {
+    font-weight: 800;
+    color: #1e293b;
+    font-size: 1.5rem;
+}
+
+.permissions-modal .modal-body {
+    padding: 2rem 2.5rem;
+    max-height: 65vh;
+    overflow-y: auto;
+}
+
+.permissions-modal .permissions-container {
+    padding: 0.5rem;
+}
+
+/* Search Filter */
+.permissions-modal .search-filter {
+    margin-bottom: 2rem;
+}
+
+.permissions-modal .search-input-group {
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.permissions-modal .search-input-group .input-group-text {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    border: none;
+    color: #64748b;
+    font-size: 1.2rem;
+    padding: 1rem 1.25rem;
+}
+
+.permissions-modal .search-input-group .form-control {
+    border: none;
+    background: white;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.permissions-modal .search-input-group .form-control:focus {
+    box-shadow: none;
+    background: #f8fafc;
+}
+
+.permissions-modal .search-input-group .btn {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    border: none;
+    color: #64748b;
+    padding: 1rem 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.permissions-modal .search-input-group .btn:hover {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+    color: white;
+}
+
+.permissions-modal .search-stats {
+    text-align: right;
+    color: #64748b;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Module Cards */
+.permissions-modal .module-card {
+    border: 1px solid rgba(241, 245, 249, 0.8);
+    border-radius: 18px;
+    margin-bottom: 1.5rem;
+    background: white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    transition: all 0.4s ease;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.permissions-modal .module-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    border-color: rgba(226, 232, 240, 0.9);
+}
+
+.permissions-modal .module-card .card-header {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-bottom: 1px solid rgba(241, 245, 249, 0.8);
+    padding: 1.5rem 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.permissions-modal .module-card .module-name {
+    font-weight: 800;
+    color: #1e293b;
+    font-size: 1.1rem;
+    text-transform: capitalize;
+}
+
+.permissions-modal .module-card .all-permissions-switch .form-check-input {
+    width: 3.5rem;
+    height: 1.75rem;
+    border: 2px solid #e2e8f0;
+}
+
+.permissions-modal .module-card .all-permissions-switch .form-check-input:checked {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
+}
+
+.permissions-modal .module-card .all-permissions-switch .form-check-label {
+    font-weight: 700;
+    color: #475569;
+    font-size: 0.9rem;
+}
+
+.permissions-modal .module-card .card-body {
+    padding: 1.75rem;
+}
+
+/* Permission Switches */
+.permissions-modal .permission-switch {
+    margin-bottom: 1rem;
+}
+
+.permissions-modal .permission-switch .form-check-input {
+    width: 3rem;
+    height: 1.5rem;
+    border: 2px solid #e2e8f0;
+    background-color: #f8fafc;
+    transition: all 0.3s ease;
+}
+
+.permissions-modal .permission-switch .form-check-input:checked {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
+}
+
+.permissions-modal .permission-switch .form-check-input:disabled {
+    background-color: #e2e8f0;
+    border-color: #cbd5e1;
+}
+
+.permissions-modal .permission-switch .form-check-label {
+    font-weight: 600;
+    color: #475569;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.permissions-modal .permission-switch .form-check-label:hover {
+    color: #1e293b;
+}
+
+/* Empty State */
+.permissions-modal .empty-modules {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: white;
+    border-radius: 18px;
+    border: 2px dashed #e2e8f0;
+}
+
+.permissions-modal .empty-modules-icon {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+}
+
+.permissions-modal .empty-modules-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.permissions-modal .empty-modules-text {
+    color: #64748b;
+    margin-bottom: 1.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .permissions-modal .modal-header {
+        padding: 1.5rem 1.5rem 1rem;
+    }
+    
+    .permissions-modal .modal-body {
+        padding: 1.5rem 1.5rem;
+        max-height: 60vh;
+    }
+    
+    .permissions-modal .module-card .card-header {
+        padding: 1.25rem 1.5rem;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .permissions-modal .module-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    .permissions-modal .search-stats {
+        text-align: center;
+        margin-top: 1rem;
+    }
+}

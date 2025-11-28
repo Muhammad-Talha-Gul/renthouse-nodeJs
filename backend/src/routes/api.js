@@ -3,6 +3,7 @@ const router = express.Router();
 const indexController = require('../controllers/indexController');
 const adminCategoriesController = require('../controllers/adminCategoriesController');
 const authController = require('../controllers/authController');
+const usersController = require('../controllers/usersController');
 const authMiddleware = require('../../middleware/authMiddleware');
 
 router.get('/index', indexController);
@@ -15,4 +16,8 @@ router.delete('/categories/distroy/:recordId', authMiddleware, adminCategoriesCo
 
 router.post('/auth/login', authController.login);
 router.post('/auth/register', authController.register);
+
+// users 
+router.get('/users/index', usersController.index);
+router.get('/users//modules_fields', usersController.getModulesAndFields);
 module.exports = router;

@@ -1,0 +1,204 @@
+:root {
+    --primary-dark: #1f2937;
+    --primary: #374151;
+    --accent-dark: #047857;
+    --accent: #059669;
+    --accent-light: #10b981;
+
+    --white: #ffffff;
+    --cream: #f9fafb;
+    --light-gray: #f3f4f6;
+    --medium-gray: #e5e7eb;
+    --dark-gray: #4b5563;
+
+    --text-dark: #111827;
+    --text-medium: #374151;
+    --text-light: #6b7280;
+}
+
+/* Card Container */
+.profile-card {
+    width: 260px;
+    background: var(--white);
+    border-radius: 16px;
+    padding: 24px 20px;
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--medium-gray);
+    text-align: center;
+    position: relative;
+    transition: 0.3s;
+}
+
+.profile-card:hover {
+    box-shadow: var(--shadow-medium);
+    transform: translateY(-3px);
+}
+
+/* Status Ribbon */
+.status-ribbon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: var(--accent-dark);
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+    border-bottom-left-radius: 8px;
+}
+
+.status-ribbon.inactive { background: #dc2626; }
+.status-ribbon.active { background: var(--accent); }
+.status-ribbon.suspended { background: #f59e0b; }
+
+/* Avatar */
+.profile-avatar-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.profile-avatar-img {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--accent-light);
+}
+
+.profile-avatar-fallback {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: 700;
+    font-size: 24px;
+}
+
+/* Name */
+.profile-name {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--text-dark);
+}
+
+/* Location Chip */
+.location-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--light-gray);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--text-medium);
+    margin-bottom: 10px;
+}
+
+/* Role Section */
+.role-section {
+    font-size: 14px;
+    color: var(--text-medium);
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+}
+
+.divider {
+    width: 60%;
+    margin: 12px auto;
+    border-top: 1px solid var(--medium-gray);
+}
+
+/* Contact List */
+.contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--text-medium);
+    font-size: 14px;
+}
+
+.contact-icon {
+    color: var(--accent);
+}
+
+/* Button */
+.view-btn {
+    width: 100%;
+    background: var(--accent);
+    color: white;
+    padding: 10px 0;
+    border-radius: 10px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--shadow-accent);
+    transition: 0.2s;
+}
+
+.view-btn:hover {
+    background: var(--accent-light);
+}
+
+/* Modal Buttons */
+.modal-close-btn {
+    background: var(--primary-dark);
+    color: white;
+    padding: 8px 18px;
+    border: none;
+    border-radius: 8px;
+}
+
+
+/* Action Buttons Row */
+.action-buttons-row {
+    margin-top: 14px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Round Icon Buttons */
+.action-round-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--light-gray);
+    border: 1px solid var(--medium-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 15px;
+    color: var(--text-medium);
+    transition: 0.2s;
+}
+
+.action-round-btn:hover {
+    background: var(--accent-light);
+    color: white;
+    border-color: var(--accent);
+}
+
+/* Delete button */
+.action-round-btn.delete-btn:hover {
+    background: #dc2626;
+    border-color: #dc2626;
+    color: white;
+}
