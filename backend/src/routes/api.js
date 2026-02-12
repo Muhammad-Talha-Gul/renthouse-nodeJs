@@ -48,6 +48,10 @@ router.post(
 );
 
 // users
-router.get("/users/index", usersController.index);
-router.get("/users//modules_fields", usersController.getModulesAndFields);
+router.get("/users/index", authMiddleware("users"), usersController.index);
+router.get(
+  "/users/modules_fields",
+  authMiddleware("users"),
+  usersController.getModulesAndFields,
+);
 module.exports = router;
