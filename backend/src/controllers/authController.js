@@ -1,4 +1,4 @@
-const db = require("../../config/db");
+const db = require("../config/db");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 exports.login = async (req, res) => {
@@ -10,12 +10,12 @@ exports.login = async (req, res) => {
     ]);
     const user = rows[0];
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(204).json({ message: "User not found" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(404).json({ message: "Invalid credentials" });
+      return res.status(204).json({ message: "Invalid credentials" });
     }
 
     const token = jwt.sign(
@@ -66,7 +66,7 @@ exports.login = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.status(204).json({
       message: "Internal Server Error",
       error: error.message || error,
     });
@@ -85,7 +85,7 @@ exports.register = async (req, res) => {
       [fullName, email, hashedPassword, phone],
     );
 
-    return res.status(201).json({
+    return res.status(200).json({
       message: "User registered successfully",
       userId: result.insertId,
     });
@@ -93,9 +93,37 @@ exports.register = async (req, res) => {
     console.error("authController.register error:", error);
 
     // Return detailed error for debugging
-    return res.status(500).json({
+    return res.status(204).json({
       message: "Internal Server Error",
       error: error.message || error,
     });
   }
+
 };
+exports.update = async (req, res) => {
+  try {
+    const recordId = req.params.id;
+    const { fullName, email } = req.body;
+    const [existingUser] = await db.query("SELECT * FROM users WHERE id = ?", [recordId]);
+
+    if (!existingUser || existingUser.length === 0) {
+      return res.status(204).json({ message: "Record not found" });
+    }
+    await db.query("UPDATE users SET name = ?, email = ? where id = ?",
+      [fullName, email, recordId]);
+
+    const [updatedRecord] = await db.query("SELECT * FROM users WHERE id = ?", [recordId]);
+    return res.status(200).json({
+      message: "User Updated successfully",
+      userId: updatedRecord[0],
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  };
+
+}

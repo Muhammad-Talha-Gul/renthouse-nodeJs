@@ -1,4 +1,4 @@
-const db = require("../../config/db");
+const db = require("../config/db");
 const jwt = require("jsonwebtoken");
 
 const index = async (req, res) => {
@@ -73,13 +73,13 @@ const index = async (req, res) => {
       process.env.NODE_ENV === "production"
         ? { error: "Internal Server Error" }
         : {
-            error: {
-              message: error.message || "Unknown error",
-              stack: error.stack,
-              sqlMessage: error.sqlMessage || null,
-              code: error.code || null,
-            },
-          };
+          error: {
+            message: error.message || "Unknown error",
+            stack: error.stack,
+            sqlMessage: error.sqlMessage || null,
+            code: error.code || null,
+          },
+        };
 
     res.status(500).json(errorResponse);
   }

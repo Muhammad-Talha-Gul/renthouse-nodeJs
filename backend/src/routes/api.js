@@ -44,7 +44,13 @@ router.post(
   "/auth/register",
   registerValidation,
   validate,
+  authMiddleware("users"),
   authController.register,
+);
+router.put(
+  "/auth/user_update/:id",
+  authMiddleware("users"),
+  authController.update,
 );
 
 // users

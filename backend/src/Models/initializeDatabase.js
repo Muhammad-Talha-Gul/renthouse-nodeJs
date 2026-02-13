@@ -1,14 +1,14 @@
 const db = require("../config/db");
 
 async function initializeDatabase() {
-    try {
-        console.log("🚀 Initializing database...");
+  try {
+    console.log("🚀 Initializing database...");
 
-        // Use a connection from the pool
-        const connection = await db.getConnection();
+    // Use a connection from the pool
+    const connection = await db.getConnection();
 
-        // Create `users` table
-        await connection.query(`
+    // Create `users` table
+    await connection.query(`
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
@@ -25,8 +25,8 @@ async function initializeDatabase() {
       )
     `);
 
-        // Create `categories` table
-        await connection.query(`
+    // Create `categories` table
+    await connection.query(`
       CREATE TABLE IF NOT EXISTS categories (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
@@ -40,13 +40,13 @@ async function initializeDatabase() {
       )
     `);
 
-        console.log("✅ Tables created or already exist.");
+    console.log("✅ Tables created or already exist.");
 
-        // Release connection back to pool
-        connection.release();
-    } catch (err) {
-        console.error("❌ Error creating tables:", err.message);
-    }
+    // Release connection back to pool
+    connection.release();
+  } catch (err) {
+    console.error("❌ Error creating tables:", err.message);
+  }
 }
 
 module.exports = initializeDatabase;

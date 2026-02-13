@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const db = require("../config/db");
+const db = require("../src/config/db");
 
 module.exports = (requiredPermissionKey = null) => {
   return async (req, res, next) => {
