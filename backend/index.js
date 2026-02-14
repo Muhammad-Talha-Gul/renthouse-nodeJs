@@ -2,9 +2,9 @@ require('dotenv').config(); // Load environment variables first
 const express = require('express');
 const cors = require('cors');
 const apiRoutes = require('./src/routes/api');
-const db = require('./config/db');
+const db = require('./src/config/db');
 const cookieParser = require('cookie-parser');
-const initializeDatabase = require("./Models/initializeDatabase");
+const initializeDatabase = require("./src/Models/initializeDatabase");
 
 const app = express();
 app.use(cookieParser());
