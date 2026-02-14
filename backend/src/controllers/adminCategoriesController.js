@@ -1,5 +1,4 @@
 const db = require("../config/db");
-const jwt = require("jsonwebtoken");
 
 const index = async (req, res) => {
   try {
@@ -20,7 +19,7 @@ const index = async (req, res) => {
 
     // 🔐 Permission: If NOT allowed to view all → only own records
     if (!req.canViewAll) {
-      filters.push("created_by = ?");
+      filters.push("user_id = ?");
       params.push(userId);
     }
 
@@ -59,7 +58,7 @@ const index = async (req, res) => {
     const [rows] = await pool.query(query, [...params, per_page, offset]);
 
     res.status(200).json({
-      message: "Admin Categories fetched successfully",
+      message: "Data fetched successfully",
       data: rows,
       pagination: {
         page,
@@ -81,7 +80,7 @@ const index = async (req, res) => {
           },
         };
 
-    res.status(500).json(errorResponse);
+    res.status(404).json(errorResponse);
   }
 };
 
@@ -107,7 +106,7 @@ const store = async (req, res) => {
         errorField.push(`name "${name}"`);
       }
 
-      return res.status(409).json({
+      return res.status(404).json({
         error: `Category with this ${errorField.join(" and ")} already exists`,
       });
     }
@@ -128,10 +127,9 @@ const store = async (req, res) => {
   } catch (error) {
     console.error("adminCategoriesController.store error:", error);
     if (process.env.NODE_ENV === "production") {
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(404).json({ error: "Internal Server Error" });
     } else {
-      // Provide safe, useful debugging info during development
-      res.status(500).json({
+      res.status(404).json({
         error: {
           message: error.message || "Unknown error",
           stack: error.stack,

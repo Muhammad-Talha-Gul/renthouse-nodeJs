@@ -11,6 +11,7 @@ const {
 const validate = require("../../middleware/validate.js");
 const indexController = require("../controllers/indexController");
 const adminCategoriesController = require("../controllers/adminCategoriesController");
+const adminPropertiesController = require("../controllers/adminPropertiesController");
 const authController = require("../controllers/authController");
 const usersController = require("../controllers/usersController");
 router.get("/index", indexController);
@@ -44,7 +45,7 @@ router.post(
   "/auth/register",
   registerValidation,
   validate,
-  authMiddleware("users"),
+  // authMiddleware("users"),
   authController.register,
 );
 router.put(
@@ -61,3 +62,7 @@ router.get(
   usersController.getModulesAndFields,
 );
 module.exports = router;
+
+
+// Admin Properties 
+router.get("/properties/index", authMiddleware("categories"), adminPropertiesController.index);

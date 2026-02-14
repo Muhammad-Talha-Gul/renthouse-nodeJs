@@ -66,7 +66,7 @@ exports.login = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(204).json({
+    return res.status(404).json({
       message: "Internal Server Error",
       error: error.message || error,
     });
@@ -82,8 +82,9 @@ exports.register = async (req, res) => {
 
     const [result] = await db.query(
       "INSERT INTO users (name, email, password, phone_number) VALUES (?, ?, ?, ?)",
-      [fullName, email, hashedPassword, phone],
+      [fullName, email, hashedPassword, phone]
     );
+
 
     return res.status(200).json({
       message: "User registered successfully",
@@ -92,12 +93,19 @@ exports.register = async (req, res) => {
   } catch (error) {
     console.error("authController.register error:", error);
 
-    // Return detailed error for debugging
-    return res.status(204).json({
+    // Return detailed error for debugging (development mode)
+    return res.status(500).json({
       message: "Internal Server Error",
-      error: error.message || error,
+      error: {
+        message: error.message || "Unknown error",
+        stack: error.stack || null,
+        code: error.code || null,
+        sqlMessage: error.sqlMessage || null,
+        sql: error.sql || null,
+      },
     });
   }
+
 
 };
 exports.update = async (req, res) => {

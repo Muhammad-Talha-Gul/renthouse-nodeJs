@@ -6,7 +6,7 @@ module.exports = (requiredPermissionKey = null) => {
     try {
       const token = req.cookies?.token;
       if (!token) {
-        return res.status(401).json({ error: "Unauthorized: Token missing" });
+        return res.status(404).json({ error: "Unauthorized: Token missing" });
       }
 
       // Verify token
@@ -20,7 +20,7 @@ module.exports = (requiredPermissionKey = null) => {
       );
 
       if (!userRows || userRows.length === 0) {
-        return res.status(401).json({ error: "User not found" });
+        return res.status(404).json({ error: "User not found" });
       }
 
       const user = userRows[0];
@@ -66,7 +66,7 @@ module.exports = (requiredPermissionKey = null) => {
 
       // ✅ Must have action permission (read/create/update/delete)
       if (!userPermissions.includes(requiredPermission)) {
-        return res.status(403).json({
+        return res.status(404).json({
           error: "Forbidden: Permission denied",
           permissions: userPermissions,
         });
@@ -78,7 +78,7 @@ module.exports = (requiredPermissionKey = null) => {
       next();
     } catch (err) {
       console.error(err);
-      return res.status(401).json({
+      return res.status(404).json({
         error: "Invalid or expired token",
         details: err.message,
       });
