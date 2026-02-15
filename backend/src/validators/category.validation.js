@@ -1,6 +1,6 @@
-import { body } from "express-validator";
+const { body } = require("express-validator");
 
-export const careateCategoryValidation = [
+const careateCategoryValidation = [
   body("name", "Category name is required")
     .notEmpty()
     .withMessage("Category name is required"),
@@ -11,3 +11,5 @@ export const careateCategoryValidation = [
     .notEmpty()
     .withMessage("Category slug is required"),
 ];
+
+module.exports = { careateCategoryValidation };

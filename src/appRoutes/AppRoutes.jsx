@@ -14,11 +14,13 @@ import Dashboard from "../pages/Admin/Dashboard/Dashboard";
 import CategoryManagement from "../pages/Admin/CategoryManagement/CategoryManagement";
 import PublicLayout from "./PublicLayout";
 import UserManagement from "../pages/Admin/UserManagement/UserManagement";
+import PropertyManagement from "../pages/Admin/PropertyManagement/PropertyManagement";
 
 export const adminRoutes = [
     { path: "dashboard", component: <Dashboard />, title: "Dashboard", icon: "📊" },
     { path: "categories", component: <CategoryManagement />, title: "Categories", icon: "🏷️" },
     { path: "users", component: <UserManagement />, title: "Users", icon: "🏷️" },
+    { path: "properties", component: <PropertyManagement />, title: "Properties", icon: "🏷️" },
     // Add more admin routes here
 ];
 function AppRoutes() {

@@ -8,6 +8,7 @@ exports.login = async (req, res) => {
     const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [
       email,
     ]);
+
     const user = rows[0];
     if (!user) {
       return res.status(204).json({ message: "User not found" });
