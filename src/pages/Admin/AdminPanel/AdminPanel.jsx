@@ -6,7 +6,7 @@ import { adminRoutes } from "../../../appRoutes/AppRoutes";
 const AdminPanel = () => {
     const userDetailsString = localStorage.getItem("userSession");
     const userSession = userDetailsString ? JSON.parse(userDetailsString) : null;
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const location = useLocation();
 
     const toggleSidebar = () => setSidebarOpen(!sidebarOpen);

@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Auth.css';
 import { useDispatch } from 'react-redux';
 import { login } from '../../redux/actions/authActions';
+import { showSuccessToast, showErrorToast } from "../../services/alertService";
 
 const Login = () => {
 
@@ -26,24 +27,26 @@ const Login = () => {
         }));
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-        const response = await dispatch(login(formData));
-        if (response && response.status === true) {
-            navigate('/admin');
-            return; 
-        }
-        // Simulate API call
-        try {
-            await new Promise(resolve => setTimeout(resolve, 1500));
+  try {
+    const response = await dispatch(login(formData));
 
-        } catch (err) {
-            setError('An error occurred. Please try again.');
-        } finally {
-            setLoading(false);
-        }
-    };
+    if (response && response.status === true) {
+      showSuccessToast("Login successful!");
+      navigate("/admin");
+      return;
+    }
+
+    showErrorToast(response?.message || "Invalid credentials");
+  } catch (err) {
+    showErrorToast("Something went wrong. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
     return (
         <div className="auth-page admin-login">

@@ -8,7 +8,7 @@ import CreateUpdateModal from '../../../components/CreateUpdateModal/CreateUpdat
 import Filter from '../../../components/Filter/Filter';
 import CustomPagination from '../../../components/Pagination/Pagination';
 import TableComponent from '../../../components/AGgridTable/TableComponent';
-
+import { showErrorToast, showSuccessToast } from '../../../services/alertService';
 const CategoryManagement = () => {
 
     const userString = localStorage.getItem("user");
@@ -45,6 +45,8 @@ const CategoryManagement = () => {
     const [showFilter, setShowFilter] = useState(false);
     const [filterData, setFilterData] = useState({ name: '', status: '' });
 
+    const error = useSelector(state => state.categories.error) || [];
+    console.log("error from redux state:", error);
     const categories = useSelector(state => state.categories.categories) || [];
     const pagination = useSelector(state => state.categories.pagination) || {};
     const [currentPage, setCurrentPage] = useState(pagination?.page || 1);
@@ -169,27 +171,51 @@ const CategoryManagement = () => {
         setEditingCategory(null);
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            let response;
-            if (editingCategory?.id) {
-                response = await dispatch(adminCategoryUpdate(editingCategory.id, formData));
-            } else {
-                response = await dispatch(adminCategoryStore(formData));
-            }
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-            if (response.status === 200) {
-                alert("Category saved successfully!");
-                handleCloseModal();
-                dispatch(fetchAdminCategories(currentPage, filterData));
-            } else {
-                alert("Request completed with non-200 status: " + response.status);
-            }
-        } catch (error) {
-            console.error("Error in handleSubmit:", error);
+  try {
+    let response;
+
+    if (editingCategory?.id) {
+      response = await dispatch(adminCategoryUpdate(editingCategory.id, formData));
+    } else {
+      response = await dispatch(adminCategoryStore(formData));
+    }
+
+        console.log("handleSubmit response:", response); // Debug log
+
+        // Normalize success detection across different backend shapes
+        const isSuccess = response?.status === true || response?.status === 'success' || response?.status === 200 || response?.success === true;
+        const successMsg = response?.message || response?.data?.message || "Category saved successfully!";
+        const backendError = response?.error || response?.message || response?.data?.error;
+
+        if (isSuccess) {
+            showSuccessToast(successMsg);
+            handleCloseModal();
+            dispatch(fetchAdminCategories(currentPage, filterData));
+
+        } else if (response && (response?.status === false || backendError)) {
+            console.log("Backend error response:", response);
+            showErrorToast(backendError || "Something went wrong!");
+
+        } else {
+            showErrorToast("Something went wrong!");
         }
-    };
+    
+  } catch (error) {
+    console.error("Error in handleSubmit:", error);
+
+    const errorMsg =
+      error?.response?.data?.error || // Axios error with backend response
+      error?.message || // Other JS error
+      "An unexpected error occurred!";
+
+    showErrorToast(errorMsg);
+  }
+};
+
+
 
     const handleDelete = async (categoryId) => {
         if (!window.confirm('Are you sure you want to delete this category?')) return;

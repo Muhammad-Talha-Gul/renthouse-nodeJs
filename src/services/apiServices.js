@@ -15,7 +15,8 @@ const apiServices = async (endpoint, method = "get", data = null, params = {}) =
         }
         return response.data;
     } catch (error) {
-        throw error?.response?.data || { message: "An unexpected error occurred" };
+        const errData = error?.response?.data || { status: false, error: error?.message || "An unexpected error occurred" };
+        return errData; // return error payload so callers can handle backend validation/messages
     }
 }
 

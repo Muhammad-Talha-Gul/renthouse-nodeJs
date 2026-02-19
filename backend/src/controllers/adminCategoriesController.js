@@ -1,3 +1,4 @@
+const { sendError, sendSuccess } = require("../../services/responseService");
 const db = require("../config/db");
 
 const index = async (req, res) => {
@@ -106,9 +107,8 @@ const store = async (req, res) => {
         errorField.push(`name "${name}"`);
       }
 
-      return res.status(404).json({
-        error: `Category with this ${errorField.join(" and ")} already exists`,
-      });
+      
+      return sendError(res, `Category with this ${errorField.join(" and ")} already exists`);
     }
 
     const [insertResult] = await req.db.query(
@@ -119,24 +119,20 @@ const store = async (req, res) => {
     const [rows] = await req.db.query("SELECT * FROM categories WHERE id = ?", [
       insertResult.insertId,
     ]);
-    res.status(200).json({
-      message: "Category created successfully!",
-      data: rows[0],
-      status: 200,
-    });
+    return sendSuccess(res, rows[0], "Category created successfully!");
+
   } catch (error) {
     console.error("adminCategoriesController.store error:", error);
     if (process.env.NODE_ENV === "production") {
-      res.status(404).json({ error: "Internal Server Error" });
+      return sendError(res, `Internal Server Error`);
     } else {
-      res.status(404).json({
-        error: {
-          message: error.message || "Unknown error",
-          stack: error.stack,
-          sqlMessage: error.sqlMessage || null,
-          code: error.code || null,
-        },
+      return sendError(res, {
+        message: error.message || "Unknown error",
+        stack: error.stack,
+        sqlMessage: error.sqlMessage || null,
+        code: error.code || null,
       });
+
     }
   }
 };

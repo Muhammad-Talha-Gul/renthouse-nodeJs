@@ -18,6 +18,7 @@ const adminCategoriesReducer = (state = initialState, action) => {
 
              };
         case 'FETCH_ADMIN_CATEGORIES_FAILURE':
+            console.log("Reducer Error fetching categories:", action.error);
             return { ...state, loading: false, error: action.error };
 
 

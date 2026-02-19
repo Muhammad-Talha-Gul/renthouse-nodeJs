@@ -6,6 +6,8 @@ import Header from './components/Header/Header';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // import './assets/css/styles.css';
 import Footer from './components/Footer/Footer';
@@ -16,6 +18,7 @@ function App() {
     <Router>
        {/* This renders the Header */}
       <AppRoutes /> {/* This renders your routes */}
+      <ToastContainer />
       
     </Router>
   );

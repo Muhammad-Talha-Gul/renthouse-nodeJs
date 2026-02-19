@@ -14,18 +14,31 @@ export const fetchAdminCategories = (page = 1, filters = {}) => async (dispatch)
 
     } catch (error) {
         dispatch({ type: "FETCH_ADMIN_CATEGORIES_FAILURE" });
+        return error;
     }
 }
 export const adminCategoryStore = (data) => async (dispatch) => {
-    try {
-        const response = await apiServices('/api/categories/store', 'post', data);
-        dispatch({ type: "STORE_ADMIN_CATEGORY_SUCCESS", payload: response?.data });
-        return response;
+  try {
+    const response = await apiServices('/api/categories/store', 'post', data);
+    console.log("store response console", response);
 
-    } catch (error) {
-        dispatch({ type: "FETCH_ADMIN_CATEGORIES_FAILURE" });
+    // If backend returned status: false, treat it as error
+    if (response?.status === false) {
+      dispatch({ type: "FETCH_ADMIN_CATEGORIES_FAILURE", error: response.error });
+    } else {
+      dispatch({ type: "STORE_ADMIN_CATEGORY_SUCCESS", payload: response?.data });
     }
-}
+
+    return response; // always return response to handleSubmit
+  } catch (error) {
+    console.error("Error storing category:", error);
+
+    const err = error?.response?.data || error || { status: false, error: error?.message || "Something went wrong" };
+    dispatch({ type: "FETCH_ADMIN_CATEGORIES_FAILURE", error: err.error });
+    return err;
+  }
+};
+
 export const adminCategoryUpdate = (id, data) => async (dispatch) => {
     try {
         const response = await apiServices(`/api/categories/update/${id}`, 'put', data);
