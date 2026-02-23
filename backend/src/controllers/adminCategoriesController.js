@@ -16,7 +16,7 @@ const index = async (req, res) => {
 
     // --- Filters ---
     const filters = [];
-    const params = [];
+    const params = [];  
 
     // 🔐 Permission: If NOT allowed to view all → only own records
     if (!req.canViewAll) {

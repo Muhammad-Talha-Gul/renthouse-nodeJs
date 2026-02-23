@@ -181,6 +181,7 @@
     font-weight: 500;
     border: 2px solid;
     transition: all 0.3s ease;
+    color: #fff;
 }
 
 .btn-outline-secondary {

@@ -8,6 +8,7 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import './App.css';
 
 // import './assets/css/styles.css';
 import Footer from './components/Footer/Footer';
