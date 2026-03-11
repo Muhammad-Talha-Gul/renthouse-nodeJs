@@ -85,10 +85,16 @@ const index = async (req, res) => {
     // ===============================
     // 🔹 Response
     // ===============================
+
+    const [categories] = await db.query(
+  "SELECT * FROM categories WHERE active_status = ?",
+  [1]
+);
     res.status(200).json({
       success: true,
       message: "Properties fetched successfully",
       data: rows,
+      categories: categories,
       pagination: {
         total,
         per_page,

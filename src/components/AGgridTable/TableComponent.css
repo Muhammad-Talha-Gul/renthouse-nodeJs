@@ -14,10 +14,10 @@
   --bg-light: #f8fafc;
   --bg-white: #ffffff;
   --border-light: #e2e8f0;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-  --shadow-md: 0 4px 12px -2px rgba(0,0,0,0.08);
-  --shadow-lg: 0 20px 25px -8px rgba(0,0,0,0.1);
-  --shadow-hover: 0 20px 25px -8px rgba(5,150,105,0.2);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 20px 25px -8px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 20px 25px -8px rgba(5, 150, 105, 0.2);
   --gradient-primary: linear-gradient(135deg, #059669, #10b981);
   --gradient-danger: linear-gradient(135deg, #dc2626, #ef4444);
   --gradient-info: linear-gradient(135deg, #3b82f6, #60a5fa);
@@ -102,8 +102,8 @@
   padding: 18px 20px;
   white-space: nowrap;
   border-bottom: 2px solid transparent;
-  background-image: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(255,255,255,0.95));
-  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95));
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
   transition: all var(--transition-fast);
 }
 
@@ -221,16 +221,16 @@
   transition: transform var(--transition-fast);
 }
 
-.table-checkbox:checked + .checkbox-custom {
+.table-checkbox:checked+.checkbox-custom {
   background: var(--gradient-primary);
   border-color: var(--primary);
 }
 
-.table-checkbox:checked + .checkbox-custom::after {
+.table-checkbox:checked+.checkbox-custom::after {
   transform: translate(-50%, -50%) scale(1);
 }
 
-.table-checkbox:focus + .checkbox-custom {
+.table-checkbox:focus+.checkbox-custom {
   box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2);
 }
 
@@ -259,6 +259,9 @@
   box-shadow: 0 4px 12px rgba(5, 150, 105, 0.1);
 }
 
+.modern-table tbody tr:nth-child(even) {
+    background-color: #f5f5f5;
+}
 .modern-table tbody tr.striped-row {
   background: linear-gradient(135deg, var(--bg-light), var(--bg-white));
 }
@@ -270,18 +273,23 @@
   font-size: 0.95rem;
   border: none;
   line-height: 1.6;
+  min-width: 180px;
+  font-size: 13px;
 }
 
+
 .modern-table tbody td:first-child {
-  border-top-left-radius: var(--border-radius-lg);
-  border-bottom-left-radius: var(--border-radius-lg);
+  /* border-top-left-radius: var(--border-radius-lg);
+  border-bottom-left-radius: var(--border-radius-lg); */
   padding-left: 24px;
+  min-width: 50px;
 }
 
 .modern-table tbody td:last-child {
-  border-top-right-radius: var(--border-radius-lg);
-  border-bottom-right-radius: var(--border-radius-lg);
+  /* border-top-right-radius: var(--border-radius-lg);
+  border-bottom-right-radius: var(--border-radius-lg); */
   padding-right: 24px;
+  min-width: 50px;
 }
 
 /* Row number styling */
@@ -513,6 +521,7 @@
   0% {
     background-position: -1000px 0;
   }
+
   100% {
     background-position: 1000px 0;
   }
@@ -571,9 +580,12 @@
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
@@ -639,6 +651,7 @@
     opacity: 0;
     transform: translate(-50%, 20px);
   }
+
   to {
     opacity: 1;
     transform: translate(-50%, 0);
@@ -687,20 +700,21 @@
 
 /* Responsive design */
 @media (max-width: 1200px) {
+
   .modern-table thead th,
   .modern-table tbody td {
     padding: 14px 16px;
   }
-  
+
   .action-btn {
     padding: 6px 12px;
     font-size: 0.8rem;
   }
-  
+
   .action-btn .btn-text {
     display: none;
   }
-  
+
   .action-btn i {
     font-size: 1rem;
     margin: 0;
@@ -712,22 +726,22 @@
     padding: 12px 14px;
     font-size: 0.75rem;
   }
-  
+
   .modern-table tbody td {
     padding: 12px 14px;
     font-size: 0.85rem;
   }
-  
+
   .row-number {
     width: 28px;
     height: 28px;
     font-size: 0.8rem;
   }
-  
+
   .icon-cell {
     font-size: 1.5rem;
   }
-  
+
   .bulk-actions-bar {
     min-width: 250px;
     padding: 8px 16px;
@@ -738,30 +752,30 @@
   .table-container {
     max-height: 500px;
   }
-  
+
   .modern-table thead th:first-child,
   .modern-table tbody td:first-child {
     padding-left: 16px;
   }
-  
+
   .modern-table thead th:last-child,
   .modern-table tbody td:last-child {
     padding-right: 16px;
   }
-  
+
   .checkbox-col,
   .row-number-col {
     width: 40px;
   }
-  
+
   .date-full {
     display: none;
   }
-  
+
   .date-ago {
     font-size: 0.85rem;
   }
-  
+
   .badge {
     padding: 4px 10px;
     font-size: 0.7rem;
@@ -770,7 +784,7 @@
 
 /* Focus states for accessibility */
 .action-btn:focus-visible,
-.table-checkbox:focus + .checkbox-custom,
+.table-checkbox:focus+.checkbox-custom,
 .empty-state-btn:focus-visible {
   outline: 3px solid var(--primary);
   outline-offset: 2px;
@@ -782,23 +796,23 @@
     box-shadow: none;
     border: 1px solid #ddd;
   }
-  
+
   .table-container {
     max-height: none;
     overflow: visible;
   }
-  
+
   .action-btn,
   .bulk-actions-bar,
   .checkbox-wrapper {
     display: none;
   }
-  
+
   .modern-table thead {
     position: static;
     backdrop-filter: none;
   }
-  
+
   .modern-table tbody tr {
     break-inside: avoid;
     box-shadow: none;
