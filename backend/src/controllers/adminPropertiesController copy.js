@@ -114,119 +114,102 @@ const index = async (req, res) => {
 
 
 const store = async (req, res) => {
+  // Wrap multer as a Promise
+  const uploadFiles = () =>
+    new Promise((resolve, reject) => {
+      upload.fields([
+        { name: 'banner_image', maxCount: 1 },
+        { name: 'images', maxCount: 10 },
+      ])(req, res, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+
   try {
-    const { category_id, title, description, listing_type, price, bedrooms, bathrooms, area,
-      area_unit,
-      furnished,
-      address,
-      city,
-      state,
-      country,
-      latitude,
-      longitude,
-      status,
-      slug,
+    // First, handle file uploads
+    await uploadFiles();
+
+    const {
+      category_id, title, description, listing_type, price, bedrooms, bathrooms,
+      area, area_unit, furnished, address, city, state, country, latitude,
+      longitude, status, slug,
     } = req.body;
 
-    const { id, email } = req.user;
     const userId = req.user?.id;
+    const finalSlug = slug ? slug : require('slugify')(title, { lower: true, strict: true });
 
-    const finalSlug = slug
-      ? slug
-      : slugify(title, { lower: true, strict: true });
-
-
-    // Check if slug or category name already exists
+    // Check for existing slug/title
     const [existingSlug] = await req.db.query(
       "SELECT * FROM properties WHERE slug = ?",
-      [finalSlug],
+      [finalSlug]
     );
+
     if (existingSlug.length > 0) {
-      const existing = existingSlug[0];
-      let errorField = [];
-
-      if (existing.slug === finalSlug) {
-        errorField.push(`slug "${finalSlug}"`);
-      }
-      if (existing.title === title) {
-        errorField.push(`title "${title}"`);
-      }
-
-      return res.status(404).json({
-        error: `Property with this ${errorField.join(" and ")} already exists`,
-      });
+      return res.status(404).json({ error: 'Slug or title already exists' });
     }
 
+    // Insert property
     const [insertResult] = await req.db.query(
-      `
-      INSERT INTO properties (
-        category_id,
-        title,
-        description,
-        listing_type,
-        price,
-        bedrooms,
-        bathrooms,
-        area,
-        area_unit,
-        furnished,
-        address,
-        city,
-        state,
-        country,
-        latitude,
-        longitude,
-        status,
-        slug,
-        user_id
-      )
-      VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `,
+      `INSERT INTO properties (
+        category_id, title, description, listing_type, price, bedrooms, bathrooms,
+        area, area_unit, furnished, address, city, state, country, latitude,
+        longitude, status, slug, user_id
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
-        category_id,
-        title,
-        description || null,
-        listing_type,
-        price,
-        bedrooms || null,
-        bathrooms || null,
-        area || null,
-        area_unit || "sqft",
-        furnished || null,
-        address || null,
-        city || null,
-        state || null,
-        country || null,
-        latitude || null,
-        longitude || null,
-        status || "available",
-        finalSlug,
-        userId,
+        category_id, title, description || null, listing_type, price,
+        bedrooms || null, bathrooms || null, area || null, area_unit || "sqft",
+        furnished || null, address || null, city || null, state || null, country || null,
+        latitude || null, longitude || null, status || "available", finalSlug, userId
       ]
     );
 
-    const [rows] = await req.db.query("SELECT * FROM properties WHERE id = ?", [
-      insertResult.insertId,
-    ]);
+    const propertyId = insertResult.insertId;
+
+    // Handle images
+    const bannerImage = req.files?.banner_image?.[0];
+    const galleryImages = req.files?.images || [];
+
+    if (bannerImage) {
+      await req.db.query(
+        `INSERT INTO property_images (property_id, image_url, is_primary) VALUES (?, ?, 1)`,
+        [propertyId, `/uploads/properties/${bannerImage.filename}`]
+      );
+    }
+
+    if (galleryImages.length > 0) {
+      const galleryValues = galleryImages.map(img => [propertyId, `/uploads/properties/${img.filename}`, 0]);
+      await req.db.query(
+        `INSERT INTO property_images (property_id, image_url, is_primary) VALUES ?`,
+        [galleryValues]
+      );
+    }
+
+    const [propertyRows] = await req.db.query(
+      "SELECT * FROM properties WHERE id = ?",
+      [propertyId]
+    );
+    const [propertyImages] = await req.db.query(
+      "SELECT * FROM property_images WHERE property_id = ?",
+      [propertyId]
+    );
+
     res.status(200).json({
       message: "Property created successfully!",
-      data: rows[0],
+      data: { ...propertyRows[0], images: propertyImages },
       status: 200,
     });
+
   } catch (error) {
     console.error("adminPropertiesController.store error:", error);
-    if (process.env.NODE_ENV === "production") {
-      res.status(404).json({ error: "Internal Server Error" });
-    } else {
-      res.status(404).json({
-        error: {
-          message: error.message || "Unknown error",
-          stack: error.stack,
-          sqlMessage: error.sqlMessage || null,
-          code: error.code || null,
-        },
-      });
-    }
+    res.status(500).json({
+      error: {
+        message: error.message || "Unknown error",
+        stack: error.stack,
+        sqlMessage: error.sqlMessage || null,
+        code: error.code || null,
+      },
+    });
   }
 };
 

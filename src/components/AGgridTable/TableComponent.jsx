@@ -62,17 +62,22 @@ const TableComponent = ({
             }));
 
         // Filter visible columns
-        const visibleCols = [...columns, ...missingColumns].filter(col => !col?.hidden);
+        // const visibleCols = [...columns, ...missingColumns].filter(col => !col?.hidden);
+        const uniqueColumns = [...columns, ...missingColumns].reduce((acc, col) => {
+            acc[col.key] = col;   // overwrite if duplicate key
+            return acc;
+        }, {});
 
+        const visibleCols = Object.values(uniqueColumns).filter(col => !col?.hide);
         // Format columns with enhanced rendering
         const formattedCols = visibleCols.map(col => {
             const newCol = { ...col };
-            
+
             // Add type-based rendering
             if (!newCol.render) {
                 newCol.render = (value, row) => {
                     if (value == null) return <span className="null-value">—</span>;
-                    
+
                     // Auto-detect and format different data types
                     if (typeof value === 'boolean') {
                         return (
@@ -81,23 +86,23 @@ const TableComponent = ({
                             </span>
                         );
                     }
-                    
+
                     if (typeof value === 'number') {
                         return <span className="number-value">{value.toLocaleString()}</span>;
                     }
-                    
-                    if (typeof value === 'string' && value.match(/^\d+$/)) {
-                        return <span className="badge badge-number">#{value}</span>;
-                    }
-                    
+
+                    // if (typeof value === 'string' && value.match(/^\d+$/)) {
+                    //     return <span className="badge badge-number">#{value}</span>;
+                    // }
+
                     if (typeof value === 'string' && value.length > 50) {
                         return <span className="truncate-text" title={value}>{value.substring(0, 50)}...</span>;
                     }
-                    
+
                     return value;
                 };
             }
-            
+
             return newCol;
         });
 
@@ -109,26 +114,26 @@ const TableComponent = ({
             width: '180px',
             render: (value, row) => {
                 if (!row?.created_at) return <span className="null-value">—</span>;
-                
+
                 try {
                     const date = new Date(row.created_at);
                     const now = new Date();
                     const diffTime = Math.abs(now - date);
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    
+
                     let timeAgo = '';
                     if (diffDays === 1) timeAgo = 'yesterday';
                     else if (diffDays < 7) timeAgo = `${diffDays} days ago`;
                     else if (diffDays < 30) timeAgo = `${Math.floor(diffDays / 7)} weeks ago`;
                     else timeAgo = `${Math.floor(diffDays / 30)} months ago`;
-                    
+
                     return (
                         <div className="date-cell">
                             <span className="date-full">
-                                {date.toLocaleDateString('en-US', { 
-                                    month: 'short', 
-                                    day: 'numeric', 
-                                    year: 'numeric' 
+                                {date.toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    year: 'numeric'
                                 })}
                             </span>
                             <span className="date-ago">{timeAgo}</span>
@@ -154,7 +159,7 @@ const TableComponent = ({
         }
 
         // Filter out system columns
-        const otherCols = formattedCols.filter(c => 
+        const otherCols = formattedCols.filter(c =>
             !['id', 'created_at', 'updated_at'].includes(c.key)
         );
 
@@ -168,9 +173,9 @@ const TableComponent = ({
             render: (value, row) => (
                 <div className="table-actions">
                     {onView && (
-                        <Button 
-                            size="sm" 
-                            variant="outline-info" 
+                        <Button
+                            size="sm"
+                            variant="outline-info"
                             className="action-btn view-btn"
                             onClick={(e) => { e.stopPropagation(); onView(row); }}
                             title="View details"
@@ -180,9 +185,9 @@ const TableComponent = ({
                         </Button>
                     )}
                     {hasPermission('update') && (
-                        <Button 
-                            size="sm" 
-                            variant="primary" 
+                        <Button
+                            size="sm"
+                            variant="primary"
                             className="action-btn edit-btn"
                             onClick={(e) => { e.stopPropagation(); onEdit(row); }}
                             title="Edit"
@@ -192,9 +197,9 @@ const TableComponent = ({
                         </Button>
                     )}
                     {hasPermission('delete') && (
-                        <Button 
-                            size="sm" 
-                            variant="danger" 
+                        <Button
+                            size="sm"
+                            variant="danger"
                             className="action-btn delete-btn"
                             onClick={(e) => { e.stopPropagation(); onDelete(row?.id); }}
                             title="Delete"
@@ -227,12 +232,12 @@ const TableComponent = ({
     // Row selection handlers
     const handleRowSelect = useCallback((rowId) => {
         if (!selectable || !rowId) return;
-        
+
         setSelectedRows(prev => {
             const newSelection = prev.includes(rowId)
                 ? prev.filter(id => id !== rowId)
                 : [...prev, rowId];
-            
+
             onSelectionChange?.(newSelection);
             return newSelection;
         });
@@ -240,11 +245,11 @@ const TableComponent = ({
 
     const handleSelectAll = useCallback(() => {
         if (!selectable) return;
-        
+
         const newSelection = selectedRows.length === safeData.length
             ? []
             : safeData.map(row => row?.id).filter(Boolean);
-        
+
         setSelectedRows(newSelection);
         onSelectionChange?.(newSelection);
     }, [selectable, safeData, selectedRows.length, onSelectionChange]);
@@ -261,7 +266,7 @@ const TableComponent = ({
     // Handle sort
     const handleSort = useCallback((key) => {
         if (!sortable || !onSort) return;
-        
+
         const direction = sortConfig.key === key && sortConfig.direction === 'asc' ? 'desc' : 'asc';
         setSortConfig({ key, direction });
         onSort(key, direction);
@@ -291,8 +296,8 @@ const TableComponent = ({
                     <h4>No Data Available</h4>
                     <p>Start by adding your first record</p>
                     {hasPermission('create') && (
-                        <Button 
-                            variant="success" 
+                        <Button
+                            variant="success"
                             onClick={() => onEdit(null)}
                             className="empty-state-btn"
                         >
@@ -326,8 +331,8 @@ const TableComponent = ({
                             )}
                             <th className="row-number-col">#</th>
                             {tableColumns.map(col => (
-                                <th 
-                                    key={col.key} 
+                                <th
+                                    key={col.key}
                                     className={`${col.className || ''} ${col.sortable ? 'sortable' : ''}`}
                                     style={{ width: col.width }}
                                     onClick={() => col.sortable && handleSort(col.key)}
@@ -352,8 +357,8 @@ const TableComponent = ({
                             renderEmptyState()
                         ) : (
                             safeData.map((row, idx) => (
-                                <tr 
-                                    key={row?.id || `row-${idx}`} 
+                                <tr
+                                    key={row?.id || `row-${idx}`}
                                     className={getRowClass(idx, row)}
                                     onClick={() => onRowClick && onRowClick(row)}
                                 >
@@ -377,13 +382,13 @@ const TableComponent = ({
                                         </span>
                                     </td>
                                     {tableColumns.map(col => (
-                                        <td 
-                                            key={col.key} 
+                                        <td
+                                            key={col.key}
                                             className={`cell-${col.type || 'text'} ${col.className || ''}`}
                                             style={col.cellStyle}
                                         >
-                                            {col.render 
-                                                ? col.render(row?.[col.key], row) 
+                                            {col.render
+                                                ? col.render(row?.[col.key], row)
                                                 : row?.[col.key] ?? <span className="null-value">—</span>
                                             }
                                         </td>
@@ -394,7 +399,7 @@ const TableComponent = ({
                     </tbody>
                 </table>
             </div>
-            
+
             {/* Bulk actions */}
             {selectedRows.length > 0 && (
                 <div className="bulk-actions-bar">
@@ -403,9 +408,9 @@ const TableComponent = ({
                         <span>item{selectedRows.length !== 1 ? 's' : ''} selected</span>
                     </div>
                     <div className="bulk-buttons">
-                        <Button 
-                            size="sm" 
-                            variant="danger" 
+                        <Button
+                            size="sm"
+                            variant="danger"
                             className="bulk-delete-btn"
                             onClick={() => {
                                 if (window.confirm(`Delete ${selectedRows.length} selected item(s)?`)) {

@@ -147,57 +147,57 @@ const UserManagement = () => {
     };
 
     const handleShowModal = (property = null) => {
-    if (property) {
-        setRecord(property);
+        if (property) {
+            setRecord(property);
 
-        setFormData({
-            title: property.title || "",
-            category_id: property.category_id || "",
-            listing_type: property.listing_type || "rent",
-            price: property.price || "",
-            bedrooms: property.bedrooms || "",
-            bathrooms: property.bathrooms || "",
-            area: property.area || "",
-            area_unit: property.area_unit || "sqft",
-            furnished: property.furnished || "unfurnished",
-            description: property.description || "",
-            address: property.address || "",
-            city: property.city || "",
-            state: property.state || "",
-            country: property.country || "",
-            latitude: property.latitude || "",
-            longitude: property.longitude || "",
-            status: property.status || "available",
-            slug: property.slug || ""
-        });
+            setFormData({
+                title: property.title || "",
+                category_id: property.category_id || "",
+                listing_type: property.listing_type || "rent",
+                price: property.price || "",
+                bedrooms: property.bedrooms || "",
+                bathrooms: property.bathrooms || "",
+                area: property.area || "",
+                area_unit: property.area_unit || "sqft",
+                furnished: property.furnished || "unfurnished",
+                description: property.description || "",
+                address: property.address || "",
+                city: property.city || "",
+                state: property.state || "",
+                country: property.country || "",
+                latitude: property.latitude || "",
+                longitude: property.longitude || "",
+                status: property.status || "available",
+                slug: property.slug || ""
+            });
 
-    } else {
-        setRecord(null);
+        } else {
+            setRecord(null);
 
-        setFormData({
-            title: "",
-            category_id: "",
-            listing_type: "rent",
-            price: "",
-            bedrooms: "",
-            bathrooms: "",
-            area: "",
-            area_unit: "sqft",
-            furnished: "unfurnished",
-            description: "",
-            address: "",
-            city: "",
-            state: "",
-            country: "",
-            latitude: "",
-            longitude: "",
-            status: "available",
-            slug: ""
-        });
-    }
+            setFormData({
+                title: "",
+                category_id: "",
+                listing_type: "rent",
+                price: "",
+                bedrooms: "",
+                bathrooms: "",
+                area: "",
+                area_unit: "sqft",
+                furnished: "unfurnished",
+                description: "",
+                address: "",
+                city: "",
+                state: "",
+                country: "",
+                latitude: "",
+                longitude: "",
+                status: "available",
+                slug: ""
+            });
+        }
 
-    setShowModal(true);
-};
+        setShowModal(true);
+    };
     const handleCloseModal = () => {
         setShowModal(false);
         setRecord(null);
@@ -282,7 +282,7 @@ const UserManagement = () => {
     const fieldsConfig = [
         { name: "title", label: "Title", type: "text", required: true, placeholder: "Enter Property Title", colSize: 12 },
 
-         {
+        {
             name: "category_id",
             label: "Category",
             type: "select",
