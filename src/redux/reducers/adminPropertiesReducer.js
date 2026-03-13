@@ -24,7 +24,7 @@ const adminPropertiesReducer = (state = initialState, action) => {
             return { ...state, loading: false, error: action.error };
 
 
-        case 'STORE_ADMIN_CATEGORY_SUCCESS':
+        case 'STORE_ADMIN_PROPERTY_SUCCESS':
             return {
                 ...state,
                 properties: [...state.properties, action.payload], // add new category

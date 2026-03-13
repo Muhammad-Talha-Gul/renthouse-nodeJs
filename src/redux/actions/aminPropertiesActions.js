@@ -20,14 +20,14 @@ export const fetchAdminProperties = (page = 1, filters = {}) => async (dispatch)
 }
 export const adminPropertyStore = (data) => async (dispatch) => {
   try {
-    const response = await apiServices('/api/categories/store', 'post', data);
+    const response = await apiServices('/api/property/store', 'post', data);
     console.log("store response console", response);
 
     // If backend returned status: false, treat it as error
     if (response?.status === false) {
       dispatch({ type: "FETCH_ADMIN_PROPERTIES_FAILURE", error: response.error });
     } else {
-      dispatch({ type: "STORE_ADMIN_CATEGORY_SUCCESS", payload: response?.data });
+      dispatch({ type: "STORE_ADMIN_PROPERTY_SUCCESS", payload: response?.data });
     }
 
     return response; // always return response to handleSubmit

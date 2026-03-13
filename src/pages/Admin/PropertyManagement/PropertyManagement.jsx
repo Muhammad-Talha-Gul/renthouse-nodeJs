@@ -41,7 +41,7 @@ const UserManagement = () => {
 
     const dispatch = useDispatch();
     const [showModal, setShowModal] = useState(false);
-    const [editingCategory, setEditingCategory] = useState(null);
+    const [Record, setRecord] = useState(null);
     const [showFilter, setShowFilter] = useState(false);
     const [filterData, setFilterData] = useState({ name: '', status: '' });
 
@@ -146,32 +146,61 @@ const UserManagement = () => {
         dispatch(fetchAdminProperties(newPage, filterData));
     };
 
-    const handleShowModal = (category = null) => {
-        if (category) {
-            setEditingCategory(category);
-            setFormData({
-                name: category.name,
-                slug: category.slug,
-                details: category.details,
-                icon: category.icon,
-                status: String(category.active_status)
-            });
-        } else {
-            setEditingCategory(null);
-            setFormData({
-                name: '',
-                slug: '',
-                details: '',
-                icon: '🏠',
-                status: '0'
-            });
-        }
-        setShowModal(true);
-    };
+    const handleShowModal = (property = null) => {
+    if (property) {
+        setRecord(property);
 
+        setFormData({
+            title: property.title || "",
+            category_id: property.category_id || "",
+            listing_type: property.listing_type || "rent",
+            price: property.price || "",
+            bedrooms: property.bedrooms || "",
+            bathrooms: property.bathrooms || "",
+            area: property.area || "",
+            area_unit: property.area_unit || "sqft",
+            furnished: property.furnished || "unfurnished",
+            description: property.description || "",
+            address: property.address || "",
+            city: property.city || "",
+            state: property.state || "",
+            country: property.country || "",
+            latitude: property.latitude || "",
+            longitude: property.longitude || "",
+            status: property.status || "available",
+            slug: property.slug || ""
+        });
+
+    } else {
+        setRecord(null);
+
+        setFormData({
+            title: "",
+            category_id: "",
+            listing_type: "rent",
+            price: "",
+            bedrooms: "",
+            bathrooms: "",
+            area: "",
+            area_unit: "sqft",
+            furnished: "unfurnished",
+            description: "",
+            address: "",
+            city: "",
+            state: "",
+            country: "",
+            latitude: "",
+            longitude: "",
+            status: "available",
+            slug: ""
+        });
+    }
+
+    setShowModal(true);
+};
     const handleCloseModal = () => {
         setShowModal(false);
-        setEditingCategory(null);
+        setRecord(null);
     };
 
     const handleSubmit = async (e) => {
@@ -180,8 +209,8 @@ const UserManagement = () => {
         try {
             let response;
 
-            if (editingCategory?.id) {
-                response = await dispatch(adminPropertyUpdate(editingCategory.id, formData));
+            if (Record?.id) {
+                response = await dispatch(adminPropertyUpdate(Record.id, formData));
             } else {
                 response = await dispatch(adminPropertyStore(formData));
             }
@@ -463,12 +492,12 @@ const UserManagement = () => {
             <CreateUpdateModal
                 show={showModal}
                 onHide={handleCloseModal}
-                title={editingCategory ? "Edit Property" : "Add New Property"}
+                title={Record ? "Edit Property" : "Add New Property"}
                 formData={formData}
                 configFields={fieldsConfig}
                 onFormChange={handleFormChange}
                 onSubmit={handleSubmit}
-                submitText={editingCategory ? "Update Property" : "Add Property"}
+                submitText={Record ? "Update Property" : "Add Property"}
             />
         </div>
     );
