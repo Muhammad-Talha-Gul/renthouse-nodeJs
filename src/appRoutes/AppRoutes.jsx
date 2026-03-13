@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router-dom";
 // Lazy imports
 const Index = lazy(() => import("../pages/Index/Index"));
 const PropertyDetails = lazy(() => import("../components/PropertDetails/PropertyDetails"));
-const Agents = lazy(() => import("../pages/Agents/Agents.jsx"));
+const Agents = lazy(() => import("../pages/Agents/Agents"));
 const ContactUs = lazy(() => import("../pages/ContactUs/ContactUs"));
 const AboutUs = lazy(() => import("../pages/AboutUs/AboutUs"));
 const SearchPage = lazy(() => import("../pages/SearchProperties/SearchPage"));
