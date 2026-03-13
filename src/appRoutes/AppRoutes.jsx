@@ -1,24 +1,25 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import Index from "../pages/Index/Index";
-import PropertyDetails from "../components/PropertDetails/PropertyDetails"; // Corrected: "PropertyDetails" (not "PropertDetails")
-import Agents from "../pages/Agents/Agents.Jsx";
-import ContactUs from "../pages/ContactUs/ContactUs";
-import AboutUs from "../pages/AboutUs/AboutUs";
-import SearchPage from "../pages/SearchProperties/SearchPage";
-import AdminPanel from "../pages/Admin/AdminPanel/AdminPanel";
-import Login from "../pages/Auth/Login";
-import Register from "../pages/Auth/Register";
-import ProtectedRoute from "./ProtectedRoute";
-import Dashboard from "../pages/Admin/Dashboard/Dashboard";
-import CategoryManagement from "../pages/Admin/CategoryManagement/CategoryManagement";
-import PublicLayout from "./PublicLayout";
-import UserManagement from "../pages/Admin/UserManagement/UserManagement";
+// Lazy imports
+const Index = lazy(() => import("../pages/Index/Index"));
+const PropertyDetails = lazy(() => import("../components/PropertDetails/PropertyDetails"));
+const Agents = lazy(() => import("../pages/Agents/Agents"));
+const ContactUs = lazy(() => import("../pages/ContactUs/ContactUs"));
+const AboutUs = lazy(() => import("../pages/AboutUs/AboutUs"));
+const SearchPage = lazy(() => import("../pages/SearchProperties/SearchPage"));
+const AdminPanel = lazy(() => import("../pages/Admin/AdminPanel/AdminPanel"));
+const Login = lazy(() => import("../pages/Auth/Login"));
+const Register = lazy(() => import("../pages/Auth/Register"));
+const Dashboard = lazy(() => import("../pages/Admin/Dashboard/Dashboard"));
+const CategoryManagement = lazy(() => import("../pages/Admin/CategoryManagement/CategoryManagement"));
+const UserManagement = lazy(() => import("../pages/Admin/UserManagement/UserManagement"));
+const PropertyManagement = lazy(() => import("../pages/Admin/PropertyManagement/PropertyManagement"));
 
 export const adminRoutes = [
     { path: "dashboard", component: <Dashboard />, title: "Dashboard", icon: "📊" },
     { path: "categories", component: <CategoryManagement />, title: "Categories", icon: "🏷️" },
     { path: "users", component: <UserManagement />, title: "Users", icon: "🏷️" },
+    { path: "properties", component: <PropertyManagement />, title: "Properties", icon: "🏷️" },
     // Add more admin routes here
 ];
 function AppRoutes() {

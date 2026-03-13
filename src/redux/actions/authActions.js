@@ -22,7 +22,6 @@ export const login = (credentials) => async (dispatch) => {
         }
 
         dispatch({ type: "LOGIN_SUCCESS", payload: response });
-        alert(response.message); // ✅ use response.message
         return response;
 
     } catch (error) {

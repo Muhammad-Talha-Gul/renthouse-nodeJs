@@ -8,6 +8,9 @@ const {
 const {
   careateCategoryValidation,
 } = require("../validators/category.validation.js");
+const {
+  propertyStoreValidation,
+} = require("../validators/propertyStore.validation.js");
 const validate = require("../../middleware/validate.js");
 const indexController = require("../controllers/indexController");
 const adminCategoriesController = require("../controllers/adminCategoriesController");
@@ -65,4 +68,12 @@ module.exports = router;
 
 
 // Admin Properties 
-router.get("/properties/index", authMiddleware("categories"), adminPropertiesController.index);
+router.get("/properties/index", authMiddleware("properties"), adminPropertiesController.index);
+
+router.post(
+  "/property/store",
+  propertyStoreValidation,
+  validate,
+  authMiddleware("properties"),
+  adminPropertiesController.store
+);

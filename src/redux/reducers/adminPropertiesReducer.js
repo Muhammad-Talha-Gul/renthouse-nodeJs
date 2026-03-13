@@ -1,31 +1,33 @@
 // src/reducers/exampleReducer.js
 const initialState = {
+    properties: [],
     categories: [],
     pagination: [],
     loading: false,
     error: null,
 };
 
-const adminCategoriesReducer = (state = initialState, action) => {
+const adminPropertiesReducer = (state = initialState, action) => {
     switch (action.type) {
-        case 'FETCH_ADMIN_CATEGORIES_REQUEST':
+        case 'FETCH_ADMIN_PROPERTIES_REQUEST':
             return { ...state, loading: true };
-        case 'FETCH_ADMIN_CATEGORIES_SUCCESS':
+        case 'FETCH_ADMIN_PROPERTIES_SUCCESS':
             console.log("action payload console", action.payload);
             return { ...state, loading: false,
-                categories: action.payload?.data || [],
+                properties: action.payload?.data || [],
+                categories: action.payload?.categories || [],
                 pagination: action.payload?.pagination || [],
 
              };
-        case 'FETCH_ADMIN_CATEGORIES_FAILURE':
-            console.log("Reducer Error fetching categories:", action.error);
+        case 'FETCH_ADMIN_PROPERTIES_FAILURE':
+            console.log("Reducer Error fetching properties:", action.error);
             return { ...state, loading: false, error: action.error };
 
 
-        case 'STORE_ADMIN_CATEGORY_SUCCESS':
+        case 'STORE_ADMIN_PROPERTY_SUCCESS':
             return {
                 ...state,
-                categories: [...state.categories, action.payload], // add new category
+                properties: [...state.properties, action.payload], // add new category
             };
 
 
@@ -33,7 +35,7 @@ const adminCategoriesReducer = (state = initialState, action) => {
             console.log("Category updated:", action.payload);
             return {
                 ...state,
-                categories: state.categories.map(cat =>
+                properties: state.properties.map(cat =>
                     cat.id === action.payload.id ? action.payload : cat
                 ),
             };
@@ -43,7 +45,7 @@ const adminCategoriesReducer = (state = initialState, action) => {
             const payloadId = Number(action.payload);
             return {
                 ...state,
-                categories: state.categories.filter(cat => Number(cat.id) !== payloadId),
+                properties: state.properties.filter(cat => Number(cat.id) !== payloadId),
             };
 
         default:
@@ -51,4 +53,4 @@ const adminCategoriesReducer = (state = initialState, action) => {
     }
 };
 
-export default adminCategoriesReducer;
+export default adminPropertiesReducer;

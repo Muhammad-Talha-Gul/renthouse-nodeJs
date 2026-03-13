@@ -49,7 +49,7 @@
     font-weight: 600;
     color: var(--text-dark);
     margin-bottom: 0.75rem;
-    font-size: 0.875rem;
+    font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     display: flex;
@@ -323,7 +323,7 @@
     }
     
     .form-label-custom {
-        color: var(--white);
+        color: var(--text-dark);
     }
     
     .custom-form-control,

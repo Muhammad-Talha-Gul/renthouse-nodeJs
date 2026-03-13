@@ -6,8 +6,10 @@ module.exports = (requiredPermissionKey = null) => {
     try {
       const token = req.cookies?.token;
       if (!token) {
-        return res.status(404).json({ error: "Unauthorized: Token missing" });
+        return res.status(500).json({ error: "Unauthorized: Token missing" });
       }
+
+      
 
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -18,6 +20,11 @@ module.exports = (requiredPermissionKey = null) => {
         "SELECT permissions FROM users WHERE id = ?",
         [decoded.id], // or decoded.userId
       );
+
+      // return res.status(500).json({
+      //     error: "Forbidden: Permission denied",
+      //     permissions: userRows,
+      //   });
 
       if (!userRows || userRows.length === 0) {
         return res.status(404).json({ error: "User not found" });

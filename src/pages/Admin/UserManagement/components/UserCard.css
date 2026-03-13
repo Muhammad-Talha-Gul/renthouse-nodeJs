@@ -18,7 +18,7 @@
 
 /* Card Container */
 .profile-card {
-    width: 260px;
+    width: 100%;
     background: var(--white);
     border-radius: 16px;
     padding: 24px 20px;

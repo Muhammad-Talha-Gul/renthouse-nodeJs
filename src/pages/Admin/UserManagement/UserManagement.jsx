@@ -26,13 +26,13 @@ const UserManagement = () => {
         user = null;
     }
 
-    const hasPermission = useCallback((action, resource = 'categories') => {
+    const hasPermission = useCallback((action, resource = 'users') => {
         const perms = user?.permissions?.[resource] || [];
         return perms.includes(action);
     }, [user]);
 
     // 🚨 Check read permission first
-    if (!user || !(user?.permissions?.['categories']?.includes('read'))) {
+    if (!user || !(user?.permissions?.['users']?.includes('read'))) {
         return (
             <div className="text-center py-5">
                 <h3>Access Not Allowed</h3>
@@ -587,7 +587,7 @@ const UserManagement = () => {
                     <div className="users-grid">
                         <Row>
                             {users.map(user => (
-                                <Col key={user.id} xl={3} lg={4} md={6} className="mb-4">
+                                <Col key={user.id} xl={4} lg={6} md={6} className="mb-4">
                                     <UserCard
                                         user={user}
                                         onShowPermissions={handleShowPermissionsModal}
