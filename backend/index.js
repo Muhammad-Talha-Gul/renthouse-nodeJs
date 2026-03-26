@@ -1,6 +1,7 @@
 require('dotenv').config(); // Load environment variables first
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const apiRoutes = require('./src/routes/api');
 const db = require('./src/config/db');
 const cookieParser = require('cookie-parser');
@@ -21,6 +22,9 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,             // Allow cookies
 }));
+
+// Serve static files from uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Attach the DB pool to each request so controllers can use `req.db.query(...)`
 app.use((req, res, next) => {

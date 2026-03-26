@@ -87,6 +87,7 @@ async function initializeDatabase() {
         city VARCHAR(100),
         state VARCHAR(100),
         country VARCHAR(100),
+        banner_image VARCHAR(255),
         latitude DECIMAL(10,8) DEFAULT NULL,
         longitude DECIMAL(11,8) DEFAULT NULL,
         status VARCHAR(50) DEFAULT 'available',

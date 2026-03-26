@@ -1,9 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Button, Form, Modal } from "react-bootstrap";
+import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPropertyDetails } from "../../redux/actions/aminPropertiesActions";
 import PropertyCard from "../../components/PropertyCard/PropertyCard";
 import "./PropertyDetails.css";
 
 const PropertyDetails = ({ property }) => {
+    const { id } = useParams();
+    const dispatch = useDispatch();
+    const { propertyDetails, loading, error } = useSelector(state => state.adminProperties);
+
+    useEffect(() => {
+        if (id) {
+            dispatch(fetchPropertyDetails(id));
+        }
+    }, [id, dispatch]);
+
     const dummyProperty = property || {
         id: 1,
         title: "Luxury Villa with Ocean View",
@@ -34,6 +47,8 @@ const PropertyDetails = ({ property }) => {
         similarProperties: []
     };
 
+    const propertyData = propertyDetails || dummyProperty;
+
     const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
     const [showContactModal, setShowContactModal] = useState(false);
     const [showGalleryModal, setShowGalleryModal] = useState(false);
@@ -41,8 +56,11 @@ const PropertyDetails = ({ property }) => {
     const [contactForm, setContactForm] = useState({ name: "", email: "", message: "" });
     const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-    const allMedia = [...dummyProperty.images, ...dummyProperty.videos];
-    const isVideo = (index) => index >= dummyProperty.images.length;
+    const images = propertyData?.images || [];
+const videos = propertyData?.videos || [];
+
+const allMedia = [...images, ...videos];
+    const isVideo = (index) => index >= images.length;
 
     // Main hero slider functions
     const nextMedia = () => setCurrentMediaIndex((prev) => (prev + 1) % allMedia.length);
@@ -121,14 +139,14 @@ const PropertyDetails = ({ property }) => {
                                         src={media}
                                         controls={!isAutoPlaying}
                                         className="slider-media"
-                                        poster={dummyProperty.images[0]}
+                                        poster={propertyData.images[0]}
                                         onMouseEnter={() => setIsAutoPlaying(false)}
                                         onMouseLeave={() => setIsAutoPlaying(true)}
                                     />
                                 ) : (
                                     <img
                                         src={media}
-                                        alt={`${dummyProperty.title} - Image ${index + 1}`}
+                                        alt={`${propertyData.title} - Image ${index + 1}`}
                                         className="slider-media"
                                     />
                                 )}
@@ -167,23 +185,23 @@ const PropertyDetails = ({ property }) => {
                         <Row>
                             <Col lg={8}>
                                 <div className="property-badge">Premium Listing</div>
-                                <h1 className="property-title-modern">{dummyProperty.title}</h1>
-                                <div className="property-price-modern">{dummyProperty.price}</div>
+                                <h1 className="property-title-modern">{propertyData.title}</h1>
+                                <div className="property-price-modern">{typeof propertyData.price === 'number' ? `$${propertyData.price.toLocaleString()}` : propertyData.price}</div>
                                 <div className="property-location-modern">
                                     <span className="location-icon">📍</span>
-                                    {dummyProperty.location}
+                                    {propertyData.location}
                                 </div>
                                 <div className="property-highlights">
                                     <div className="highlight-item">
-                                        <span className="highlight-value">{dummyProperty.bedrooms}</span>
+                                        <span className="highlight-value">{propertyData.bedrooms}</span>
                                         <span className="highlight-label">Bedrooms</span>
                                     </div>
                                     <div className="highlight-item">
-                                        <span className="highlight-value">{dummyProperty.bathrooms}</span>
+                                        <span className="highlight-value">{propertyData.bathrooms}</span>
                                         <span className="highlight-label">Bathrooms</span>
                                     </div>
                                     <div className="highlight-item">
-                                        <span className="highlight-value">{dummyProperty.area}</span>
+                                        <span className="highlight-value">{propertyData.area}</span>
                                         <span className="highlight-label">Area</span>
                                     </div>
                                 </div>
@@ -200,13 +218,13 @@ const PropertyDetails = ({ property }) => {
                         <Col lg={8}>
                             <div className="info-card">
                                 <h2 className="section-title">Property Overview</h2>
-                                <p className="property-description-modern">{dummyProperty.description}</p>
+                                <p className="property-description-modern">{propertyData.description}</p>
                             </div>
 
                             <div className="info-card">
                                 <h3 className="subsection-title">Key Features</h3>
                                 <div className="features-grid">
-                                    {dummyProperty.features.map((feature, index) => (
+                                    {(propertyData?.features || []).map((feature, index) => (
                                         <div key={index} className="feature-card">
                                             <div className="feature-icon">✓</div>
                                             <span>{feature}</span>
@@ -218,7 +236,7 @@ const PropertyDetails = ({ property }) => {
                             <div className="info-card">
                                 <h3 className="subsection-title">Amenities</h3>
                                 <div className="amenities-grid-modern">
-                                    {dummyProperty.amenities.map((amenity, index) => (
+                                    {(propertyData?.amenities|| []).map((amenity, index) => (
                                         <div key={index} className="amenity-card">
                                             <div className="amenity-icon">⭐</div>
                                             <span>{amenity}</span>
@@ -236,23 +254,23 @@ const PropertyDetails = ({ property }) => {
                                 <div className="summary-list">
                                     <div className="summary-row">
                                         <span className="summary-label">Price</span>
-                                        <span className="summary-value highlight">{dummyProperty.price}</span>
+                                        <span className="summary-value highlight">{propertyData.price}</span>
                                     </div>
                                     <div className="summary-row">
                                         <span className="summary-label">Bedrooms</span>
-                                        <span className="summary-value">{dummyProperty.bedrooms}</span>
+                                        <span className="summary-value">{propertyData.bedrooms}</span>
                                     </div>
                                     <div className="summary-row">
                                         <span className="summary-label">Bathrooms</span>
-                                        <span className="summary-value">{dummyProperty.bathrooms}</span>
+                                        <span className="summary-value">{propertyData.bathrooms}</span>
                                     </div>
                                     <div className="summary-row">
                                         <span className="summary-label">Area</span>
-                                        <span className="summary-value">{dummyProperty.area}</span>
+                                        <span className="summary-value">{propertyData.area}</span>
                                     </div>
                                     <div className="summary-row">
                                         <span className="summary-label">Location</span>
-                                        <span className="summary-value">{dummyProperty.location}</span>
+                                        <span className="summary-value">{propertyData.location}</span>
                                     </div>
                                 </div>
                                 <Button className="action-btn primary" onClick={() => setShowContactModal(true)}>
@@ -331,7 +349,7 @@ const PropertyDetails = ({ property }) => {
                                     ) : (
                                         <img
                                             src={media}
-                                            alt={`${dummyProperty.title} - ${isVideo(index) ? 'Video' : 'Image'} ${index + 1}`}
+                                            alt={`${propertyData.title} - ${isVideo(index) ? 'Video' : 'Image'} ${index + 1}`}
                                             className="modal-slider-media"
                                         />
                                     )}
@@ -388,11 +406,11 @@ const PropertyDetails = ({ property }) => {
                 </Modal.Header>
                 <Modal.Body className="modal-body-modern">
                     <div className="agent-card">
-                        <img src={dummyProperty.agent.avatar} alt={dummyProperty.agent.name} className="agent-avatar-modern" />
+                        <img src={propertyData?.agent?.avatar || ''} alt={propertyData?.agent?.name || 'Unknown'} className="agent-avatar-modern" />
                         <div className="agent-details">
-                            <h4>{dummyProperty.agent.name}</h4>
-                            <p className="agent-phone">{dummyProperty.agent.phone}</p>
-                            <p className="agent-email">{dummyProperty.agent.email}</p>
+                            <h4>{propertyData?.agent?.name || 'Unknown'}</h4>
+                            <p className="agent-phone">{propertyData?.agent?.phone || 'Unknown'}</p>
+                            <p className="agent-email">{propertyData?.agent?.email || 'Unknown'}</p>
                         </div>
                     </div>
                     <Form onSubmit={handleContactSubmit} className="contact-form">

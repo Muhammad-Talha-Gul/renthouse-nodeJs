@@ -33,17 +33,17 @@ const propertyStoreValidation = [
     .withMessage("Price must be a valid number"),
 
   body("bedrooms")
-    .optional()
+    .optional({ nullable: true, checkFalsy: true })
     .isInt({ min: 0 })
     .withMessage("Bedrooms must be a positive number"),
 
   body("bathrooms")
-    .optional()
+    .optional({ nullable: true, checkFalsy: true })
     .isInt({ min: 0 })
     .withMessage("Bathrooms must be a positive number"),
 
   body("area")
-    .optional()
+    .optional({ nullable: true, checkFalsy: true })
     .isFloat({ min: 0 })
     .withMessage("Area must be a valid number"),
 
@@ -52,31 +52,42 @@ const propertyStoreValidation = [
     .isIn(["sqft", "sqm", "kanal", "marla"])
     .withMessage("Invalid area unit"),
 
+  body("furnished")
+    .optional({ nullable: true, checkFalsy: true })
+    .isIn(["furnished", "semi_furnished", "unfurnished"])
+    .withMessage("Invalid furnished status"),
+
+  body("address")
+    .optional({ nullable: true, checkFalsy: true })
+    .trim()
+    .isLength({ max: 500 })
+    .withMessage("Address too long"),
+
   body("city")
-    .optional()
+    .optional({ nullable: true, checkFalsy: true })
     .trim()
     .isLength({ max: 100 })
     .withMessage("City name too long"),
 
   body("state")
-    .optional()
+    .optional({ nullable: true, checkFalsy: true })
     .trim()
     .isLength({ max: 100 })
     .withMessage("State name too long"),
 
   body("country")
-    .optional()
+    .optional({ nullable: true, checkFalsy: true })
     .trim()
     .isLength({ max: 100 })
     .withMessage("Country name too long"),
 
   body("latitude")
-    .optional()
+    .optional({ nullable: true, checkFalsy: true })
     .isFloat({ min: -90, max: 90 })
     .withMessage("Invalid latitude"),
 
   body("longitude")
-    .optional()
+    .optional({ nullable: true, checkFalsy: true })
     .isFloat({ min: -180, max: 180 })
     .withMessage("Invalid longitude"),
 

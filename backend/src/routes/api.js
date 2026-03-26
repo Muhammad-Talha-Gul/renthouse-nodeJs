@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../../middleware/authMiddleware");
+const upload = require("../../middleware/upload");
 const {
   registerValidation,
   loginValidation,
@@ -64,6 +65,11 @@ router.get(
   authMiddleware("users"),
   usersController.getModulesAndFields,
 );
+
+// Public Properties Search
+router.get("/properties/search", adminPropertiesController.search);
+router.get("/properties/details/:id", adminPropertiesController.details);
+
 module.exports = router;
 
 
@@ -72,8 +78,22 @@ router.get("/properties/index", authMiddleware("properties"), adminPropertiesCon
 
 router.post(
   "/property/store",
+  upload.any(),
   propertyStoreValidation,
   validate,
   authMiddleware("properties"),
   adminPropertiesController.store
+);
+
+router.put(
+  "/properties/update/:id",
+  upload.any(),
+  authMiddleware("properties"),
+  adminPropertiesController.update
+);
+
+router.delete(
+  "/properties/destroy/:id",
+  authMiddleware("properties"),
+  adminPropertiesController.destroy
 );

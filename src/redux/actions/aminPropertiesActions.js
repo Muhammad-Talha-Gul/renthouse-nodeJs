@@ -18,6 +18,31 @@ export const fetchAdminProperties = (page = 1, filters = {}) => async (dispatch)
         return error;
     }
 }
+
+export const searchProperties = (filters = {}) => async (dispatch) => {
+    dispatch({ type: "SEARCH_PROPERTIES_REQUEST" });
+    try {
+        const params = { ...filters };
+        const response = await apiServices('/api/properties/search', 'get', null, params);
+        dispatch({ type: "SEARCH_PROPERTIES_SUCCESS", payload: response });
+        return response;
+    } catch (error) {
+        dispatch({ type: "SEARCH_PROPERTIES_FAILURE", error });
+        return error;
+    }
+}
+
+export const fetchPropertyDetails = (id) => async (dispatch) => {
+    dispatch({ type: "FETCH_PROPERTY_DETAILS_REQUEST" });
+    try {
+        const response = await apiServices(`/api/properties/details/${id}`, 'get');
+        dispatch({ type: "FETCH_PROPERTY_DETAILS_SUCCESS", payload: response });
+        return response;
+    } catch (error) {
+        dispatch({ type: "FETCH_PROPERTY_DETAILS_FAILURE", error });
+        return error;
+    }
+}
 export const adminPropertyStore = (data) => async (dispatch) => {
   try {
     console.log("fomr data console", data);
@@ -43,8 +68,8 @@ export const adminPropertyStore = (data) => async (dispatch) => {
 
 export const adminPropertyUpdate = (id, data) => async (dispatch) => {
     try {
-        const response = await apiServices(`/api/categories/update/${id}`, 'put', data);
-        dispatch({ type: "UPDATE_ADMIN_CATEGORY_SUCCESS", payload: response?.data });
+        const response = await apiServices(`/api/properties/update/${id}`, 'put', data);
+        dispatch({ type: "UPDATE_ADMIN_PROPERTY_SUCCESS", payload: response?.data });
         return response;
 
     } catch (error) {
@@ -53,10 +78,10 @@ export const adminPropertyUpdate = (id, data) => async (dispatch) => {
 }
 export const adminPropertyDelete = (id) => async (dispatch) => {
     try {
-        const response = await apiServices(`/api/categories/distroy/${id}`, 'delete', null);
+        const response = await apiServices(`/api/properties/destroy/${id}`, 'delete', null);
         // prefer id from response.data if present, otherwise fallback to response.id or the id we passed
         const deletedId = response?.data?.id ?? response?.id ?? id;
-        dispatch({ type: "DELETE_ADMIN_CATEGORY_SUCCESS", payload: deletedId });
+        dispatch({ type: "DELETE_ADMIN_PROPERTY_SUCCESS", payload: deletedId });
         return response;
 
     } catch (error) {

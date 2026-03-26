@@ -8,7 +8,7 @@ import './Index.css'; // Make sure to import your CSS file
 
 const Index = () => {
     const dispatch = useDispatch();
-    const indexData = useSelector(state => state.index.indexData);
+    const indexData = useSelector(state => state.index.data);
 
     // State for form fields
     const [searchData, setSearchData] = useState({
@@ -71,68 +71,6 @@ const Index = () => {
     };
 
     const dummyIndexData = {
-        featuredProperties: [
-            {
-                id: 1,
-                title: "Modern Apartment in Downtown",
-                image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-                price: "$450,000",
-                location: "New York, NY",
-                bedrooms: 2,
-                bathrooms: 1,
-                area: "1200 sq ft"
-            },
-            {
-                id: 2,
-                title: "Spacious Family House",
-                image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-                price: "$750,000",
-                location: "Los Angeles, CA",
-                bedrooms: 4,
-                bathrooms: 3,
-                area: "2500 sq ft"
-            },
-            {
-                id: 3,
-                title: "Luxury Villa with Pool",
-                image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-                price: "$1,200,000",
-                location: "Miami, FL",
-                bedrooms: 5,
-                bathrooms: 4,
-                area: "3500 sq ft"
-            },
-            {
-                id: 4,
-                title: "Cozy Studio in the City",
-                image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-                price: "$300,000",
-                location: "Chicago, IL",
-                bedrooms: 1,
-                bathrooms: 1,
-                area: "600 sq ft"
-            },
-            {
-                id: 5,
-                title: "Suburban Condo",
-                image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-                price: "$550,000",
-                location: "Austin, TX",
-                bedrooms: 3,
-                bathrooms: 2,
-                area: "1800 sq ft"
-            },
-            {
-                id: 6,
-                title: "Beachfront Villa",
-                image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-                price: "$2,000,000",
-                location: "San Diego, CA",
-                bedrooms: 6,
-                bathrooms: 5,
-                area: "4500 sq ft"
-            }
-        ],
         propertyTypes: [
             {
                 value: "apartment",
@@ -360,7 +298,7 @@ const Index = () => {
                         </Col>
                     </Row>
                     <Row>
-                        {dummyIndexData?.featuredProperties?.slice(0, 6).map((property, index) => (
+                        {indexData?.featuredProperties?.slice(0, 6).map((property, index) => (
                             <Col key={index} lg={4} md={6} className="mb-4">
                                 <PropertyCard property={property} />
                             </Col>

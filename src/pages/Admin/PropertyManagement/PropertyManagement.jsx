@@ -1,4 +1,4 @@
-// src/components/Admin/CategoryManagement.jsx
+// src/pages/Admin/PropertyManagement/PropertyManagement.jsx
 import React, { useEffect, useMemo, useState } from 'react';
 import { Row, Col, Card, Button } from 'react-bootstrap';
 // import './CategoryManagement.css';
@@ -8,8 +8,11 @@ import CreateUpdateModal from '../../../components/CreateUpdateModal/CreateUpdat
 import Filter from '../../../components/Filter/Filter';
 import CustomPagination from '../../../components/Pagination/Pagination';
 import TableComponent from '../../../components/AGgridTable/TableComponent';
+import ImageModal from '../../../components/ImageModal/ImageModal';
 import { showErrorToast, showSuccessToast } from '../../../services/alertService';
-const UserManagement = () => {
+const PropertyManagement = () => {
+
+    const API_BASE = 'http://localhost:5000';
 
     const userString = localStorage.getItem("user");
     let user = null;
@@ -44,6 +47,8 @@ const UserManagement = () => {
     const [Record, setRecord] = useState(null);
     const [showFilter, setShowFilter] = useState(false);
     const [filterData, setFilterData] = useState({ name: '', status: '' });
+    const [showImagesModal, setShowImagesModal] = useState(false);
+    const [selectedImages, setSelectedImages] = useState([]);
 
     const error = useSelector(state => state.adminProperties.error) || [];
     console.log("error from redux state:", error);
@@ -53,11 +58,26 @@ const UserManagement = () => {
     const [currentPage, setCurrentPage] = useState(pagination?.page || 1);
 
     const [formData, setFormData] = useState({
-        name: '',
-        slug: '',
-        details: '',
-        icon: '🏠',
-        status: '0'
+        title: "",
+        category_id: "",
+        listing_type: "rent",
+        price: "",
+        bedrooms: "",
+        bathrooms: "",
+        area: "",
+        area_unit: "sqft",
+        furnished: "unfurnished",
+        description: "",
+        address: "",
+        city: "",
+        state: "",
+        country: "",
+        latitude: "",
+        longitude: "",
+        status: "available",
+        slug: "",
+        banner_image: null,
+        images: []
     });
 
 
@@ -282,10 +302,28 @@ const UserManagement = () => {
         { key: 'name', label: 'NAME', hide: true },
         { key: 'slug', label: 'SLUG', hide: true },
         { key: 'phone_number', label: 'Phone Number', hide: true },
+        {
+            key: 'banner_image',
+            label: 'Banner',
+            render: (value) => value ? <Button variant="primary" size="sm" onClick={() => window.open(`${API_BASE}${value}`, '_blank')}>View</Button> : 'No Banner'
+        },
+        {
+            key: 'images',
+            label: 'Images',
+            render: (value) => (
+                <Button 
+                    variant="info" 
+                    size="sm" 
+                    onClick={() => { setSelectedImages(value || []); setShowImagesModal(true); }}
+                >
+                    View ({value?.length || 0})
+                </Button>
+            )
+        },
     ], []);
 
     const columnOrder = useMemo(() => [
-        'title', 'price', 'listing_type', 'status', 'user_id', 'name',
+        'title', 'price', 'listing_type', 'status', 'user_id', 'banner_image', 'images',
         'phone_number', 'email', 'address', 'city', 'state', 'country',
         'area', 'area_unit', 'bedrooms', 'bathrooms', 'furnished',
         'category_id', 'slug', 'description', 'latitude', 'longitude',
@@ -359,8 +397,8 @@ const UserManagement = () => {
                 longitude: property.longitude || "",
                 status: property.status || "available",
                 slug: property.slug || "",
-                banner_image: null,  // Don't pass the URL, let backend keep existing
-                images: []  // Don't pass existing images array
+                banner_image: property.banner_image || null,
+                images: property.images || []
             });
 
         } else {
@@ -402,14 +440,14 @@ const UserManagement = () => {
 
         const data = new FormData();
         Object.keys(formData).forEach((key) => {
-            const config = fieldsConfig[key];
+            const config = fieldsConfig.find(field => field.name === key);
             const value = formData[key];
 
-            if (config?.type === "file" && config?.multiple && Array.isArray(value)) {
+            if (config?.type === "file-multiple" && Array.isArray(value)) {
                 value.forEach((file) => {
-                    if (file instanceof File) data.append(`${key}[]`, file);
+                    if (file instanceof File) data.append(key, file);
                 });
-            } else if (config?.type === "file" && value instanceof File) {
+            } else if (config?.type === "file-single" && value instanceof File) {
                 data.append(key, value);
             } else {
                 data.append(key, value);
@@ -429,7 +467,7 @@ const UserManagement = () => {
 
             // Normalize success detection across different backend shapes
             const isSuccess = response?.status === true || response?.status === 'success' || response?.status === 200 || response?.success === true;
-            const successMsg = response?.message || response?.data?.message || "Category saved successfully!";
+            const successMsg = response?.message || response?.data?.message || "Property saved successfully!";
             const backendError = response?.error || response?.message || response?.data?.error;
 
             if (isSuccess) {
@@ -459,13 +497,13 @@ const UserManagement = () => {
 
 
 
-    const handleDelete = async (categoryId) => {
-        if (!window.confirm('Are you sure you want to delete this category?')) return;
+    const handleDelete = async (propertyId) => {
+        if (!window.confirm('Are you sure you want to delete this property?')) return;
 
         try {
-            const response = await dispatch(adminPropertyDelete(categoryId, null));
+            const response = await dispatch(adminPropertyDelete(propertyId, null));
             if (response.status === 200) {
-                alert("Category deleted successfully!");
+                alert("Property deleted successfully!");
                 const remainingItems = properties.length - 1;
                 if (remainingItems === 0 && currentPage > 1) {
                     handlePageChange(currentPage - 1);
@@ -476,7 +514,7 @@ const UserManagement = () => {
                 alert("Request completed with non-200 status: " + response.status);
             }
         } catch (error) {
-            console.error("Error deleting category:", error);
+            console.error("Error deleting property:", error);
         }
     };
 
@@ -518,10 +556,10 @@ const UserManagement = () => {
         }
 
         // Handle slug generation
-        if (name === "name") {
+        if (name === "title") {
             setFormData({
                 ...formData,
-                name: value,
+                title: value,
                 slug: value.toLowerCase().replace(/[^a-z0-9]+/g, "-")
             });
             return;
@@ -585,7 +623,7 @@ const UserManagement = () => {
                                 }}
                             >
                                 <span style={{ fontSize: '18px' }}>➕</span>
-                                Add Category
+                                Add Property
                             </Button>
                         )}
                         <Button
@@ -671,8 +709,15 @@ const UserManagement = () => {
                 onSubmit={handleSubmit}
                 submitText={Record ? "Update Property" : "Add Property"}
             />
+
+            <ImageModal 
+                show={showImagesModal} 
+                onHide={() => setShowImagesModal(false)} 
+                images={selectedImages} 
+                apiBase={API_BASE} 
+            />
         </div>
     );
 };
 
-export default UserManagement;
+export default PropertyManagement;

@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Form, Button, Card, Badge } from 'react-bootstrap';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { searchProperties } from '../../redux/actions/aminPropertiesActions';
 import './SearchPage.css';
 import PropertyCard from '../../components/PropertyCard/PropertyCard';
 
 const SearchPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    // Redux state
+    const { searchResults, searchPagination, loading, error } = useSelector(state => state.adminProperties);
 
     // Search states
     const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
@@ -23,9 +29,6 @@ const SearchPage = () => {
 
     // UI states
     const [showFilters, setShowFilters] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [properties, setProperties] = useState([]);
-    const [totalResults, setTotalResults] = useState(0);
 
     // Property data options
     const propertyTypes = {
@@ -63,180 +66,28 @@ const SearchPage = () => {
         { value: 'popular', label: 'Most Popular' }
     ];
 
-    // Mock properties data
-    const mockProperties = [
-        {
-            id: 1,
-            title: "Modern Downtown Apartment",
-            price: 450000,
-            image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-            type: "Apartment",
-            transaction: "sale",
-            bedrooms: 2,
-            bathrooms: 2,
-            area: 1200,
-            location: "Manhattan, NY",
-            featured: true,
-            favorite: false,
-            status: "Premium"
-        },
-        {
-            id: 2,
-            title: "Luxury Villa with Pool",
-            price: 2500,
-            image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-            type: "Villa",
-            transaction: "rent",
-            bedrooms: 5,
-            bathrooms: 4,
-            area: 3500,
-            location: "Beverly Hills, CA",
-            featured: true,
-            favorite: true,
-            status: "Luxury"
-        },
-        {
-            id: 3,
-            title: "Cozy Studio in City Center",
-            price: 1800,
-            image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-            type: "Studio",
-            transaction: "rent",
-            bedrooms: 1,
-            bathrooms: 1,
-            area: 600,
-            location: "Chicago, IL",
-            featured: false,
-            favorite: false,
-            status: "New"
-        },
-        {
-            id: 4,
-            title: "Spacious Family House",
-            price: 750000,
-            image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-            type: "House",
-            transaction: "sale",
-            bedrooms: 4,
-            bathrooms: 3,
-            area: 2500,
-            location: "Austin, TX",
-            featured: true,
-            favorite: false,
-            status: "Featured"
-        },
-        {
-            id: 5,
-            title: "Commercial Office Space",
-            price: 1200000,
-            image: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-            type: "Office",
-            transaction: "sale",
-            bedrooms: 0,
-            bathrooms: 2,
-            area: 5000,
-            location: "Downtown, SF",
-            featured: false,
-            favorite: false,
-            status: "Commercial"
-        },
-        {
-            id: 6,
-            title: "Waterfront Luxury Condo",
-            price: 3200,
-            image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-            type: "Condo",
-            transaction: "rent",
-            bedrooms: 3,
-            bathrooms: 2,
-            area: 1800,
-            location: "Miami, FL",
-            featured: true,
-            favorite: true,
-            status: "Premium"
-        }
-    ];
-
     // Search and filter properties
-    const searchProperties = () => {
-        setLoading(true);
+    const searchProperties = async () => {
+        const filters = {
+            q: searchTerm,
+            type: propertyType,
+            transaction: transactionType,
+            minPrice: priceRange.min,
+            maxPrice: priceRange.max,
+            bedrooms,
+            bathrooms,
+            location,
+            sort: sortBy,
+            page: 1 // For now, start with page 1
+        };
 
-        // Simulate API call
-        setTimeout(() => {
-            let filtered = [...mockProperties];
+        // Remove empty filters
+        Object.keys(filters).forEach(key => {
+            if (!filters[key]) delete filters[key];
+        });
 
-            // Filter by search term
-            if (searchTerm) {
-                filtered = filtered.filter(property =>
-                    property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    property.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    property.type.toLowerCase().includes(searchTerm.toLowerCase())
-                );
-            }
-
-            // Filter by property type
-            if (propertyType) {
-                filtered = filtered.filter(property => property.type === propertyType);
-            }
-
-            // Filter by transaction type
-            if (transactionType) {
-                filtered = filtered.filter(property => property.transaction === transactionType);
-            }
-
-            // Filter by price range
-            if (priceRange.min) {
-                filtered = filtered.filter(property => property.price >= parseInt(priceRange.min));
-            }
-            if (priceRange.max) {
-                filtered = filtered.filter(property => property.price <= parseInt(priceRange.max));
-            }
-
-            // Filter by bedrooms
-            if (bedrooms && bedrooms !== 'Any') {
-                const bedFilter = bedrooms === '5+' ? 5 : parseInt(bedrooms);
-                filtered = bedrooms === '5+'
-                    ? filtered.filter(property => property.bedrooms >= bedFilter)
-                    : filtered.filter(property => property.bedrooms === bedFilter);
-            }
-
-            // Filter by bathrooms
-            if (bathrooms && bathrooms !== 'Any') {
-                const bathFilter = bathrooms === '4+' ? 4 : parseInt(bathrooms);
-                filtered = bathrooms === '4+'
-                    ? filtered.filter(property => property.bathrooms >= bathFilter)
-                    : filtered.filter(property => property.bathrooms === bathFilter);
-            }
-
-            // Filter by location
-            if (location) {
-                filtered = filtered.filter(property =>
-                    property.location.toLowerCase().includes(location.toLowerCase())
-                );
-            }
-
-            // Sort results
-            switch (sortBy) {
-                case 'price-low':
-                    filtered.sort((a, b) => a.price - b.price);
-                    break;
-                case 'price-high':
-                    filtered.sort((a, b) => b.price - a.price);
-                    break;
-                case 'featured':
-                    filtered.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
-                    break;
-                case 'popular':
-                    filtered.sort((a, b) => (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0));
-                    break;
-                default: // newest
-                    filtered.sort((a, b) => b.id - a.id);
-            }
-
-            setProperties(filtered);
-            setTotalResults(filtered.length);
-            setLoading(false);
-        }, 500);
+        await dispatch(searchProperties(filters));
+        updateURL();
     };
 
     // Update URL with search parameters
@@ -315,7 +166,7 @@ const SearchPage = () => {
                         <Col>
                             <h1 className="page-title">Find Your Perfect Property</h1>
                             <p className="page-subtitle">
-                                Search through {totalResults} properties matching your criteria
+                                Search through {propertyTypes.length} properties matching your criteria
                             </p>
                         </Col>
                     </Row>
@@ -511,7 +362,7 @@ const SearchPage = () => {
                     <Row>
                         <Col>
                             <div className="results-header">
-                                <h3>Properties Found: {totalResults}</h3>
+                                <h3>Properties Found: {searchPagination.total || 0}</h3>
                                 <div className="active-filters">
                                     {searchTerm && (
                                         <Badge bg="primary" className="active-filter">
@@ -553,8 +404,8 @@ const SearchPage = () => {
                     {/* Results Grid */}
                     {!loading && (
                         <Row className="properties-grid">
-                            {properties.length > 0 ? (
-                                properties.map(property => (
+                            {searchResults.length > 0 ? (
+                                searchResults.map(property => (
                                     <Col key={property.id} lg={4} md={6} className="mb-4">
                                         <PropertyCard
                                             property={property}

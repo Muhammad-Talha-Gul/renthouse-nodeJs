@@ -3,6 +3,9 @@ const initialState = {
     properties: [],
     categories: [],
     pagination: [],
+    searchResults: [],
+    searchPagination: {},
+    propertyDetails: null,
     loading: false,
     error: null,
 };
@@ -21,6 +24,27 @@ const adminPropertiesReducer = (state = initialState, action) => {
              };
         case 'FETCH_ADMIN_PROPERTIES_FAILURE':
             console.log("Reducer Error fetching properties:", action.error);
+            return { ...state, loading: false, error: action.error };
+
+        case 'SEARCH_PROPERTIES_REQUEST':
+            return { ...state, loading: true };
+        case 'SEARCH_PROPERTIES_SUCCESS':
+            return { ...state, loading: false,
+                searchResults: action.payload?.properties || [],
+                searchPagination: action.payload?.pagination || {},
+                error: null
+             };
+        case 'SEARCH_PROPERTIES_FAILURE':
+            return { ...state, loading: false, error: action.error };
+
+        case 'FETCH_PROPERTY_DETAILS_REQUEST':
+            return { ...state, loading: true };
+        case 'FETCH_PROPERTY_DETAILS_SUCCESS':
+            return { ...state, loading: false,
+                propertyDetails: action.payload,
+                error: null
+             };
+        case 'FETCH_PROPERTY_DETAILS_FAILURE':
             return { ...state, loading: false, error: action.error };
 
 
