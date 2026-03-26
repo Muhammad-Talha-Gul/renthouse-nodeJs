@@ -39,9 +39,14 @@ const indexController = async (req, res) => {
       area: `${property.area} ${property.area_unit}`,
     }));
 
+    const [propertyCategories] = await pool.query(
+      "SELECT * FROM categories WHERE active_status = ?",
+      [1]
+    );
+
     res.json({
       featuredProperties,
-      propertyTypes: [], // You can add logic to fetch property types if needed
+      propertyCategories: propertyCategories, // You can add logic to fetch property types if needed
       testimonials: [], // Add testimonials if available
       blogPosts: [], // Add blog posts if available
     });

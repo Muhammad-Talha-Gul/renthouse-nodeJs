@@ -639,7 +639,7 @@ const details = async (req, res) => {
   try {
     const { id } = req.params;
     console.log('Received property ID:', id);
-    
+
     const pool = req.db || db;
 
     // Fetch property details with images

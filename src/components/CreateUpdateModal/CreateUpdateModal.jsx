@@ -57,7 +57,7 @@ const CreateUpdateModal = ({
     // Handle based on field type
     if (cropField.type === 'file-multiple') {
       const currentImages = Array.isArray(formData[cropField.name]) ? formData[cropField.name] : [];
-      
+
       // Create a custom update for multiple files
       const newImages = [...currentImages, croppedFile];
       onFormChange({
@@ -81,7 +81,7 @@ const CreateUpdateModal = ({
   const handleRemoveImage = useCallback((fieldName, index) => {
     const images = [...(formData[fieldName] || [])];
     images.splice(index, 1);
-    
+
     onFormChange({
       target: {
         name: fieldName,
@@ -231,6 +231,76 @@ const CreateUpdateModal = ({
           </div>
         );
 
+      case 'profile-single':
+        return (
+          <div className="profile-image-uploader">
+            <Form.Control
+              type="file"
+              accept={accept}
+              onChange={(e) => handleFileSelect(e, field)}
+              style={{ display: 'none' }}
+              id={`upload-${name}`}
+            />
+
+            <label
+              htmlFor={`upload-${name}`}
+              style={{
+                width: '120px',
+                height: '120px',
+                borderRadius: '50%',
+                overflow: 'hidden',
+                border: '2px dashed #ccc',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                background: '#f8f9fa',
+                position: 'relative'
+              }}
+            >
+              {value ? (
+                <img
+                  src={value instanceof File ? URL.createObjectURL(value) : value}
+                  alt="profile"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }}
+                />
+              ) : (
+                <span style={{ fontSize: '14px', color: '#999' }}>
+                  Upload
+                </span>
+              )}
+
+              {value && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleRemoveSingle(name);
+                  }}
+                  style={{
+                    position: 'absolute',
+                    top: '5px',
+                    right: '5px',
+                    background: 'red',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: '20px',
+                    height: '20px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  ×
+                </button>
+              )}
+            </label>
+          </div>
+        );
+
       case 'file-multiple':
         const images = Array.isArray(value) ? value : [];
 
@@ -249,9 +319,9 @@ const CreateUpdateModal = ({
                   const previewUrl = img instanceof File ? URL.createObjectURL(img) : img;
                   return (
                     <div className="image-box" key={idx} style={{ position: 'relative' }}>
-                      <img 
-                        src={previewUrl} 
-                        alt={`upload-${idx}`} 
+                      <img
+                        src={previewUrl}
+                        alt={`upload-${idx}`}
                         style={{ maxWidth: '100px', maxHeight: '100px' }}
                       />
                       <button
@@ -360,6 +430,7 @@ const CreateUpdateModal = ({
         imageSrc={cropImage}
         onCropComplete={handleCropComplete}
         cropOptions={cropOptions}
+        circularCrop={cropField?.type === 'profile-single'}
       />
     </>
   );

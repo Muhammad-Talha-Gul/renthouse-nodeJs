@@ -413,11 +413,29 @@ const UserManagement = () => {
     }, []);
 
     const handleFormChange = useCallback((e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+        const { name, value, type, files } = e.target;
+
+        if (type === 'file') {
+            setFormData(prev => ({
+                ...prev,
+                [name]: files[0] // ✅ store file
+            }));
+        } else if (type === 'file-multiple') {
+            setFormData(prev => ({
+                ...prev,
+                [name]: value // already array
+            }));
+        } else if (type === 'file-single') {
+            setFormData(prev => ({
+                ...prev,
+                [name]: value
+            }));
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                [name]: value
+            }));
+        }
     }, []);
 
     const handleSubmit = useCallback(async (e) => {
@@ -467,6 +485,13 @@ const UserManagement = () => {
 
     // Memoized form configuration
     const userFormConfig = useMemo(() => [
+        {
+            name: "profile_image",
+            label: "Profile Image",
+            type: "profile-single",
+            colSize: 12,
+            cropOptions: { width: 400, height: 400, aspect: 1 } // square for circular crop
+        },
         {
             name: 'name',
             label: 'Full Name',

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import Cropper from 'react-easy-crop';
 
-const ImageCropModal = ({ show, onHide, imageSrc, onCropComplete, cropOptions }) => {
+const ImageCropModal = ({ show, onHide, imageSrc, onCropComplete, cropOptions, circularCrop = false }) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
@@ -14,7 +14,7 @@ const ImageCropModal = ({ show, onHide, imageSrc, onCropComplete, cropOptions })
 
   const handleSubmit = async () => {
     try {
-      const croppedFile = await getCroppedImg(imageSrc, croppedAreaPixels, cropOptions);
+      const croppedFile = await getCroppedImg(imageSrc, croppedAreaPixels, cropOptions, circularCrop);
       onCropComplete(croppedFile);
       onHide();
     } catch (e) {
@@ -33,7 +33,7 @@ const ImageCropModal = ({ show, onHide, imageSrc, onCropComplete, cropOptions })
             position: 'relative',
             width: '100%',
             height: cropOptions?.height || 400,
-            background: '#333'
+            background: '#333',
           }}
         >
           <Cropper
@@ -41,6 +41,8 @@ const ImageCropModal = ({ show, onHide, imageSrc, onCropComplete, cropOptions })
             crop={crop}
             zoom={zoom}
             aspect={cropOptions?.aspect || 1}
+            cropShape={circularCrop ? 'round' : 'rect'} // key change: circular overlay
+            showGrid={!circularCrop} // optional: hide grid for circle
             onCropChange={setCrop}
             onZoomChange={setZoom}
             onCropComplete={handleCropComplete}
@@ -60,7 +62,7 @@ const ImageCropModal = ({ show, onHide, imageSrc, onCropComplete, cropOptions })
 };
 
 // Helper function to create cropped image
-const getCroppedImg = async (imageSrc, pixelCrop, cropOptions = {}) => {
+const getCroppedImg = async (imageSrc, pixelCrop, cropOptions = {}, circularCrop = false) => {
   const image = await createImage(imageSrc);
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
@@ -70,6 +72,7 @@ const getCroppedImg = async (imageSrc, pixelCrop, cropOptions = {}) => {
   canvas.width = width;
   canvas.height = height;
 
+  // Draw cropped image
   ctx.drawImage(
     image,
     pixelCrop.x,
@@ -81,6 +84,28 @@ const getCroppedImg = async (imageSrc, pixelCrop, cropOptions = {}) => {
     width,
     height
   );
+
+  // Apply circular mask if needed
+  if (circularCrop) {
+    const circularCanvas = document.createElement('canvas');
+    circularCanvas.width = width;
+    circularCanvas.height = height;
+    const circularCtx = circularCanvas.getContext('2d');
+
+    circularCtx.beginPath();
+    circularCtx.arc(width / 2, height / 2, width / 2, 0, Math.PI * 2, true);
+    circularCtx.closePath();
+    circularCtx.clip();
+
+    circularCtx.drawImage(canvas, 0, 0, width, height);
+
+    return new Promise((resolve) => {
+      circularCanvas.toBlob((blob) => {
+        const file = new File([blob], 'cropped-profile.jpg', { type: 'image/jpeg' });
+        resolve(file);
+      }, 'image/jpeg');
+    });
+  }
 
   return new Promise((resolve) => {
     canvas.toBlob((blob) => {
@@ -95,7 +120,7 @@ const createImage = (url) =>
     const image = new Image();
     image.addEventListener('load', () => resolve(image));
     image.addEventListener('error', (error) => reject(error));
-    image.setAttribute('crossOrigin', 'anonymous'); // needed to avoid cross-origin issues
+    image.setAttribute('crossOrigin', 'anonymous');
     image.src = url;
   });
 

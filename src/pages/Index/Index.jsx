@@ -9,6 +9,7 @@ import './Index.css'; // Make sure to import your CSS file
 const Index = () => {
     const dispatch = useDispatch();
     const indexData = useSelector(state => state.index.data);
+    const propertyCategories = useSelector(state => state.index.data?.propertyCategories || []);
 
     // State for form fields
     const [searchData, setSearchData] = useState({
@@ -196,12 +197,10 @@ const Index = () => {
                         value: searchData.propertyType,
                         onChange: handlePropertyTypeChange,
                         options: [
-                            { value: "", label: "Any Type" },
-                            { value: "apartment", label: "Apartment" },
-                            { value: "house", label: "House" },
-                            { value: "villa", label: "Villa" },
-                            { value: "condo", label: "Condo" },
-                            { value: "studio", label: "Studio" }
+                            ...propertyCategories.map(category => ({
+                                value: category.slug || category.name.toLowerCase(),
+                                label: category.name
+                            }))
                         ]
                     },
                     {
