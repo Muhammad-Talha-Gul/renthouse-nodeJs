@@ -49,6 +49,7 @@ const indexController = async (req, res) => {
       propertyCategories: propertyCategories, // You can add logic to fetch property types if needed
       testimonials: [], // Add testimonials if available
       blogPosts: [], // Add blog posts if available
+      success: true
     });
   } catch (error) {
     console.error("Error fetching index data:", error);

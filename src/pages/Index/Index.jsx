@@ -5,9 +5,11 @@ import HeroSection from "../../components/HeoSection/HeroSection";
 import { Col, Container, Row } from "react-bootstrap";
 import PropertyCard from "../../components/PropertyCard/PropertyCard";
 import './Index.css'; // Make sure to import your CSS file
-
+import { useNavigate } from "react-router-dom";
+import { fetchSearchData } from "../../redux/actions/searchActions";
 const Index = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const indexData = useSelector(state => state.index.data);
     const propertyCategories = useSelector(state => state.index.data?.propertyCategories || []);
 
@@ -34,14 +36,20 @@ const Index = () => {
     };
 
     // Handle form submission
-    const handleSearchSubmit = (e) => {
+    const handleSearchSubmit = async (e) => {
         e.preventDefault();
-        console.log("Search submitted with data:", searchData);
-        alert(`Searching for:
-        Property Type: ${searchData.propertyType || 'Any'}
-        Location: ${searchData.location || 'Any'}
-        Min Price: ${searchData.minPrice || 'Any'}
-        Max Price: ${searchData.maxPrice || 'Any'}`);
+        const response = await dispatch(fetchSearchData(1, searchData));
+        if (response?.success === true) {
+            console.log("console response", response);
+            navigate('/search');
+
+        }
+        // console.log("Search submitted with data:", searchData);
+        // alert(`Searching for:
+        // Property Type: ${searchData.propertyType || 'Any'}
+        // Location: ${searchData.location || 'Any'}
+        // Min Price: ${searchData.minPrice || 'Any'}
+        // Max Price: ${searchData.maxPrice || 'Any'}`);
     };
 
     // Handle individual field changes

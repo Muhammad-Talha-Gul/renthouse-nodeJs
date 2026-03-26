@@ -11,6 +11,10 @@ const SearchPage = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
+    const indexData = useSelector(state => state.search.data);
+    const propertyCategories = useSelector(state => state.search.data?.propertyCategories || []);
+    const featuredProperties = useSelector(state => state.search.data?.featuredProperties || []);
+
     // Redux state
     const { searchResults, searchPagination, loading, error } = useSelector(state => state.adminProperties);
 
@@ -362,7 +366,7 @@ const SearchPage = () => {
                     <Row>
                         <Col>
                             <div className="results-header">
-                                <h3>Properties Found: {searchPagination.total || 0}</h3>
+                                <h3>Properties Found: {featuredProperties.length || 0}</h3>
                                 <div className="active-filters">
                                     {searchTerm && (
                                         <Badge bg="primary" className="active-filter">
@@ -404,8 +408,8 @@ const SearchPage = () => {
                     {/* Results Grid */}
                     {!loading && (
                         <Row className="properties-grid">
-                            {searchResults.length > 0 ? (
-                                searchResults.map(property => (
+                            {featuredProperties.length > 0 ? (
+                                featuredProperties.map(property => (
                                     <Col key={property.id} lg={4} md={6} className="mb-4">
                                         <PropertyCard
                                             property={property}
