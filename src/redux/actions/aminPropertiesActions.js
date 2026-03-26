@@ -20,6 +20,7 @@ export const fetchAdminProperties = (page = 1, filters = {}) => async (dispatch)
 }
 export const adminPropertyStore = (data) => async (dispatch) => {
   try {
+    console.log("fomr data console", data);
     const response = await apiServices('/api/property/store', 'post', data);
     console.log("store response console", response);
 

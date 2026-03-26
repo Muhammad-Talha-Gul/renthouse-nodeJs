@@ -1,5 +1,5 @@
 // src/components/Admin/CategoryManagement.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Row, Col, Card, Button } from 'react-bootstrap';
 // import './CategoryManagement.css';
 import { adminPropertyDelete, adminPropertyStore, adminPropertyUpdate, fetchAdminProperties } from '../../../redux/actions/aminPropertiesActions';
@@ -60,6 +60,174 @@ const UserManagement = () => {
         status: '0'
     });
 
+
+    const fieldsConfig = useMemo(() => [
+        {
+            name: "banner_image",
+            label: "Banner Image",
+            type: "file-single",
+            colSize: 12,
+            cropOptions: { width: 1200, height: 400, aspect: 3 }
+        },
+        {
+            name: "title",
+            label: "Title",
+            type: "text",
+            required: true,
+            placeholder: "Enter Property Title",
+            colSize: 12
+        },
+        {
+            name: "category_id",
+            label: "Category",
+            type: "select",
+            required: true,
+            options: categories.map(cat => ({
+                value: cat.id,
+                label: cat.name,
+            })),
+            colSize: 6
+        },
+        {
+            name: "listing_type",
+            label: "Listing Type",
+            type: "select",
+            required: true,
+            options: [
+                { value: "rent", label: "Rent" },
+                { value: "sale", label: "Sale" }
+            ],
+            colSize: 6
+        },
+        {
+            name: "price",
+            label: "Price",
+            type: "number",
+            required: true,
+            placeholder: "Enter Price",
+            colSize: 6
+        },
+        {
+            name: "bedrooms",
+            label: "Bedrooms",
+            type: "number",
+            placeholder: "Enter Bedrooms",
+            colSize: 3
+        },
+        {
+            name: "bathrooms",
+            label: "Bathrooms",
+            type: "number",
+            placeholder: "Enter Bathrooms",
+            colSize: 3
+        },
+        {
+            name: "area",
+            label: "Area",
+            type: "number",
+            placeholder: "Enter Area",
+            colSize: 4
+        },
+        {
+            name: "area_unit",
+            label: "Area Unit",
+            type: "select",
+            options: [
+                { value: "sqft", label: "Sq Ft" },
+                { value: "marla", label: "Marla" },
+                { value: "kanal", label: "Kanal" }
+            ],
+            colSize: 2
+        },
+        {
+            name: "furnished",
+            label: "Furnished",
+            type: "select",
+            options: [
+                { value: "furnished", label: "Furnished" },
+                { value: "semi_furnished", label: "Semi Furnished" },
+                { value: "unfurnished", label: "Unfurnished" }
+            ],
+            colSize: 6
+        },
+        {
+            name: "description",
+            label: "Description",
+            type: "textarea",
+            rows: 4,
+            placeholder: "Enter Property Description",
+            colSize: 12
+        },
+        {
+            name: "address",
+            label: "Address",
+            type: "textarea",
+            rows: 2,
+            placeholder: "Enter Address",
+            colSize: 12
+        },
+        {
+            name: "city",
+            label: "City",
+            type: "text",
+            placeholder: "Enter City",
+            colSize: 4
+        },
+        {
+            name: "state",
+            label: "State",
+            type: "text",
+            placeholder: "Enter State",
+            colSize: 4
+        },
+        {
+            name: "country",
+            label: "Country",
+            type: "text",
+            placeholder: "Enter Country",
+            colSize: 4
+        },
+        {
+            name: "latitude",
+            label: "Latitude",
+            type: "text",
+            placeholder: "Enter Latitude",
+            colSize: 6
+        },
+        {
+            name: "longitude",
+            label: "Longitude",
+            type: "text",
+            placeholder: "Enter Longitude",
+            colSize: 6
+        },
+        {
+            name: "status",
+            label: "Status",
+            type: "select",
+            options: [
+                { value: "available", label: "Available" },
+                { value: "sold", label: "Sold" },
+                { value: "rented", label: "Rented" }
+            ],
+            colSize: 6
+        },
+        {
+            name: "slug",
+            label: "Slug",
+            type: "text",
+            placeholder: "Auto generated or manual",
+            colSize: 6
+        },
+        {
+            name: "images",
+            label: "Property Images",
+            type: "file-multiple",
+            colSize: 12,
+            helpText: "Upload multiple images.",
+            cropOptions: { width: 800, height: 600, aspect: 4 / 3 }
+        },
+    ], [categories]);
     // ---- Filter handlers ----
     const filterFields = [
         { name: 'start_date', label: 'Start Date', type: 'date', colSize: 2 },
@@ -74,41 +242,63 @@ const UserManagement = () => {
     ];
 
     // ---- Column configuration for TableComponent ----
-    const columnConfig = [
-        { key: 'title', label: 'Title', index: 0, hidden: false },
-        { key: 'listing_type ', label: 'Property Type', index: 1 },
-        { key: 'price', label: 'Pricee', index: 2 },
-        { key: 'city ', label: 'City ', index: 3 },
-        { key: 'state', label: 'State', index: 4 },
-        { key: 'country', label: 'Country', index: 5 },
-        { key: 'status ', label: 'Property Status', index: 6 },
+    const columnConfig = useMemo(() => [
+        { key: 'title', label: 'Title' },
+        { key: 'listing_type', label: 'Property Type' },
+        { key: 'price', label: 'Price' },
+        { key: 'city', label: 'City' },
+        { key: 'state', label: 'State' },
+        { key: 'country', label: 'Country' },
+        {
+            key: 'status',
+            label: 'Property Status',
+            render: (value) => {
+                const statusConfig = {
+                    'available': { class: 'bg-success', label: 'Available' },
+                    'sold': { class: 'bg-danger', label: 'Sold' },
+                    'rented': { class: 'bg-warning', label: 'Rented' }
+                };
+                const config = statusConfig[value] || { class: 'bg-secondary', label: value || 'Unknown' };
+                return <span className={`badge ${config.class}`}>{config.label}</span>;
+            }
+        },
+        {
+            key: 'user_id',
+            label: 'Added By',
+            render: (value, row) => (
+                <span className="badge bg-info">{row?.name || 'N/A'}</span>
+            )
+        },
         {
             key: 'active_status',
-            label: 'Status',
-            index: 7,
+            label: 'Active Status',
             render: (value) => (
-                <span className={`badge ${value === 1 || value === '1' ? 'bg-success' : 'bg-secondary'}`}>
-                    {value === 1 || value === '1' ? 'Active' : 'Inactive'}
+                <span className={`badge ${value == 1 ? 'bg-success' : 'bg-secondary'}`}>
+                    {value == 1 ? 'Active' : 'Inactive'}
                 </span>
             )
         },
+        { key: 'email', label: 'Email', hide: true },
+        { key: 'name', label: 'NAME', hide: true },
+        { key: 'slug', label: 'SLUG', hide: true },
+        { key: 'phone_number', label: 'Phone Number', hide: true },
+    ], []);
 
-        {
-            key: 'actions',
-            label: 'Custom Actions',
-            index: 6,
-            hidden: true,
-            render: (value, row) => (
-                <button
-                    onClick={() => alert(`Row ID: ${row.id}`)}
-                    className="btn btn-sm btn-outline-success"
-                >
-                    View
-                </button>
-            )
-        }
-    ];
+    const columnOrder = useMemo(() => [
+        'title', 'price', 'listing_type', 'status', 'user_id', 'name',
+        'phone_number', 'email', 'address', 'city', 'state', 'country',
+        'area', 'area_unit', 'bedrooms', 'bathrooms', 'furnished',
+        'category_id', 'slug', 'description', 'latitude', 'longitude',
+        'created_at', 'updated_at', 'id'
+    ], []);
 
+    const orderedColumns = useMemo(() => {
+        const ordered = columnOrder
+            .map(key => columnConfig.find(col => col.key === key))
+            .filter(Boolean);
+        const remaining = columnConfig.filter(col => !columnOrder.includes(col.key));
+        return [...ordered, ...remaining];
+    }, [columnConfig, columnOrder]);
 
 
     useEffect(() => {
@@ -168,7 +358,9 @@ const UserManagement = () => {
                 latitude: property.latitude || "",
                 longitude: property.longitude || "",
                 status: property.status || "available",
-                slug: property.slug || ""
+                slug: property.slug || "",
+                banner_image: null,  // Don't pass the URL, let backend keep existing
+                images: []  // Don't pass existing images array
             });
 
         } else {
@@ -192,7 +384,9 @@ const UserManagement = () => {
                 latitude: "",
                 longitude: "",
                 status: "available",
-                slug: ""
+                slug: "",
+                banner_image: null,
+                images: []
             });
         }
 
@@ -206,13 +400,29 @@ const UserManagement = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const data = new FormData();
+        Object.keys(formData).forEach((key) => {
+            const config = fieldsConfig[key];
+            const value = formData[key];
+
+            if (config?.type === "file" && config?.multiple && Array.isArray(value)) {
+                value.forEach((file) => {
+                    if (file instanceof File) data.append(`${key}[]`, file);
+                });
+            } else if (config?.type === "file" && value instanceof File) {
+                data.append(key, value);
+            } else {
+                data.append(key, value);
+            }
+        });
         try {
+
             let response;
 
             if (Record?.id) {
-                response = await dispatch(adminPropertyUpdate(Record.id, formData));
+                response = await dispatch(adminPropertyUpdate(Record.id, data));
             } else {
-                response = await dispatch(adminPropertyStore(formData));
+                response = await dispatch(adminPropertyStore(data));
             }
 
             console.log("handleSubmit response:", response); // Debug log
@@ -270,95 +480,57 @@ const UserManagement = () => {
         }
     };
 
+    // const handleFormChange = (e) => {
+    //     const { name, value } = e.target;
+    //     if (name === "name") {
+    //         setFormData({ ...formData, name: value, slug: value.toLowerCase().replace(/[^a-z0-9]+/g, "-") });
+    //         return;
+    //     }
+    //     setFormData({ ...formData, [name]: value });
+    // };
+
     const handleFormChange = (e) => {
-        const { name, value } = e.target;
-        if (name === "name") {
-            setFormData({ ...formData, name: value, slug: value.toLowerCase().replace(/[^a-z0-9]+/g, "-") });
+        const { name, value, type, files } = e.target;
+
+        console.log('Form change:', { name, value, type, files }); // Debug log
+
+        // Handle file inputs from direct file selection
+        if (type === 'file') {
+            if (files && files.length > 0) {
+                if (e.target.multiple) {
+                    // For multiple files
+                    setFormData({
+                        ...formData,
+                        [name]: Array.from(files)
+                    });
+                } else {
+                    // For single file
+                    setFormData({ ...formData, [name]: files[0] });
+                }
+            }
             return;
         }
+
+        // Handle custom value updates (from crop modal)
+        if (type === 'file-multiple' || type === 'file-single') {
+            setFormData({ ...formData, [name]: value });
+            return;
+        }
+
+        // Handle slug generation
+        if (name === "name") {
+            setFormData({
+                ...formData,
+                name: value,
+                slug: value.toLowerCase().replace(/[^a-z0-9]+/g, "-")
+            });
+            return;
+        }
+
+        // Handle other inputs
         setFormData({ ...formData, [name]: value });
     };
 
-    const fieldsConfig = [
-        { name: "title", label: "Title", type: "text", required: true, placeholder: "Enter Property Title", colSize: 12 },
-
-        {
-            name: "category_id",
-            label: "Category",
-            type: "select",
-            required: true,
-            options: categories
-                ? categories.map((cat) => ({
-                    value: cat.id,
-                    label: cat.name,
-                }))
-                : [],
-            colSize: 6
-        },
-
-        {
-            name: "listing_type", label: "Listing Type", type: "select", required: true,
-            options: [
-                { value: "rent", label: "Rent" },
-                { value: "sale", label: "Sale" }
-            ],
-            colSize: 6
-        },
-
-        { name: "price", label: "Price", type: "number", required: true, placeholder: "Enter Price", colSize: 6 },
-
-        { name: "bedrooms", label: "Bedrooms", type: "number", placeholder: "Enter Bedrooms", colSize: 3 },
-
-        { name: "bathrooms", label: "Bathrooms", type: "number", placeholder: "Enter Bathrooms", colSize: 3 },
-
-        { name: "area", label: "Area", type: "number", placeholder: "Enter Area", colSize: 4 },
-
-        {
-            name: "area_unit", label: "Area Unit", type: "select",
-            options: [
-                { value: "sqft", label: "Sq Ft" },
-                { value: "marla", label: "Marla" },
-                { value: "kanal", label: "Kanal" }
-            ],
-            colSize: 2
-        },
-
-        {
-            name: "furnished", label: "Furnished", type: "select",
-            options: [
-                { value: "furnished", label: "Furnished" },
-                { value: "semi_furnished", label: "Semi Furnished" },
-                { value: "unfurnished", label: "Unfurnished" }
-            ],
-            colSize: 6
-        },
-
-        { name: "description", label: "Description", type: "textarea", rows: 4, placeholder: "Enter Property Description", colSize: 12 },
-
-        { name: "address", label: "Address", type: "textarea", rows: 2, placeholder: "Enter Address", colSize: 12 },
-
-        { name: "city", label: "City", type: "text", placeholder: "Enter City", colSize: 4 },
-
-        { name: "state", label: "State", type: "text", placeholder: "Enter State", colSize: 4 },
-
-        { name: "country", label: "Country", type: "text", placeholder: "Enter Country", colSize: 4 },
-
-        { name: "latitude", label: "Latitude", type: "text", placeholder: "Enter Latitude", colSize: 6 },
-
-        { name: "longitude", label: "Longitude", type: "text", placeholder: "Enter Longitude", colSize: 6 },
-
-        {
-            name: "status", label: "Status", type: "select",
-            options: [
-                { value: "available", label: "Available" },
-                { value: "sold", label: "Sold" },
-                { value: "rented", label: "Rented" }
-            ],
-            colSize: 6
-        },
-
-        { name: "slug", label: "Slug", type: "text", placeholder: "Auto generated or manual", colSize: 6 }
-    ];
 
     return (
         <div className="category-management">
@@ -471,7 +643,7 @@ const UserManagement = () => {
                         <div className="table-scroll-wrapper">
                             <TableComponent
                                 data={properties}
-                                columns={columnConfig}
+                                columns={orderedColumns}
                                 pagination={pagination}
                                 currentPage={currentPage}
                                 hasPermission={hasPermission}
