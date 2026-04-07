@@ -71,28 +71,27 @@ const SearchPage = () => {
     ];
 
     // Search and filter properties
-    const searchProperties = async () => {
-        const filters = {
-            q: searchTerm,
-            type: propertyType,
-            transaction: transactionType,
-            minPrice: priceRange.min,
-            maxPrice: priceRange.max,
-            bedrooms,
-            bathrooms,
-            location,
-            sort: sortBy,
-            page: 1 // For now, start with page 1
-        };
-
-        // Remove empty filters
-        Object.keys(filters).forEach(key => {
-            if (!filters[key]) delete filters[key];
-        });
-
-        await dispatch(searchProperties(filters));
-        updateURL();
+const handleSearchProperties = async () => {
+    const filters = {
+        q: searchTerm,
+        type: propertyType,
+        transaction: transactionType,
+        minPrice: priceRange.min,
+        maxPrice: priceRange.max,
+        bedrooms,
+        bathrooms,
+        location,
+        sort: sortBy,
+        page: 1
     };
+
+    Object.keys(filters).forEach(key => {
+        if (!filters[key]) delete filters[key];
+    });
+
+    await dispatch(searchProperties(filters)); // Redux action
+    updateURL();
+};
 
     // Update URL with search parameters
     const updateURL = () => {
@@ -114,13 +113,13 @@ const SearchPage = () => {
     const handleSearch = (e) => {
         e.preventDefault();
         updateURL();
-        searchProperties();
+        handleSearchProperties();
     };
 
     // Handle filter changes
     const handleFilterChange = () => {
         updateURL();
-        searchProperties();
+        handleSearchProperties();
     };
 
     // Clear all filters
@@ -135,12 +134,12 @@ const SearchPage = () => {
         setSortBy('newest');
 
         navigate('/search', { replace: true });
-        searchProperties();
+        handleSearchProperties();
     };
 
     // Initialize search on component mount and when URL params change
     useEffect(() => {
-        searchProperties();
+        handleSearchProperties();
     }, []);
 
     // Handler functions
