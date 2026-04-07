@@ -10,21 +10,13 @@ import CustomPagination from '../../../components/Pagination/Pagination';
 import TableComponent from '../../../components/AGgridTable/TableComponent';
 import ImageModal from '../../../components/ImageModal/ImageModal';
 import { showErrorToast, showSuccessToast } from '../../../services/alertService';
+import { authSession } from '../../../services/authSession';
+import PageHeader from '../../../components/Breadcrumb/PageHeader';
 const PropertyManagement = () => {
 
     const API_BASE = 'http://localhost:5000';
 
-    const userString = localStorage.getItem("userDetails");
-    const userDetails = userString ? JSON.parse(userString) : null;
-    const userData = userDetails?.userData;
-    let user = null;
-
-    try {
-        user = userString ? JSON.parse(userString) : null;
-    } catch (err) {
-        console.error("Error parsing user from localStorage", err);
-        user = null;
-    }
+    const user = authSession.getUser();
 
     const hasPermission = (action, resource = 'properties') => {
         const perms = user?.permissions?.[resource] || [];
@@ -574,94 +566,19 @@ const PropertyManagement = () => {
 
     return (
         <div className="category-management">
-            <Row className="mb-4">
-                <Col className='d-flex justify-content-between align-items-center'>
-                    {/* Left side - Total Records */}
-                    <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        backgroundColor: '#f8f9fa',
-                        padding: '8px 16px',
-                        borderRadius: '8px',
-                        border: '1px solid #e9ecef'
-                    }}>
-                        <span style={{
-                            fontSize: '14px',
-                            fontWeight: '500',
-                            color: '#495057'
-                        }}>
-                            Total Properties:
-                        </span>
-                        <span style={{
-                            backgroundColor: '#007bff',
-                            color: 'white',
-                            padding: '4px 12px',
-                            borderRadius: '20px',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            minWidth: '40px'
-                        }}>
-                            {properties.length}
-                        </span>
-                    </div>
-
-                    {/* Right side - Action Buttons */}
-                    <div className='d-flex gap-2'>
-                        {hasPermission('create') && (
-                            <Button
-                                variant="success"
-                                onClick={() => handleShowModal()}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '6px',
-                                    padding: '8px 16px',
-                                    fontWeight: '500',
-                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                                }}
-                            >
-                                <span style={{ fontSize: '18px' }}>➕</span>
-                                Add Property
-                            </Button>
-                        )}
-                        <Button
-                            variant={showFilter ? 'outline-secondary' : 'secondary'}
-                            onClick={() => setShowFilter(s => !s)}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                                padding: '8px 16px',
-                                fontWeight: '500',
-                                backgroundColor: showFilter ? 'transparent' : '#6c757d',
-                                borderColor: '#6c757d',
-                                color: showFilter ? '#6c757d' : 'white',
-                                transition: 'all 0.3s ease',
-                                boxShadow: showFilter ? 'none' : '0 2px 4px rgba(0,0,0,0.1)'
-                            }}
-                            onMouseEnter={(e) => {
-                                if (!showFilter) {
-                                    e.target.style.backgroundColor = '#5a6268';
-                                    e.target.style.borderColor = '#545b62';
-                                }
-                            }}
-                            onMouseLeave={(e) => {
-                                if (!showFilter) {
-                                    e.target.style.backgroundColor = '#6c757d';
-                                    e.target.style.borderColor = '#6c757d';
-                                }
-                            }}
-                        >
-                            <span style={{ fontSize: '16px' }}>🔍</span>
-                            {showFilter ? 'Hide Filters' : 'Show Filters'}
-                        </Button>
-                    </div>
-                </Col>
-            </Row>
+            <PageHeader
+                title="Property Management"
+                subtitle="Manage platform properties and their details"
+                breadcrumbItems={[
+                    { label: "Dashboard", link: "/admin" },
+                    { label: "Properties" }
+                ]}
+                showFilter={showFilter}
+                setShowFilter={setShowFilter}
+                onAdd={handleShowModal}
+                canCreate={hasPermission('create')}
+                total={pagination?.total || 0}
+            />
 
             {showFilter && (
                 <Row className="mb-3">

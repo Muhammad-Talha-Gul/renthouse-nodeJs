@@ -1,9 +1,10 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { authSession } from "../services/authSession";
 
 const ProtectedRoute = ({ element }) => {
-  const token = localStorage.getItem("token");
+  const token = authSession.getToken();
 
   if (!token) {
     return <Navigate to="/login" replace />;
@@ -11,17 +12,15 @@ const ProtectedRoute = ({ element }) => {
 
   try {
     const decoded = jwtDecode(token);
-
-    // exp is in seconds, Date.now() is in milliseconds
     if (decoded.exp * 1000 < Date.now()) {
-      localStorage.removeItem("token");
+      authSession.clearSession();
       return <Navigate to="/login" replace />;
     }
 
     return element;
   } catch (error) {
     // If token is invalid
-    localStorage.removeItem("token");
+     const token = authSession.clearSession();
     return <Navigate to="/login" replace />;
   }
 };

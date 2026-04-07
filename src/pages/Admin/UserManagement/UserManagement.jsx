@@ -14,19 +14,11 @@ import "./components/UserCard.css";
 import "./components/UserDetailsModal.css";
 import "./components/FieldPermissionsModal.css";
 import "./components/PermissionsModal.css";
+import { authSession } from '../../../services/authSession';
+import PageHeader from '../../../components/Breadcrumb/PageHeader';
 
 const UserManagement = () => {
-    const userString = localStorage.getItem("userDetails");
-    const userDetails = userString ? JSON.parse(userString) : null;
-    const userData = userDetails?.userData;
-    let user = null;
-
-    try {
-        user = userString ? JSON.parse(userString) : null;
-    } catch (err) {
-        console.error("Error parsing user from localStorage", err);
-        user = null;
-    }
+    const user = authSession.getUser();
 
     const hasPermission = useCallback((action, resource = 'users') => {
         const perms = user?.permissions?.[resource] || [];
@@ -575,29 +567,19 @@ const UserManagement = () => {
 
     return (
         <div className="user-management">
-            <Row className="mb-4">
-                <Col>
-                    <div className="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h2>User Management</h2>
-                            <p className="text-muted">Manage platform users and their permissions</p>
-                        </div>
-                        <div className="d-flex gap-2">
-                            {hasPermission('create') && (
-                                <Button variant="success" onClick={() => handleShowModal()}>
-                                    ➕ Add User
-                                </Button>
-                            )}
-                            <Button
-                                variant={showFilter ? 'outline-secondary' : 'secondary'}
-                                onClick={() => setShowFilter(s => !s)}
-                            >
-                                {showFilter ? 'Hide Filters' : 'Show Filters'}
-                            </Button>
-                        </div>
-                    </div>
-                </Col>
-            </Row>
+            <PageHeader
+                title="User Management"
+                subtitle="Manage platform users and their permissions"
+                breadcrumbItems={[
+                    { label: "Dashboard", link: "/admin" },
+                    { label: "Users" }
+                ]}
+                showFilter={showFilter}
+                setShowFilter={setShowFilter}
+                onAdd={handleShowModal}
+                canCreate={hasPermission('create')}
+                total={pagination?.total || 0}
+            />
 
             {showFilter && (
                 <Row className="mb-3">
@@ -621,7 +603,7 @@ const UserManagement = () => {
                                 if (!user || !user.id) return null;
 
                                 return (
-                                    <Col key={user.id} xl={3} lg={3} md={4} sm={3} className="mb-4">
+                                    <Col key={user.id} xl={3} lg={4} md={6} sm={6} className="mb-4">
                                         <UserCard
                                             user={user}
                                             onShowPermissions={handleShowPermissionsModal}

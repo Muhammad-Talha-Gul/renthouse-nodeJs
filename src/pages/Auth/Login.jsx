@@ -6,6 +6,7 @@ import './Auth.css';
 import { useDispatch } from 'react-redux';
 import { login } from '../../redux/actions/authActions';
 import { showSuccessToast, showErrorToast } from "../../services/alertService";
+import { authSession } from "../../services/authSession";
 
 const Login = () => {
 
@@ -27,35 +28,25 @@ const Login = () => {
         }));
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
+        const handleSubmit = async (e) => {
+            e.preventDefault();
+            setLoading(true);
 
-        try {
-            const response = await dispatch(login(formData));
+            try {
+                const response = await dispatch(login(formData));
 
-            if (response && response.status === true) {
+                if (response && response.status === true) {
 
-                // if (response.token) {
-                //     localStorage.setItem('token', response.token);
-                // }
-                if (response.user) {
-                    try {
-                        localStorage.setItem('token', JSON.stringify(response.token));
-                        localStorage.setItem('userDetails', JSON.stringify(response.user));
-                    } catch (e) {
-                        console.warn('Failed to save user to localStorage', e);
-                    }
+                    authSession.setSession(response.token, response.user);
+                    navigate("/admin");
+                    return;
                 }
-                navigate("/admin");
-                return;
+            } catch (err) {
+                showErrorToast("Something went wrong. Please try again.");
+            } finally {
+                setLoading(false);
             }
-        } catch (err) {
-            showErrorToast("Something went wrong. Please try again.");
-        } finally {
-            setLoading(false);
-        }
-    };
+        };
 
     return (
         <div className="auth-page admin-login">

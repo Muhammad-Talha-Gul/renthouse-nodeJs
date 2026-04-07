@@ -61,3 +61,8 @@ body {
 .theme-pagination.compact .pagination {
     gap: 4px;
 }
+
+
+.dropdown-toggle::after{
+    display: none !important;
+}

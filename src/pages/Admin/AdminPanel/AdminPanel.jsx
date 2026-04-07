@@ -57,7 +57,7 @@ const AdminPanel = () => {
     };
     return (
         <div className="admin-panel">
-            <Row>
+            <div>
                 {/* Sidebar */}
                 <Col
                     lg={2}
@@ -357,7 +357,7 @@ const AdminPanel = () => {
                         <h1>This is Footer Text</h1>
                     </div> */}
                 </Col>
-            </Row>
+            </div>
         </div>
     );
 };
