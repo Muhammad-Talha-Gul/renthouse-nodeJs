@@ -27,26 +27,35 @@ const Login = () => {
         }));
     };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
 
-  try {
-    const response = await dispatch(login(formData));
+        try {
+            const response = await dispatch(login(formData));
 
-    if (response && response.status === true) {
-      showSuccessToast("Login successful!");
-      navigate("/admin");
-      return;
-    }
+            if (response && response.status === true) {
 
-    showErrorToast(response?.message || "Invalid credentials");
-  } catch (err) {
-    showErrorToast("Something went wrong. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
+                // if (response.token) {
+                //     localStorage.setItem('token', response.token);
+                // }
+                if (response.user) {
+                    try {
+                        localStorage.setItem('token', JSON.stringify(response.token));
+                        localStorage.setItem('userDetails', JSON.stringify(response.user));
+                    } catch (e) {
+                        console.warn('Failed to save user to localStorage', e);
+                    }
+                }
+                navigate("/admin");
+                return;
+            }
+        } catch (err) {
+            showErrorToast("Something went wrong. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="auth-page admin-login">

@@ -14,7 +14,9 @@ const PropertyManagement = () => {
 
     const API_BASE = 'http://localhost:5000';
 
-    const userString = localStorage.getItem("user");
+    const userString = localStorage.getItem("userDetails");
+    const userDetails = userString ? JSON.parse(userString) : null;
+    const userData = userDetails?.userData;
     let user = null;
 
     try {
@@ -311,9 +313,9 @@ const PropertyManagement = () => {
             key: 'images',
             label: 'Images',
             render: (value) => (
-                <Button 
-                    variant="info" 
-                    size="sm" 
+                <Button
+                    variant="info"
+                    size="sm"
                     onClick={() => { setSelectedImages(value || []); setShowImagesModal(true); }}
                 >
                     View ({value?.length || 0})
@@ -710,11 +712,11 @@ const PropertyManagement = () => {
                 submitText={Record ? "Update Property" : "Add Property"}
             />
 
-            <ImageModal 
-                show={showImagesModal} 
-                onHide={() => setShowImagesModal(false)} 
-                images={selectedImages} 
-                apiBase={API_BASE} 
+            <ImageModal
+                show={showImagesModal}
+                onHide={() => setShowImagesModal(false)}
+                images={selectedImages}
+                apiBase={API_BASE}
             />
         </div>
     );

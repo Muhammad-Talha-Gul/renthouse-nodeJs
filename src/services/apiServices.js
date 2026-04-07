@@ -10,14 +10,21 @@ const apiServices = async (endpoint, method = "get", data = null, params = {}) =
             headers: data instanceof FormData ? { "Content-Type": "multipart/form-data" } : {},
             params
         });
+
         if (response.data.status_code == 204) {
-            alert("Access Denied", response.data.message, "error")
+            alert("Access Denied", response.data.message, "error");
         }
+
         return response.data;
+
     } catch (error) {
-        const errData = error?.response?.data || { status: false, error: error?.message || "An unexpected error occurred" };
-        return errData; // return error payload so callers can handle backend validation/messages
+        const errData = error?.response?.data || {
+            status: false,
+            error: error?.message || "An unexpected error occurred"
+        };
+
+        throw errData; // ✅ FIX: throw instead of return
     }
-}
+};
 
 export default apiServices;

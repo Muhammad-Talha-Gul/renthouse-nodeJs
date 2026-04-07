@@ -1,5 +1,5 @@
 // src/components/Common/CreateUpdateModal/CreateUpdateModal.jsx
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import './CreateUpdateModal.css';
 import ImageCropModal from '../ImageCropModal/ImageCropModal';
@@ -107,6 +107,23 @@ const CreateUpdateModal = ({
     onSubmit(e);
   };
 
+
+  // Store the memoized URL for the profile-single image file
+  const profileImageURL = useMemo(() => {
+    if (formData['profileImage'] && formData['profileImage'] instanceof File) {
+      return URL.createObjectURL(formData['profileImage']);
+    }
+    return formData['profileImage'] || null;
+  }, [formData['profileImage']]);
+
+  // If you want to cleanup the URL when component unmounts or file changes:
+  useEffect(() => {
+    return () => {
+      if (profileImageURL && profileImageURL.startsWith('blob:')) {
+        URL.revokeObjectURL(profileImageURL);
+      }
+    };
+  }, [profileImageURL]);
   const renderField = (field) => {
     const {
       name,
@@ -260,7 +277,7 @@ const CreateUpdateModal = ({
             >
               {value ? (
                 <img
-                  src={value instanceof File ? URL.createObjectURL(value) : value}
+                  src={value instanceof File ? profileImageURL : value}
                   alt="profile"
                   style={{
                     width: '100%',

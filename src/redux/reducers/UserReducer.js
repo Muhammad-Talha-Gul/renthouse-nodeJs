@@ -34,7 +34,7 @@ const usersReducer = (state = initialState, action) => {
         case 'STORE_USER_SUCCESS':
             return {
                 ...state,
-                users: [...state.users, action.payload], // add new category
+                users: [...state.users, action.payload?.user], // add new category
             };
 
 

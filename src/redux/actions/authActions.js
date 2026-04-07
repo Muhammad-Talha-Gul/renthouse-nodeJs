@@ -1,3 +1,4 @@
+import { showErrorToast, showSuccessToast } from "../../services/alertService";
 import apiServices from "../../services/apiServices";
 
 
@@ -8,24 +9,12 @@ export const login = (credentials) => async (dispatch) => {
         const response = await apiServices('/api/auth/login', 'post', credentials);
         console.log("login response view file:", response.message); // ✅ use response.message
 
-        // Store token in localStorage
-        if (response.token) {
-            localStorage.setItem('token', response.token);
-        }
-        // Store user in localStorage (for displaying name/profile)
-        if (response.user) {
-            try {
-                localStorage.setItem('user', JSON.stringify(response.user));
-            } catch (e) {
-                console.warn('Failed to save user to localStorage', e);
-            }
-        }
-
         dispatch({ type: "LOGIN_SUCCESS", payload: response });
+        showSuccessToast(response.message);
         return response;
 
     } catch (error) {
-        alert(error.message); // ✅ safer logging // ✅ corrected syntax
+        showErrorToast(error.message);
         dispatch({ type: "LOGIN_FAILURE" });
     }
 }

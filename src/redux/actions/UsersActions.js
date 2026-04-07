@@ -1,5 +1,5 @@
+import { showErrorToast, showSuccessToast } from "../../services/alertService";
 import apiServices from "../../services/apiServices";
-
 
 export const fetchUsers = (page = 1, filters = {}) => async (dispatch) => {
     console.log("actions is calling correctly");
@@ -20,7 +20,7 @@ export const fetchModulesAndFields = () => async (dispatch) => {
     console.log("actions is calling correctly");
     dispatch({ type: "FETCH_USERS_REQUEST" });
     try {
-        const response = await apiServices('/api/users//modules_fields', 'get', null, null);
+        const response = await apiServices('/api/users/modules_fields', 'get', null, null);
         dispatch({ type: "FETCH_MODULES_FIELDS_SUCCESS", payload: response.data });
         return response;
 
@@ -31,18 +31,25 @@ export const fetchModulesAndFields = () => async (dispatch) => {
 
 export const userStore = (data) => async (dispatch) => {
     try {
-        const response = await apiServices('/api/categories/store', 'post', data);
+        const response = await apiServices('/api/user/store', 'post', data);
         dispatch({ type: "STORE_USER_SUCCESS", payload: response?.data });
+        showSuccessToast(response?.message);
         return response;
 
+
     } catch (error) {
+        const errorMessage =
+            error?.error?.message ||
+            error?.message ||
+            "Something went wrong";
+        showErrorToast(errorMessage);
         dispatch({ type: "FETCH_USER_FAILURE" });
     }
 }
 export const userUpdate = (id, data) => async (dispatch) => {
     try {
-        const response = await apiServices(`/api/categories/update/${id}`, 'put', data);
-        dispatch({ type: "UPDATE_USER_SUCCESS", payload: response?.data });
+        const response = await apiServices(`/api/user/update/${id}`, 'put', data);
+        dispatch({ type: "UPDATE_USER_SUCCESS", payload: response?.user });
         return response;
 
     } catch (error) {

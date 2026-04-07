@@ -27,6 +27,9 @@
     text-align: center;
     position: relative;
     transition: 0.3s;
+    max-width: 400px;
+    width: 100%;
+    margin: 0 auto;
 }
 
 .profile-card:hover {
@@ -47,9 +50,17 @@
     border-bottom-left-radius: 8px;
 }
 
-.status-ribbon.inactive { background: #dc2626; }
-.status-ribbon.active { background: var(--accent); }
-.status-ribbon.suspended { background: #f59e0b; }
+.status-ribbon.inactive {
+    background: #dc2626;
+}
+
+.status-ribbon.active {
+    background: var(--accent);
+}
+
+.status-ribbon.suspended {
+    background: #f59e0b;
+}
 
 /* Avatar */
 .profile-avatar-wrapper {

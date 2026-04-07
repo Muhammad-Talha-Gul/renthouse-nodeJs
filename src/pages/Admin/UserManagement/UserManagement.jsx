@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { Row, Col, Card, Button, Badge, Modal, Form } from 'react-bootstrap';
 import './UserManagement.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUsers, fetchModulesAndFields } from '../../../redux/actions/UsersActions';
+import { fetchUsers, fetchModulesAndFields, userStore, userUpdate } from '../../../redux/actions/UsersActions';
 import CreateUpdateModal from '../../../components/CreateUpdateModal/CreateUpdateModal';
 import CustomPagination from '../../../components/Pagination/Pagination';
 import Filter from '../../../components/Filter/Filter';
@@ -16,7 +16,9 @@ import "./components/FieldPermissionsModal.css";
 import "./components/PermissionsModal.css";
 
 const UserManagement = () => {
-    const userString = localStorage.getItem("user");
+    const userString = localStorage.getItem("userDetails");
+    const userDetails = userString ? JSON.parse(userString) : null;
+    const userData = userDetails?.userData;
     let user = null;
 
     try {
@@ -112,8 +114,8 @@ const UserManagement = () => {
 
     // Memoized filter configuration
     const filterFields = useMemo(() => [
-        { name: 'name', label: 'User Name', type: 'text', colSize: 3 },
-        { name: 'email', label: 'Email', type: 'email', colSize: 3 },
+        { name: 'name', label: 'User Name', type: 'text', colSize: 2 },
+        { name: 'email', label: 'Email', type: 'email', colSize: 2 },
         {
             name: 'role',
             label: 'Role',
@@ -450,20 +452,24 @@ const UserManagement = () => {
             submitData.role_id = parseInt(submitData.role_id);
             submitData.active_status = parseInt(submitData.active_status);
 
+            let response;
             if (editingUser) {
                 console.log('Updating user:', editingUser.id, submitData);
-                // await updateUserAPI(editingUser.id, submitData);
+                response = await dispatch(userUpdate(editingUser.id, submitData));
             } else {
                 console.log('Creating new user:', submitData);
-                // await createUserAPI(submitData);
+                response = await dispatch(userStore(submitData));
             }
 
-            dispatch(fetchUsers(currentPage, filterData));
-            handleCloseModal();
+            if (response?.success === true) {
+                handleCloseModal();
+            }
+
+            console.log("view file response console", response);
         } catch (error) {
             console.error('Error saving user:', error);
         }
-    }, [formData, editingUser, currentPage, filterData, dispatch, handleCloseModal]);
+    }, [formData, editingUser, currentPage, filterData, dispatch]);
 
     const handleDelete = useCallback(async (userId) => {
         if (!window.confirm('Are you sure you want to delete this user?')) return;
@@ -611,22 +617,26 @@ const UserManagement = () => {
                 <Card.Body>
                     <div className="users-grid">
                         <Row>
-                            {users.map(user => (
-                                <Col key={user.id} xl={4} lg={6} md={6} className="mb-4">
-                                    <UserCard
-                                        user={user}
-                                        onShowPermissions={handleShowPermissionsModal}
-                                        onShowFieldPermissions={handleShowFieldPermissionsModal}
-                                        onEdit={handleShowModal}
-                                        onDelete={handleDelete}
-                                        getRoleVariant={getRoleVariant}
-                                        getRoleText={getRoleText}
-                                        getStatusVariant={getStatusVariant}
-                                        getStatusText={getStatusText}
-                                        hasPermission={hasPermission}
-                                    />
-                                </Col>
-                            ))}
+                            {users?.map((user, index) => {
+                                if (!user || !user.id) return null;
+
+                                return (
+                                    <Col key={user.id} xl={3} lg={3} md={4} sm={3} className="mb-4">
+                                        <UserCard
+                                            user={user}
+                                            onShowPermissions={handleShowPermissionsModal}
+                                            onShowFieldPermissions={handleShowFieldPermissionsModal}
+                                            onEdit={handleShowModal}
+                                            onDelete={handleDelete}
+                                            getRoleVariant={getRoleVariant}
+                                            getRoleText={getRoleText}
+                                            getStatusVariant={getStatusVariant}
+                                            getStatusText={getStatusText}
+                                            hasPermission={hasPermission}
+                                        />
+                                    </Col>
+                                );
+                            })}
                         </Row>
                         {users.length === 0 && (
                             <div className="text-center py-5">

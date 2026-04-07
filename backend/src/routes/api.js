@@ -7,6 +7,9 @@ const {
   loginValidation,
 } = require("../validators/auth.validation.js");
 const {
+  userStoreValidation,
+} = require("../validators/user.validation.js");
+const {
   careateCategoryValidation,
 } = require("../validators/category.validation.js");
 const {
@@ -17,6 +20,7 @@ const indexController = require("../controllers/indexController");
 const adminCategoriesController = require("../controllers/adminCategoriesController");
 const adminPropertiesController = require("../controllers/adminPropertiesController");
 const authController = require("../controllers/authController");
+const adminUserController = require("../controllers/adminUserController");
 const usersController = require("../controllers/usersController");
 router.get("/index", indexController);
 
@@ -52,10 +56,16 @@ router.post(
   // authMiddleware("users"),
   authController.register,
 );
-router.put(
-  "/auth/user_update/:id",
+router.post(
+  "/user/store",
+  userStoreValidation,
+  validate,
+  // authMiddleware("users"),
+  adminUserController.register,
+);
+router.put("/user/update/:id",
   authMiddleware("users"),
-  authController.update,
+  adminUserController.update,
 );
 
 // users

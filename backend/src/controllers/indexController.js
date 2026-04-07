@@ -21,7 +21,7 @@ const indexController = async (req, res) => {
         LEFT JOIN property_images pi 
             ON p.id = pi.property_id AND pi.is_primary = 1
         WHERE p.status = 'available'
-        ORDER BY p.created_at DESC
+        ORDER BY p.id DESC
         LIMIT 6
         `);
 
@@ -49,7 +49,8 @@ const indexController = async (req, res) => {
       propertyCategories: propertyCategories, // You can add logic to fetch property types if needed
       testimonials: [], // Add testimonials if available
       blogPosts: [], // Add blog posts if available
-      success: true
+      success: true,
+      message: "This is Talha"
     });
   } catch (error) {
     console.error("Error fetching index data:", error);

@@ -11,7 +11,9 @@ import TableComponent from '../../../components/AGgridTable/TableComponent';
 import { showErrorToast, showSuccessToast } from '../../../services/alertService';
 const CategoryManagement = () => {
 
-    const userString = localStorage.getItem("user");
+    const userString = localStorage.getItem("userDetails");
+    const userDetails = userString ? JSON.parse(userString) : null;
+    const userData = userDetails?.userData;
     let user = null;
 
     try {
