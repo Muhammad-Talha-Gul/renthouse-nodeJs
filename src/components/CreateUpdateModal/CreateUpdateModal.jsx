@@ -17,15 +17,11 @@ const CreateUpdateModal = ({
   cancelText = 'Cancel',
   size = 'lg'
 }) => {
-  // Crop modal state - REMOVED fromData state
   const [cropModal, setCropModal] = useState(false);
   const [cropImage, setCropImage] = useState(null);
   const [cropField, setCropField] = useState(null);
   const [cropOptions, setCropOptions] = useState({ width: 400, height: 400, aspect: 1 });
 
-  // REMOVED handleFormChange function - using parent's onFormChange instead
-
-  // Handle file selection for cropping
   const handleFileSelect = useCallback((e, field) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -38,14 +34,12 @@ const CreateUpdateModal = ({
       setCropModal(true);
     };
     reader.readAsDataURL(file);
-    e.target.value = null; // Reset input
+    e.target.value = null;
   }, []);
 
-  // Handle crop completion - UPDATED to use parent's onFormChange
   const handleCropComplete = useCallback((croppedFile) => {
     if (!cropField) return;
 
-    // Create a synthetic event to update parent
     const syntheticEvent = {
       target: {
         name: cropField.name,
@@ -54,11 +48,8 @@ const CreateUpdateModal = ({
       }
     };
 
-    // Handle based on field type
     if (cropField.type === 'file-multiple') {
       const currentImages = Array.isArray(formData[cropField.name]) ? formData[cropField.name] : [];
-
-      // Create a custom update for multiple files
       const newImages = [...currentImages, croppedFile];
       onFormChange({
         target: {
@@ -68,7 +59,6 @@ const CreateUpdateModal = ({
         }
       });
     } else {
-      // For single file, just replace
       onFormChange(syntheticEvent);
     }
 
@@ -77,7 +67,6 @@ const CreateUpdateModal = ({
     setCropField(null);
   }, [cropField, formData, onFormChange]);
 
-  // Handle image removal - UPDATED to use parent's onFormChange
   const handleRemoveImage = useCallback((fieldName, index) => {
     const images = [...(formData[fieldName] || [])];
     images.splice(index, 1);
@@ -91,7 +80,6 @@ const CreateUpdateModal = ({
     });
   }, [formData, onFormChange]);
 
-  // Handle single image removal - UPDATED to use parent's onFormChange
   const handleRemoveSingle = useCallback((fieldName) => {
     onFormChange({
       target: {
@@ -107,8 +95,6 @@ const CreateUpdateModal = ({
     onSubmit(e);
   };
 
-
-  // Store the memoized URL for the profile-single image file
   const profileImageURL = useMemo(() => {
     if (formData['profileImage'] && formData['profileImage'] instanceof File) {
       return URL.createObjectURL(formData['profileImage']);
@@ -116,7 +102,6 @@ const CreateUpdateModal = ({
     return formData['profileImage'] || null;
   }, [formData['profileImage']]);
 
-  // If you want to cleanup the URL when component unmounts or file changes:
   useEffect(() => {
     return () => {
       if (profileImageURL && profileImageURL.startsWith('blob:')) {
@@ -124,6 +109,7 @@ const CreateUpdateModal = ({
       }
     };
   }, [profileImageURL]);
+
   const renderField = (field) => {
     const {
       name,
@@ -175,36 +161,49 @@ const CreateUpdateModal = ({
           />
         );
 
-      case 'icon-selector':
+      case 'checkbox-group':
         return (
-          <div className="icon-selector">
-            {options.map(icon => (
-              <button
-                key={icon}
-                type="button"
-                className={`icon-option ${value === icon ? 'selected' : ''}`}
-                onClick={() => onFormChange({
-                  target: { name, value: icon }
-                })}
-              >
-                {icon}
-              </button>
-            ))}
+          <div className="checkbox-group">
+            <div className="checkbox-group-container" style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
+              gap: '10px',
+              maxHeight: '250px',
+              overflowY: 'auto',
+              padding: '10px',
+              border: '1px solid #ddd',
+              borderRadius: '4px',
+              backgroundColor: '#f8f9fa'
+            }}>
+              {options.map(option => (
+                <Form.Check
+                  key={option.value}
+                  type="checkbox"
+                  id={`${name}-${option.value}`}
+                  label={option.label}
+                  value={option.value}
+                  checked={Array.isArray(value) && value.includes(option.value)}
+                  onChange={(e) => {
+                    const syntheticEvent = {
+                      target: {
+                        name: name,
+                        value: option.value,
+                        checked: e.target.checked,
+                        type: 'checkbox-group'
+                      }
+                    };
+                    onFormChange(syntheticEvent);
+                  }}
+                  disabled={disabled}
+                />
+              ))}
+            </div>
+            {Array.isArray(value) && value.length > 0 && (
+              <div className="selected-count mt-2" style={{ fontSize: '12px', color: '#666' }}>
+                Selected: {value.length} item(s)
+              </div>
+            )}
           </div>
-        );
-
-      case 'slug':
-        return (
-          <Form.Control
-            type="text"
-            name={name}
-            value={value}
-            onChange={onFormChange}
-            placeholder={placeholder}
-            required={required}
-            disabled={disabled}
-            className="custom-form-control"
-          />
         );
 
       case 'file-single':
@@ -218,11 +217,11 @@ const CreateUpdateModal = ({
               className="mb-2"
             />
             {value && (
-              <div className="image-box">
+              <div className="image-box" style={{ position: 'relative', display: 'inline-block' }}>
                 <img
                   src={value instanceof File ? URL.createObjectURL(value) : value}
                   alt="uploaded"
-                  style={{ maxWidth: '100px', maxHeight: '100px' }}
+                  style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '4px' }}
                 />
                 <button
                   type="button"
@@ -238,7 +237,11 @@ const CreateUpdateModal = ({
                     borderRadius: '50%',
                     width: '20px',
                     height: '20px',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '12px'
                   }}
                 >
                   ×
@@ -309,6 +312,10 @@ const CreateUpdateModal = ({
                     width: '20px',
                     height: '20px',
                     cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '12px'
                   }}
                 >
                   ×
@@ -329,6 +336,7 @@ const CreateUpdateModal = ({
               onChange={(e) => handleFileSelect(e, field)}
               disabled={disabled}
               className="mb-2"
+              multiple
             />
             {images.length > 0 && (
               <div className="uploaded-images-grid" style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '10px' }}>
@@ -339,7 +347,7 @@ const CreateUpdateModal = ({
                       <img
                         src={previewUrl}
                         alt={`upload-${idx}`}
-                        style={{ maxWidth: '100px', maxHeight: '100px' }}
+                        style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '4px' }}
                       />
                       <button
                         type="button"
@@ -355,7 +363,11 @@ const CreateUpdateModal = ({
                           borderRadius: '50%',
                           width: '20px',
                           height: '20px',
-                          cursor: 'pointer'
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '12px'
                         }}
                       >
                         ×

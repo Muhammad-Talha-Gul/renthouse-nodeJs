@@ -12,6 +12,7 @@ import ImageModal from '../../../components/ImageModal/ImageModal';
 import { showErrorToast, showSuccessToast } from '../../../services/alertService';
 import { authSession } from '../../../services/authSession';
 import PageHeader from '../../../components/Breadcrumb/PageHeader';
+
 const PropertyManagement = () => {
 
     const API_BASE = 'http://localhost:5000';
@@ -23,9 +24,7 @@ const PropertyManagement = () => {
         return perms.includes(action);
     };
 
-
     // 🚨 Check read permission first
-    // Check if user has 'read' permission, else block access
     if (!user || !(user?.permissions?.['properties']?.includes('read'))) {
         return (
             <div className="text-center py-5">
@@ -34,7 +33,6 @@ const PropertyManagement = () => {
             </div>
         );
     }
-
 
     const dispatch = useDispatch();
     const [showModal, setShowModal] = useState(false);
@@ -50,6 +48,44 @@ const PropertyManagement = () => {
     const categories = useSelector(state => state.adminProperties.categories) || [];
     const pagination = useSelector(state => state.adminProperties.pagination) || {};
     const [currentPage, setCurrentPage] = useState(pagination?.page || 1);
+
+    // Static Amenities Data
+    const staticAmenities = useMemo(() => [
+        { id: 1, name: "Swimming Pool", icon: "🏊", category: "recreation" },
+        { id: 2, name: "Gym", icon: "💪", category: "fitness" },
+        { id: 3, name: "Parking", icon: "🅿️", category: "parking" },
+        { id: 4, name: "Security", icon: "🔒", category: "safety" },
+        { id: 5, name: "Elevator", icon: "🛗", category: "convenience" },
+        { id: 6, name: "Central AC", icon: "❄️", category: "climate" },
+        { id: 7, name: "Heating", icon: "🔥", category: "climate" },
+        { id: 8, name: "Laundry", icon: "🧺", category: "convenience" },
+        { id: 9, name: "Balcony", icon: "🏠", category: "outdoor" },
+        { id: 10, name: "Garden", icon: "🌺", category: "outdoor" },
+        { id: 11, name: "Children Play Area", icon: "🎠", category: "family" },
+        { id: 12, name: "Pets Allowed", icon: "🐕", category: "pets" },
+        { id: 13, name: "Furnished", icon: "🛋️", category: "furnishing" },
+        { id: 14, name: "Internet", icon: "🌐", category: "technology" },
+        { id: 15, name: "Cable TV", icon: "📺", category: "entertainment" }
+    ], []);
+
+    // Static Features Data
+    const staticFeatures = useMemo(() => [
+        { id: 1, name: "Smart Home", icon: "🏠", description: "Automated home systems" },
+        { id: 2, name: "Solar Panels", icon: "☀️", description: "Energy efficient" },
+        { id: 3, name: "Rainwater Harvesting", icon: "💧", description: "Water conservation" },
+        { id: 4, name: "Waste Disposal", icon: "🗑️", description: "Modern waste management" },
+        { id: 5, name: "Wheelchair Access", icon: "♿", description: "Accessibility feature" },
+        { id: 6, name: "Smart Locks", icon: "🔐", description: "Digital security" },
+        { id: 7, name: "Video Doorbell", icon: "📹", description: "Security feature" },
+        { id: 8, name: "EV Charging", icon: "🔋", description: "Electric vehicle ready" },
+        { id: 9, name: "Sound Proof", icon: "🔇", description: "Noise reduction" },
+        { id: 10, name: "Wine Cellar", icon: "🍷", description: "Premium storage" },
+        { id: 11, name: "Home Theater", icon: "🎬", description: "Entertainment system" },
+        { id: 12, name: "Sauna", icon: "🧖", description: "Wellness feature" },
+        { id: 13, name: "Jacuzzi", icon: "🛁", description: "Luxury bathing" },
+        { id: 14, name: "Smart Irrigation", icon: "💦", description: "Automated gardening" },
+        { id: 15, name: "Backup Generator", icon: "⚡", description: "Power backup" }
+    ], []);
 
     const [formData, setFormData] = useState({
         title: "",
@@ -71,9 +107,10 @@ const PropertyManagement = () => {
         status: "available",
         slug: "",
         banner_image: null,
-        images: []
+        images: [],
+        amenities: [], // Array of selected amenity IDs
+        features: []   // Array of selected feature IDs
     });
-
 
     const fieldsConfig = useMemo(() => [
         {
@@ -202,6 +239,28 @@ const PropertyManagement = () => {
             colSize: 4
         },
         {
+            name: "amenities",
+            label: "Amenities",
+            type: "checkbox-group",
+            options: staticAmenities.map(amenity => ({
+                value: amenity.id,
+                label: `${amenity.icon || '✓'} ${amenity.name}`
+            })),
+            colSize: 12,
+            helpText: "Select available amenities for this property"
+        },
+        {
+            name: "features",
+            label: "Features",
+            type: "checkbox-group",
+            options: staticFeatures.map(feature => ({
+                value: feature.id,
+                label: `${feature.icon || '✨'} ${feature.name}`
+            })),
+            colSize: 12,
+            helpText: "Select special features of this property"
+        },
+        {
             name: "latitude",
             label: "Latitude",
             type: "text",
@@ -241,7 +300,8 @@ const PropertyManagement = () => {
             helpText: "Upload multiple images.",
             cropOptions: { width: 800, height: 600, aspect: 4 / 3 }
         },
-    ], [categories]);
+    ], [categories, staticAmenities, staticFeatures]);
+
     // ---- Filter handlers ----
     const filterFields = [
         { name: 'start_date', label: 'Start Date', type: 'date', colSize: 2 },
@@ -274,6 +334,50 @@ const PropertyManagement = () => {
                 };
                 const config = statusConfig[value] || { class: 'bg-secondary', label: value || 'Unknown' };
                 return <span className={`badge ${config.class}`}>{config.label}</span>;
+            }
+        },
+        {
+            key: 'amenities',
+            label: 'Amenities',
+            render: (value) => {
+                if (!value || value.length === 0) return <span className="text-muted">None</span>;
+                // If amenities are stored as IDs, map to names
+                const amenitiesList = Array.isArray(value) ? value.map(item => {
+                    if (typeof item === 'object') return item.name;
+                    const amenity = staticAmenities.find(a => a.id === item);
+                    return amenity ? amenity.name : item;
+                }) : [];
+                
+                return (
+                    <div className="d-flex flex-wrap gap-1">
+                        {amenitiesList.slice(0, 3).map((item, idx) => (
+                            <span key={idx} className="badge bg-info">{item}</span>
+                        ))}
+                        {amenitiesList.length > 3 && <span className="badge bg-secondary">+{amenitiesList.length - 3}</span>}
+                    </div>
+                );
+            }
+        },
+        {
+            key: 'features',
+            label: 'Features',
+            render: (value) => {
+                if (!value || value.length === 0) return <span className="text-muted">None</span>;
+                // If features are stored as IDs, map to names
+                const featuresList = Array.isArray(value) ? value.map(item => {
+                    if (typeof item === 'object') return item.name;
+                    const feature = staticFeatures.find(f => f.id === item);
+                    return feature ? feature.name : item;
+                }) : [];
+                
+                return (
+                    <div className="d-flex flex-wrap gap-1">
+                        {featuresList.slice(0, 3).map((item, idx) => (
+                            <span key={idx} className="badge bg-success">{item}</span>
+                        ))}
+                        {featuresList.length > 3 && <span className="badge bg-secondary">+{featuresList.length - 3}</span>}
+                    </div>
+                );
             }
         },
         {
@@ -314,10 +418,10 @@ const PropertyManagement = () => {
                 </Button>
             )
         },
-    ], []);
+    ], [staticAmenities, staticFeatures]);
 
     const columnOrder = useMemo(() => [
-        'title', 'price', 'listing_type', 'status', 'user_id', 'banner_image', 'images',
+        'title', 'price', 'listing_type', 'status', 'amenities', 'features', 'user_id', 'banner_image', 'images',
         'phone_number', 'email', 'address', 'city', 'state', 'country',
         'area', 'area_unit', 'bedrooms', 'bathrooms', 'furnished',
         'category_id', 'slug', 'description', 'latitude', 'longitude',
@@ -331,7 +435,6 @@ const PropertyManagement = () => {
         const remaining = columnConfig.filter(col => !columnOrder.includes(col.key));
         return [...ordered, ...remaining];
     }, [columnConfig, columnOrder]);
-
 
     useEffect(() => {
         dispatch(fetchAdminProperties(1, {}));
@@ -371,7 +474,34 @@ const PropertyManagement = () => {
     const handleShowModal = (property = null) => {
         if (property) {
             setRecord(property);
-
+            // Parse amenities and features if they're stored as JSON strings
+            let amenitiesArray = [];
+            let featuresArray = [];
+            
+            if (property.amenities) {
+                if (typeof property.amenities === 'string') {
+                    try {
+                        amenitiesArray = JSON.parse(property.amenities);
+                    } catch (e) {
+                        amenitiesArray = [];
+                    }
+                } else if (Array.isArray(property.amenities)) {
+                    amenitiesArray = property.amenities.map(a => typeof a === 'object' ? a.id : a);
+                }
+            }
+            
+            if (property.features) {
+                if (typeof property.features === 'string') {
+                    try {
+                        featuresArray = JSON.parse(property.features);
+                    } catch (e) {
+                        featuresArray = [];
+                    }
+                } else if (Array.isArray(property.features)) {
+                    featuresArray = property.features.map(f => typeof f === 'object' ? f.id : f);
+                }
+            }
+            
             setFormData({
                 title: property.title || "",
                 category_id: property.category_id || "",
@@ -392,12 +522,12 @@ const PropertyManagement = () => {
                 status: property.status || "available",
                 slug: property.slug || "",
                 banner_image: property.banner_image || null,
-                images: property.images || []
+                images: property.images || [],
+                amenities: amenitiesArray,
+                features: featuresArray
             });
-
         } else {
             setRecord(null);
-
             setFormData({
                 title: "",
                 category_id: "",
@@ -418,12 +548,14 @@ const PropertyManagement = () => {
                 status: "available",
                 slug: "",
                 banner_image: null,
-                images: []
+                images: [],
+                amenities: [],
+                features: []
             });
         }
-
         setShowModal(true);
     };
+
     const handleCloseModal = () => {
         setShowModal(false);
         setRecord(null);
@@ -437,18 +569,25 @@ const PropertyManagement = () => {
             const config = fieldsConfig.find(field => field.name === key);
             const value = formData[key];
 
-            if (config?.type === "file-multiple" && Array.isArray(value)) {
+            if (key === 'amenities' || key === 'features') {
+                // Handle arrays - send as JSON string
+                if (Array.isArray(value) && value.length > 0) {
+                    data.append(key, JSON.stringify(value));
+                } else {
+                    data.append(key, JSON.stringify([]));
+                }
+            } else if (config?.type === "file-multiple" && Array.isArray(value)) {
                 value.forEach((file) => {
                     if (file instanceof File) data.append(key, file);
                 });
             } else if (config?.type === "file-single" && value instanceof File) {
                 data.append(key, value);
-            } else {
+            } else if (value !== null && value !== undefined) {
                 data.append(key, value);
             }
         });
-        try {
 
+        try {
             let response;
 
             if (Record?.id) {
@@ -457,9 +596,8 @@ const PropertyManagement = () => {
                 response = await dispatch(adminPropertyStore(data));
             }
 
-            console.log("handleSubmit response:", response); // Debug log
+            console.log("handleSubmit response:", response);
 
-            // Normalize success detection across different backend shapes
             const isSuccess = response?.status === true || response?.status === 'success' || response?.status === 200 || response?.success === true;
             const successMsg = response?.message || response?.data?.message || "Property saved successfully!";
             const backendError = response?.error || response?.message || response?.data?.error;
@@ -468,28 +606,18 @@ const PropertyManagement = () => {
                 showSuccessToast(successMsg);
                 handleCloseModal();
                 dispatch(fetchAdminProperties(currentPage, filterData));
-
             } else if (response && (response?.status === false || backendError)) {
                 console.log("Backend error response:", response);
                 showErrorToast(backendError || "Something went wrong!");
-
             } else {
                 showErrorToast("Something went wrong!");
             }
-
         } catch (error) {
             console.error("Error in handleSubmit:", error);
-
-            const errorMsg =
-                error?.response?.data?.error || // Axios error with backend response
-                error?.message || // Other JS error
-                "An unexpected error occurred!";
-
+            const errorMsg = error?.response?.data?.error || error?.message || "An unexpected error occurred!";
             showErrorToast(errorMsg);
         }
     };
-
-
 
     const handleDelete = async (propertyId) => {
         if (!window.confirm('Are you sure you want to delete this property?')) return;
@@ -512,31 +640,36 @@ const PropertyManagement = () => {
         }
     };
 
-    // const handleFormChange = (e) => {
-    //     const { name, value } = e.target;
-    //     if (name === "name") {
-    //         setFormData({ ...formData, name: value, slug: value.toLowerCase().replace(/[^a-z0-9]+/g, "-") });
-    //         return;
-    //     }
-    //     setFormData({ ...formData, [name]: value });
-    // };
-
     const handleFormChange = (e) => {
-        const { name, value, type, files } = e.target;
+        const { name, value, type, files, checked } = e.target;
 
-        console.log('Form change:', { name, value, type, files }); // Debug log
+        console.log('Form change:', { name, value, type, files, checked });
+
+        // Handle checkbox group for amenities and features
+        if (type === 'checkbox-group') {
+            const currentValues = [...(formData[name] || [])];
+            const parsedValue = parseInt(value);
+            if (checked) {
+                if (!currentValues.includes(parsedValue)) {
+                    currentValues.push(parsedValue);
+                }
+            } else {
+                const index = currentValues.indexOf(parsedValue);
+                if (index > -1) currentValues.splice(index, 1);
+            }
+            setFormData({ ...formData, [name]: currentValues });
+            return;
+        }
 
         // Handle file inputs from direct file selection
         if (type === 'file') {
             if (files && files.length > 0) {
                 if (e.target.multiple) {
-                    // For multiple files
                     setFormData({
                         ...formData,
                         [name]: Array.from(files)
                     });
                 } else {
-                    // For single file
                     setFormData({ ...formData, [name]: files[0] });
                 }
             }
@@ -562,7 +695,6 @@ const PropertyManagement = () => {
         // Handle other inputs
         setFormData({ ...formData, [name]: value });
     };
-
 
     return (
         <div className="category-management">
