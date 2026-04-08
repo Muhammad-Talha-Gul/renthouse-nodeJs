@@ -1,12 +1,12 @@
 body {
-  padding: 0;
-  margin: 0;
+    padding: 0;
+    margin: 0;
 }
 
 * {
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
 }
 
 /* Index.css */
@@ -17,25 +17,25 @@ body {
     --accent-dark: #047857;
     --accent: #059669;
     --accent-light: #10b981;
-    
+
     /* Neutrals */
     --white: #ffffff;
     --cream: #f9fafb;
     --light-gray: #f3f4f6;
     --medium-gray: #e5e7eb;
     --dark-gray: #4b5563;
-    
+
     /* Text */
     --text-dark: #111827;
     --text-medium: #374151;
     --text-light: #6b7280;
     --text-lighter: #9ca3af;
-    
+
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent) 100%);
     --gradient-accent: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
     --gradient-dark: linear-gradient(135deg, #111827 0%, var(--accent-dark) 100%);
-    
+
     /* Shadows */
     --shadow-light: 0 4px 20px rgba(31, 41, 55, 0.08);
     --shadow-medium: 0 8px 30px rgba(31, 41, 55, 0.12);
@@ -63,6 +63,15 @@ body {
 }
 
 
-.dropdown-toggle::after{
+.dropdown-toggle::after {
     display: none !important;
+}
+
+.auth-section .dropdown .dropdown-menu {
+    background-color: var(--accent-dark);
+    box-shadow: var(--shadow-light);
+}
+
+.auth-section .dropdown .dropdown-menu .dropdown-item span {
+    color: var(--white) !important;
 }

@@ -164,9 +164,9 @@ const CreateUpdateModal = ({
       case 'checkbox-group':
         return (
           <div className="checkbox-group">
-            <div className="checkbox-group-container" style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
+            <div className="checkbox-group-container" style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
               gap: '10px',
               maxHeight: '250px',
               overflowY: 'auto',

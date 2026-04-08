@@ -1,11 +1,12 @@
 const db = require("../config/db");
 
 async function initializeDatabase() {
+  let connection;
+
   try {
     console.log("🚀 Initializing database...");
 
-    // Use a connection from the pool
-    const connection = await db.getConnection();
+    connection = await db.getConnection();
 
     // ===============================
     // 1️⃣ Users Table
@@ -26,7 +27,6 @@ async function initializeDatabase() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-        -- Indexes
         INDEX idx_email (email),
         INDEX idx_role_id (role_id),
         INDEX idx_active_status (active_status),
@@ -49,16 +49,13 @@ async function initializeDatabase() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-        -- Indexes
         INDEX idx_user_id (user_id),
         INDEX idx_name (name),
         INDEX idx_active_status (active_status),
         INDEX idx_user_active (user_id, active_status),
 
-        -- Unique constraint: user cannot have duplicate category names
         UNIQUE KEY unique_user_category (user_id, name),
 
-        -- Foreign key
         CONSTRAINT fk_categories_user
           FOREIGN KEY (user_id)
           REFERENCES users(id)
@@ -76,7 +73,7 @@ async function initializeDatabase() {
         category_id INT UNSIGNED NOT NULL,
         title VARCHAR(255) NOT NULL,
         description TEXT,
-        listing_type VARCHAR(20) NOT NULL, -- rent / sale
+        listing_type VARCHAR(20) NOT NULL,
         price DECIMAL(12,2) NOT NULL,
         bedrooms INT UNSIGNED DEFAULT NULL,
         bathrooms INT UNSIGNED DEFAULT NULL,
@@ -95,7 +92,6 @@ async function initializeDatabase() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-        -- Indexes
         INDEX idx_user_id (user_id),
         INDEX idx_category_id (category_id),
         INDEX idx_listing_type (listing_type),
@@ -103,7 +99,6 @@ async function initializeDatabase() {
         INDEX idx_city (city),
         INDEX idx_status (status),
 
-        -- Foreign keys
         CONSTRAINT fk_properties_user
           FOREIGN KEY (user_id)
           REFERENCES users(id)
@@ -127,10 +122,8 @@ async function initializeDatabase() {
         is_primary TINYINT(1) DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-        -- Index
         INDEX idx_property_id (property_id),
 
-        -- Foreign key
         CONSTRAINT fk_property_images_property
           FOREIGN KEY (property_id)
           REFERENCES properties(id)
@@ -138,12 +131,134 @@ async function initializeDatabase() {
       ) ENGINE=InnoDB;
     `);
 
-    console.log("✅ All tables created or already exist.");
+    // ===============================
+    // 5️⃣ Amenities Table
+    // ===============================
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS amenities (
+        id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL UNIQUE,
+        icon VARCHAR(10),
+        category VARCHAR(50),
+        active_status TINYINT(1) DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB;
+    `);
 
-    // Release connection back to pool
-    connection.release();
+    // ===============================
+    // 6️⃣ Features Table
+    // ===============================
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS features (
+        id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL UNIQUE,
+        icon VARCHAR(10),
+        description TEXT,
+        active_status TINYINT(1) DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB;
+    `);
+
+    // ===============================
+    // 7️⃣ Property Amenities (Pivot)
+    // ===============================
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS property_amenities (
+        property_id INT UNSIGNED,
+        amenity_id INT UNSIGNED,
+        PRIMARY KEY (property_id, amenity_id),
+
+        FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE,
+        FOREIGN KEY (amenity_id) REFERENCES amenities(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB;
+    `);
+
+    // ===============================
+    // 8️⃣ Property Features (Pivot)
+    // ===============================
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS property_features (
+        property_id INT UNSIGNED,
+        feature_id INT UNSIGNED,
+        PRIMARY KEY (property_id, feature_id),
+
+        FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE,
+        FOREIGN KEY (feature_id) REFERENCES features(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB;
+    `);
+
+    // ===============================
+    // 🔥 Seed Amenities (if empty)
+    // ===============================
+    const [amenityRows] = await connection.query(`SELECT COUNT(*) as count FROM amenities`);
+    if (amenityRows[0].count === 0) {
+      console.log("🌱 Seeding amenities...");
+
+      const amenities = [
+        ["Swimming Pool", "🏊", "recreation", 1],
+        ["Gym", "💪", "fitness", 1],
+        ["Parking", "🅿️", "parking", 1],
+        ["Security", "🔒", "safety", 1],
+        ["Elevator", "🛗", "convenience", 1],
+        ["Central AC", "❄️", "climate", 1],
+        ["Heating", "🔥", "climate", 1],
+        ["Laundry", "🧺", "convenience", 1],
+        ["Balcony", "🏠", "outdoor", 1],
+        ["Garden", "🌺", "outdoor", 1],
+        ["Children Play Area", "🎠", "family", 1],
+        ["Pets Allowed", "🐕", "pets", 1],
+        ["Furnished", "🛋️", "furnishing", 1],
+        ["Internet", "🌐", "technology", 1],
+        ["Cable TV", "📺", "entertainment", 1]
+      ];
+
+      for (const item of amenities) {
+        await connection.query(
+          `INSERT INTO amenities (name, icon, category, active_status) VALUES (?, ?, ?, ?)`,
+          item
+        );
+      }
+    }
+
+    // ===============================
+    // 🔥 Seed Features (if empty)
+    // ===============================
+    const [featureRows] = await connection.query(`SELECT COUNT(*) as count FROM features`);
+    if (featureRows[0].count === 0) {
+      console.log("🌱 Seeding features...");
+
+      const features = [
+        ["Smart Home", "🏠", "Automated home systems", 1],
+        ["Solar Panels", "☀️", "Energy efficient", 1],
+        ["Rainwater Harvesting", "💧", "Water conservation", 1],
+        ["Waste Disposal", "🗑️", "Modern waste management", 1],
+        ["Wheelchair Access", "♿", "Accessibility feature", 1],
+        ["Smart Locks", "🔐", "Digital security", 1],
+        ["Video Doorbell", "📹", "Security feature", 1],
+        ["EV Charging", "🔋", "Electric vehicle ready", 1],
+        ["Sound Proof", "🔇", "Noise reduction", 1],
+        ["Wine Cellar", "🍷", "Premium storage", 1],
+        ["Home Theater", "🎬", "Entertainment system", 1],
+        ["Sauna", "🧖", "Wellness feature", 1],
+        ["Jacuzzi", "🛁", "Luxury bathing", 1],
+        ["Smart Irrigation", "💦", "Automated gardening", 1],
+        ["Backup Generator", "⚡", "Power backup", 1]
+      ];
+
+      for (const item of features) {
+        await connection.query(
+          `INSERT INTO features (name, icon, description, active_status) VALUES (?, ?, ?,?)`,
+          item
+        );
+      }
+    }
+
+    console.log("✅ All tables created & seeded successfully.");
+
   } catch (err) {
     console.error("❌ Error creating tables:", err.message);
+  } finally {
+    if (connection) connection.release();
   }
 }
 

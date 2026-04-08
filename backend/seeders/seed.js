@@ -1,113 +1,72 @@
 const db = require("../src/config/db");
-const bcrypt = require("bcryptjs");
 
 async function seedDatabase() {
   const connection = await db.getConnection();
 
   try {
-    console.log("🌱 Seeding database...");
+    console.log("🌱 Seeding Amenities & Features...");
 
     // ===============================
-    // 1️⃣ Seed Users
+    // 🏊 Amenities Seeder
     // ===============================
+    const amenities = [
+      ["Swimming Pool", "🏊", "recreation"],
+      ["Gym", "💪", "fitness"],
+      ["Parking", "🅿️", "parking"],
+      ["Security", "🔒", "safety"],
+      ["Elevator", "🛗", "convenience"],
+      ["Central AC", "❄️", "climate"],
+      ["Heating", "🔥", "climate"],
+      ["Laundry", "🧺", "convenience"],
+      ["Balcony", "🏠", "outdoor"],
+      ["Garden", "🌺", "outdoor"],
+      ["Children Play Area", "🎠", "family"],
+      ["Pets Allowed", "🐕", "pets"],
+      ["Furnished", "🛋️", "furnishing"],
+      ["Internet", "🌐", "technology"],
+      ["Cable TV", "📺", "entertainment"]
+    ];
 
-    const hashedPassword = await bcrypt.hash("123456", 10);
+    for (const item of amenities) {
+      await connection.query(
+        `INSERT IGNORE INTO amenities (name, icon, category) VALUES (?, ?, ?)`,
+        item
+      );
+    }
 
-    const [userResult] = await connection.query(
-      `
-      INSERT INTO users 
-      (name, email, phone_number, role_id, active_status, password, permissions) 
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `,
-      [
-        "Admin User",
-        "admin@example.com",
-        "03001234567",
-        1,
-        1,
-        hashedPassword,
-        JSON.stringify({
-          users: ["read", "create", "update", "delete"],
-          properties: ["read", "create", "update", "delete"],
-        }),
-      ]
-    );
-
-    const userId = userResult.insertId;
-
-    // ===============================
-    // 2️⃣ Seed Categories
-    // ===============================
-
-    const [categoryResult] = await connection.query(
-      `
-      INSERT INTO categories 
-      (user_id, name, details, active_status, slug) 
-      VALUES (?, ?, ?, ?, ?)
-    `,
-      [
-        userId,
-        "Apartments",
-        "All apartment listings",
-        1,
-        "apartments",
-      ]
-    );
-
-    const categoryId = categoryResult.insertId;
+    console.log("✅ Amenities seeded");
 
     // ===============================
-    // 3️⃣ Seed Properties
+    // ⚡ Features Seeder
     // ===============================
+    const features = [
+      ["Smart Home", "🏠", "Automated home systems"],
+      ["Solar Panels", "☀️", "Energy efficient"],
+      ["Rainwater Harvesting", "💧", "Water conservation"],
+      ["Waste Disposal", "🗑️", "Modern waste management"],
+      ["Wheelchair Access", "♿", "Accessibility feature"],
+      ["Smart Locks", "🔐", "Digital security"],
+      ["Video Doorbell", "📹", "Security feature"],
+      ["EV Charging", "🔋", "Electric vehicle ready"],
+      ["Sound Proof", "🔇", "Noise reduction"],
+      ["Wine Cellar", "🍷", "Premium storage"],
+      ["Home Theater", "🎬", "Entertainment system"],
+      ["Sauna", "🧖", "Wellness feature"],
+      ["Jacuzzi", "🛁", "Luxury bathing"],
+      ["Smart Irrigation", "💦", "Automated gardening"],
+      ["Backup Generator", "⚡", "Power backup"]
+    ];
 
-    const [propertyResult] = await connection.query(
-      `
-      INSERT INTO properties
-      (user_id, category_id, title, description, listing_type, price, bedrooms, bathrooms, area, city, state, country, slug)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `,
-      [
-        userId,
-        categoryId,
-        "Luxury Apartment in City Center",
-        "Beautiful fully furnished apartment.",
-        "rent",
-        120000,
-        3,
-        2,
-        1200,
-        "Lahore",
-        "Punjab",
-        "Pakistan",
-        "luxury-apartment-city-center",
-      ]
-    );
+    for (const item of features) {
+      await connection.query(
+        `INSERT IGNORE INTO features (name, icon, description) VALUES (?, ?, ?)`,
+        item
+      );
+    }
 
-    const propertyId = propertyResult.insertId;
+    console.log("✅ Features seeded");
 
-    // ===============================
-    // 4️⃣ Seed Property Images
-    // ===============================
-
-    await connection.query(
-      `
-      INSERT INTO property_images
-      (property_id, image_url, is_primary)
-      VALUES (?, ?, ?)
-    `,
-      [propertyId, "https://example.com/image1.jpg", 1]
-    );
-
-    await connection.query(
-      `
-      INSERT INTO property_images
-      (property_id, image_url, is_primary)
-      VALUES (?, ?, ?)
-    `,
-      [propertyId, "https://example.com/image2.jpg", 0]
-    );
-
-    console.log("✅ Seeding completed successfully!");
+    console.log("🎉 Seeding completed successfully!");
   } catch (error) {
     console.error("❌ Seeding error:", error.message);
   } finally {

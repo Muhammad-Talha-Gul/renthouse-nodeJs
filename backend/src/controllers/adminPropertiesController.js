@@ -99,11 +99,21 @@ const index = async (req, res) => {
       "SELECT * FROM categories WHERE active_status = ?",
       [1]
     );
+    const [amunities] = await db.query(
+      "SELECT * FROM amenities WHERE active_status = ?",
+      [1]
+    );
+    const [features] = await db.query(
+      "SELECT * FROM features WHERE active_status = ?",
+      [1]
+    );
     res.status(200).json({
       success: true,
       message: "Properties fetched successfully",
       data: rows,
       categories: categories,
+      amunities: amunities,
+      features: features,
       pagination: {
         total,
         per_page,

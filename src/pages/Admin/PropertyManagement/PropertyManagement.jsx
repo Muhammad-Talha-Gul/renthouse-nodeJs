@@ -46,11 +46,13 @@ const PropertyManagement = () => {
     console.log("error from redux state:", error);
     const properties = useSelector(state => state.adminProperties.properties) || [];
     const categories = useSelector(state => state.adminProperties.categories) || [];
+    const amunities = useSelector(state => state.adminProperties.amunities) || [];
+    const features = useSelector(state => state.adminProperties.features) || [];
     const pagination = useSelector(state => state.adminProperties.pagination) || {};
     const [currentPage, setCurrentPage] = useState(pagination?.page || 1);
 
     // Static Amenities Data
-    const staticAmenities = useMemo(() => [
+    const staticAmenitie = useMemo(() => [
         { id: 1, name: "Swimming Pool", icon: "🏊", category: "recreation" },
         { id: 2, name: "Gym", icon: "💪", category: "fitness" },
         { id: 3, name: "Parking", icon: "🅿️", category: "parking" },
@@ -69,7 +71,7 @@ const PropertyManagement = () => {
     ], []);
 
     // Static Features Data
-    const staticFeatures = useMemo(() => [
+    const staticFeature = useMemo(() => [
         { id: 1, name: "Smart Home", icon: "🏠", description: "Automated home systems" },
         { id: 2, name: "Solar Panels", icon: "☀️", description: "Energy efficient" },
         { id: 3, name: "Rainwater Harvesting", icon: "💧", description: "Water conservation" },
@@ -242,7 +244,7 @@ const PropertyManagement = () => {
             name: "amenities",
             label: "Amenities",
             type: "checkbox-group",
-            options: staticAmenities.map(amenity => ({
+            options: amunities.map(amenity => ({
                 value: amenity.id,
                 label: `${amenity.icon || '✓'} ${amenity.name}`
             })),
@@ -253,7 +255,7 @@ const PropertyManagement = () => {
             name: "features",
             label: "Features",
             type: "checkbox-group",
-            options: staticFeatures.map(feature => ({
+            options: features.map(feature => ({
                 value: feature.id,
                 label: `${feature.icon || '✨'} ${feature.name}`
             })),
@@ -300,7 +302,7 @@ const PropertyManagement = () => {
             helpText: "Upload multiple images.",
             cropOptions: { width: 800, height: 600, aspect: 4 / 3 }
         },
-    ], [categories, staticAmenities, staticFeatures]);
+    ], [categories, amunities, features]);
 
     // ---- Filter handlers ----
     const filterFields = [
@@ -344,10 +346,10 @@ const PropertyManagement = () => {
                 // If amenities are stored as IDs, map to names
                 const amenitiesList = Array.isArray(value) ? value.map(item => {
                     if (typeof item === 'object') return item.name;
-                    const amenity = staticAmenities.find(a => a.id === item);
+                    const amenity = amunities.find(a => a.id === item);
                     return amenity ? amenity.name : item;
                 }) : [];
-                
+
                 return (
                     <div className="d-flex flex-wrap gap-1">
                         {amenitiesList.slice(0, 3).map((item, idx) => (
@@ -366,10 +368,10 @@ const PropertyManagement = () => {
                 // If features are stored as IDs, map to names
                 const featuresList = Array.isArray(value) ? value.map(item => {
                     if (typeof item === 'object') return item.name;
-                    const feature = staticFeatures.find(f => f.id === item);
+                    const feature = features.find(f => f.id === item);
                     return feature ? feature.name : item;
                 }) : [];
-                
+
                 return (
                     <div className="d-flex flex-wrap gap-1">
                         {featuresList.slice(0, 3).map((item, idx) => (
@@ -418,7 +420,7 @@ const PropertyManagement = () => {
                 </Button>
             )
         },
-    ], [staticAmenities, staticFeatures]);
+    ], [amunities, features]);
 
     const columnOrder = useMemo(() => [
         'title', 'price', 'listing_type', 'status', 'amenities', 'features', 'user_id', 'banner_image', 'images',
@@ -477,7 +479,7 @@ const PropertyManagement = () => {
             // Parse amenities and features if they're stored as JSON strings
             let amenitiesArray = [];
             let featuresArray = [];
-            
+
             if (property.amenities) {
                 if (typeof property.amenities === 'string') {
                     try {
@@ -489,7 +491,7 @@ const PropertyManagement = () => {
                     amenitiesArray = property.amenities.map(a => typeof a === 'object' ? a.id : a);
                 }
             }
-            
+
             if (property.features) {
                 if (typeof property.features === 'string') {
                     try {
@@ -501,7 +503,7 @@ const PropertyManagement = () => {
                     featuresArray = property.features.map(f => typeof f === 'object' ? f.id : f);
                 }
             }
-            
+
             setFormData({
                 title: property.title || "",
                 category_id: property.category_id || "",
