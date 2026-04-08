@@ -15,12 +15,14 @@ import CategoryManagement from "../pages/Admin/CategoryManagement/CategoryManage
 import PublicLayout from "./PublicLayout";
 import UserManagement from "../pages/Admin/UserManagement/UserManagement";
 import PropertyManagement from "../pages/Admin/PropertyManagement/PropertyManagement"
+import PropertyForm from "../pages/Admin/PropertyManagement/PropertyForm";
 
 export const adminRoutes = [
     { path: "dashboard", component: <Dashboard />, title: "Dashboard", icon: "📊" },
     { path: "categories", component: <CategoryManagement />, title: "Categories", icon: "🏷️" },
     { path: "users", component: <UserManagement />, title: "Users", icon: "🏷️" },
     { path: "properties", component: <PropertyManagement />, title: "Properties", icon: "🏷️" },
+    { path: "properties/create", component: <PropertyForm />, title: "Add Propert", icon: "🏷️" },
     // Add more admin routes here
 ];
 function AppRoutes() {

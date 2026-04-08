@@ -67,49 +67,63 @@ async function initializeDatabase() {
     // 3️⃣ Properties Table
     // ===============================
     await connection.query(`
-      CREATE TABLE IF NOT EXISTS properties (
-        id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        user_id INT UNSIGNED NOT NULL,
-        category_id INT UNSIGNED NOT NULL,
-        title VARCHAR(255) NOT NULL,
-        description TEXT,
-        listing_type VARCHAR(20) NOT NULL,
-        price DECIMAL(12,2) NOT NULL,
-        bedrooms INT UNSIGNED DEFAULT NULL,
-        bathrooms INT UNSIGNED DEFAULT NULL,
-        area DECIMAL(10,2) DEFAULT NULL,
-        area_unit VARCHAR(20) DEFAULT 'sqft',
-        furnished VARCHAR(50) DEFAULT NULL,
-        address TEXT,
-        city VARCHAR(100),
-        state VARCHAR(100),
-        country VARCHAR(100),
-        banner_image VARCHAR(255),
-        latitude DECIMAL(10,8) DEFAULT NULL,
-        longitude DECIMAL(11,8) DEFAULT NULL,
-        status VARCHAR(50) DEFAULT 'available',
-        slug VARCHAR(150) UNIQUE,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CREATE TABLE IF NOT EXISTS properties (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NOT NULL,
+    category_id INT UNSIGNED NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    listing_type VARCHAR(20) NOT NULL,
+    price DECIMAL(12,2) NOT NULL,
+    bedrooms INT UNSIGNED DEFAULT NULL,
+    bathrooms INT UNSIGNED DEFAULT NULL,
+    area DECIMAL(10,2) DEFAULT NULL,
+    area_unit VARCHAR(20) DEFAULT 'sqft',
+    furnished VARCHAR(50) DEFAULT NULL,
+    address TEXT,
+    city VARCHAR(100),
+    state VARCHAR(100),
+    country VARCHAR(100),
+    banner_image VARCHAR(255),
+    latitude DECIMAL(10,8) DEFAULT NULL,
+    longitude DECIMAL(11,8) DEFAULT NULL,
+    status VARCHAR(50) DEFAULT 'available',
+    slug VARCHAR(150) UNIQUE,
+    
+    -- JSON columns for amenities and features
+    amenities JSON DEFAULT NULL,
+    features JSON DEFAULT NULL,
+    
+    -- Instalment plan columns
+    instalment_available TINYINT(1) DEFAULT 0,
+    down_payment DECIMAL(12,2) DEFAULT NULL,
+    monthly_installment DECIMAL(12,2) DEFAULT NULL,
+    installment_years INT DEFAULT NULL,
+    processing_fee DECIMAL(12,2) DEFAULT NULL,
+    late_payment_fee DECIMAL(12,2) DEFAULT NULL,
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-        INDEX idx_user_id (user_id),
-        INDEX idx_category_id (category_id),
-        INDEX idx_listing_type (listing_type),
-        INDEX idx_price (price),
-        INDEX idx_city (city),
-        INDEX idx_status (status),
+    INDEX idx_user_id (user_id),
+    INDEX idx_category_id (category_id),
+    INDEX idx_listing_type (listing_type),
+    INDEX idx_price (price),
+    INDEX idx_city (city),
+    INDEX idx_status (status),
+    INDEX idx_instalment_available (instalment_available),
 
-        CONSTRAINT fk_properties_user
-          FOREIGN KEY (user_id)
-          REFERENCES users(id)
-          ON DELETE CASCADE,
+    CONSTRAINT fk_properties_user
+      FOREIGN KEY (user_id)
+      REFERENCES users(id)
+      ON DELETE CASCADE,
 
-        CONSTRAINT fk_properties_category
-          FOREIGN KEY (category_id)
-          REFERENCES categories(id)
-          ON DELETE RESTRICT
-      ) ENGINE=InnoDB;
-    `);
+    CONSTRAINT fk_properties_category
+      FOREIGN KEY (category_id)
+      REFERENCES categories(id)
+      ON DELETE RESTRICT
+  ) ENGINE=InnoDB;
+`);
 
     // ===============================
     // 4️⃣ Property Images Table

@@ -43,27 +43,38 @@ export const fetchPropertyDetails = (id) => async (dispatch) => {
         return error;
     }
 }
-export const adminPropertyStore = (data) => async (dispatch) => {
-  try {
-    console.log("fomr data console", data);
-    const response = await apiServices('/api/property/store', 'post', data);
-    console.log("store response console", response);
-
-    // If backend returned status: false, treat it as error
-    if (response?.status === false) {
-      dispatch({ type: "FETCH_ADMIN_PROPERTIES_FAILURE", error: response.error });
-    } else {
-      dispatch({ type: "STORE_ADMIN_PROPERTY_SUCCESS", payload: response?.data });
+export const fetchAdminPropertyById = (id) => async (dispatch) => {
+    dispatch({ type: "FETCH_PROPERTY_DETAILS_REQUEST" });
+    try {
+        const response = await apiServices(`/api/properties/details/${id}`, 'get');
+        dispatch({ type: "FETCH_PROPERTY_DETAILS_SUCCESS", payload: response });
+        return response;
+    } catch (error) {
+        dispatch({ type: "FETCH_PROPERTY_DETAILS_FAILURE", error });
+        return error;
     }
+}
+export const adminPropertyStore = (data) => async (dispatch) => {
+    try {
+        console.log("fomr data console", data);
+        const response = await apiServices('/api/property/store', 'post', data);
+        console.log("store response console", response);
 
-    return response; // always return response to handleSubmit
-  } catch (error) {
-    console.error("Error storing category:", error);
+        // If backend returned status: false, treat it as error
+        if (response?.status === false) {
+            dispatch({ type: "FETCH_ADMIN_PROPERTIES_FAILURE", error: response.error });
+        } else {
+            dispatch({ type: "STORE_ADMIN_PROPERTY_SUCCESS", payload: response?.data });
+        }
 
-    const err = error?.response?.data || error || { status: false, error: error?.message || "Something went wrong" };
-    dispatch({ type: "FETCH_ADMIN_PROPERTIES_FAILURE", error: err.error });
-    return err;
-  }
+        return response; // always return response to handleSubmit
+    } catch (error) {
+        console.error("Error storing category:", error);
+
+        const err = error?.response?.data || error || { status: false, error: error?.message || "Something went wrong" };
+        dispatch({ type: "FETCH_ADMIN_PROPERTIES_FAILURE", error: err.error });
+        return err;
+    }
 };
 
 export const adminPropertyUpdate = (id, data) => async (dispatch) => {

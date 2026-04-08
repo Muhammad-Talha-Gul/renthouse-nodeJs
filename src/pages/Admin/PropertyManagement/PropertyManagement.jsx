@@ -473,91 +473,94 @@ const PropertyManagement = () => {
         dispatch(fetchAdminProperties(newPage, filterData));
     };
 
+    // const handleShowModal = (property = null) => {
+    //     if (property) {
+    //         setRecord(property);
+    //         // Parse amenities and features if they're stored as JSON strings
+    //         let amenitiesArray = [];
+    //         let featuresArray = [];
+
+    //         if (property.amenities) {
+    //             if (typeof property.amenities === 'string') {
+    //                 try {
+    //                     amenitiesArray = JSON.parse(property.amenities);
+    //                 } catch (e) {
+    //                     amenitiesArray = [];
+    //                 }
+    //             } else if (Array.isArray(property.amenities)) {
+    //                 amenitiesArray = property.amenities.map(a => typeof a === 'object' ? a.id : a);
+    //             }
+    //         }
+
+    //         if (property.features) {
+    //             if (typeof property.features === 'string') {
+    //                 try {
+    //                     featuresArray = JSON.parse(property.features);
+    //                 } catch (e) {
+    //                     featuresArray = [];
+    //                 }
+    //             } else if (Array.isArray(property.features)) {
+    //                 featuresArray = property.features.map(f => typeof f === 'object' ? f.id : f);
+    //             }
+    //         }
+
+    //         setFormData({
+    //             title: property.title || "",
+    //             category_id: property.category_id || "",
+    //             listing_type: property.listing_type || "rent",
+    //             price: property.price || "",
+    //             bedrooms: property.bedrooms || "",
+    //             bathrooms: property.bathrooms || "",
+    //             area: property.area || "",
+    //             area_unit: property.area_unit || "sqft",
+    //             furnished: property.furnished || "unfurnished",
+    //             description: property.description || "",
+    //             address: property.address || "",
+    //             city: property.city || "",
+    //             state: property.state || "",
+    //             country: property.country || "",
+    //             latitude: property.latitude || "",
+    //             longitude: property.longitude || "",
+    //             status: property.status || "available",
+    //             slug: property.slug || "",
+    //             banner_image: property.banner_image || null,
+    //             images: property.images || [],
+    //             amenities: amenitiesArray,
+    //             features: featuresArray
+    //         });
+    //     } else {
+    //         setRecord(null);
+    //         setFormData({
+    //             title: "",
+    //             category_id: "",
+    //             listing_type: "rent",
+    //             price: "",
+    //             bedrooms: "",
+    //             bathrooms: "",
+    //             area: "",
+    //             area_unit: "sqft",
+    //             furnished: "unfurnished",
+    //             description: "",
+    //             address: "",
+    //             city: "",
+    //             state: "",
+    //             country: "",
+    //             latitude: "",
+    //             longitude: "",
+    //             status: "available",
+    //             slug: "",
+    //             banner_image: null,
+    //             images: [],
+    //             amenities: [],
+    //             features: []
+    //         });
+    //     }
+    //     setShowModal(true);
+    // };
+
     const handleShowModal = (property = null) => {
-        if (property) {
-            setRecord(property);
-            // Parse amenities and features if they're stored as JSON strings
-            let amenitiesArray = [];
-            let featuresArray = [];
-
-            if (property.amenities) {
-                if (typeof property.amenities === 'string') {
-                    try {
-                        amenitiesArray = JSON.parse(property.amenities);
-                    } catch (e) {
-                        amenitiesArray = [];
-                    }
-                } else if (Array.isArray(property.amenities)) {
-                    amenitiesArray = property.amenities.map(a => typeof a === 'object' ? a.id : a);
-                }
-            }
-
-            if (property.features) {
-                if (typeof property.features === 'string') {
-                    try {
-                        featuresArray = JSON.parse(property.features);
-                    } catch (e) {
-                        featuresArray = [];
-                    }
-                } else if (Array.isArray(property.features)) {
-                    featuresArray = property.features.map(f => typeof f === 'object' ? f.id : f);
-                }
-            }
-
-            setFormData({
-                title: property.title || "",
-                category_id: property.category_id || "",
-                listing_type: property.listing_type || "rent",
-                price: property.price || "",
-                bedrooms: property.bedrooms || "",
-                bathrooms: property.bathrooms || "",
-                area: property.area || "",
-                area_unit: property.area_unit || "sqft",
-                furnished: property.furnished || "unfurnished",
-                description: property.description || "",
-                address: property.address || "",
-                city: property.city || "",
-                state: property.state || "",
-                country: property.country || "",
-                latitude: property.latitude || "",
-                longitude: property.longitude || "",
-                status: property.status || "available",
-                slug: property.slug || "",
-                banner_image: property.banner_image || null,
-                images: property.images || [],
-                amenities: amenitiesArray,
-                features: featuresArray
-            });
-        } else {
-            setRecord(null);
-            setFormData({
-                title: "",
-                category_id: "",
-                listing_type: "rent",
-                price: "",
-                bedrooms: "",
-                bathrooms: "",
-                area: "",
-                area_unit: "sqft",
-                furnished: "unfurnished",
-                description: "",
-                address: "",
-                city: "",
-                state: "",
-                country: "",
-                latitude: "",
-                longitude: "",
-                status: "available",
-                slug: "",
-                banner_image: null,
-                images: [],
-                amenities: [],
-                features: []
-            });
-        }
-        setShowModal(true);
-    };
-
+        navigate('/properties/create');
+    }
     const handleCloseModal = () => {
         setShowModal(false);
         setRecord(null);

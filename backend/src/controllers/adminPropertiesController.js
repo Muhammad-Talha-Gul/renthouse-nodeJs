@@ -134,7 +134,15 @@ const index = async (req, res) => {
 
 const store = async (req, res) => {
   try {
-    const { category_id, title, description, listing_type, price, bedrooms, bathrooms, area,
+    const {
+      category_id,
+      title,
+      description,
+      listing_type,
+      price,
+      bedrooms,
+      bathrooms,
+      area,
       area_unit,
       furnished,
       address,
@@ -145,10 +153,40 @@ const store = async (req, res) => {
       longitude,
       status,
       slug,
+      amenities,
+      features,
+      instalment_available,
+      down_payment,
+      monthly_installment,
+      installment_years,
+      processing_fee,
+      late_payment_fee,
+      primary_image
     } = req.body;
 
-    const { id, email } = req.user;
     const userId = req.user?.id;
+
+    // Parse amenities and features
+    let amenitiesJson = null;
+    let featuresJson = null;
+
+    if (amenities) {
+      try {
+        const amenitiesArray = typeof amenities === 'string' ? JSON.parse(amenities) : amenities;
+        amenitiesJson = JSON.stringify(amenitiesArray);
+      } catch (e) {
+        amenitiesJson = null;
+      }
+    }
+
+    if (features) {
+      try {
+        const featuresArray = typeof features === 'string' ? JSON.parse(features) : features;
+        featuresJson = JSON.stringify(featuresArray);
+      } catch (e) {
+        featuresJson = null;
+      }
+    }
 
     const finalSlug = slug
       ? slug
@@ -156,23 +194,23 @@ const store = async (req, res) => {
 
     // Handle file uploads
     let bannerImagePath = null;
-    const bannerFile = req.files.find(f => f.fieldname === 'banner_image');
+    const bannerFile = req.files?.find(f => f.fieldname === 'banner_image');
     if (bannerFile) {
       bannerImagePath = '/uploads/properties/' + path.basename(bannerFile.path);
     }
 
     let imagesPaths = [];
-    const imageFiles = req.files.filter(f => f.fieldname === 'images');
-    if (imageFiles.length > 0) {
+    const imageFiles = req.files?.filter(f => f.fieldname === 'images[]' || f.fieldname === 'images');
+    if (imageFiles && imageFiles.length > 0) {
       imagesPaths = imageFiles.map(file => '/uploads/properties/' + path.basename(file.path));
     }
 
-
-    // Check if slug or category name already exists
+    // Check if slug or title already exists
     const [existingSlug] = await req.db.query(
-      "SELECT * FROM properties WHERE slug = ?",
-      [finalSlug],
+      "SELECT * FROM properties WHERE slug = ? OR title = ?",
+      [finalSlug, title],
     );
+
     if (existingSlug.length > 0) {
       const existing = existingSlug[0];
       let errorField = [];
@@ -184,14 +222,15 @@ const store = async (req, res) => {
         errorField.push(`title "${title}"`);
       }
 
-      return res.status(404).json({
+      return res.status(400).json({
         error: `Property with this ${errorField.join(" and ")} already exists`,
+        status: false
       });
     }
 
+    // Insert property
     const [insertResult] = await req.db.query(
-      `
-      INSERT INTO properties (
+      `INSERT INTO properties (
         category_id,
         title,
         description,
@@ -211,11 +250,16 @@ const store = async (req, res) => {
         status,
         slug,
         banner_image,
-        images,
-        user_id
-      )
-      VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `,
+        user_id,
+        amenities,
+        features,
+        instalment_available,
+        down_payment,
+        monthly_installment,
+        installment_years,
+        processing_fee,
+        late_payment_fee
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         category_id,
         title,
@@ -236,50 +280,92 @@ const store = async (req, res) => {
         status || "available",
         finalSlug,
         bannerImagePath,
-        null, // images as JSON, but we'll use table
         userId,
+        amenitiesJson,
+        featuresJson,
+        instalment_available === 'true' || instalment_available === true ? 1 : 0,
+        down_payment || null,
+        monthly_installment || null,
+        installment_years || null,
+        processing_fee || null,
+        late_payment_fee || null
       ]
     );
 
     const propertyId = insertResult.insertId;
 
-    // Insert images into property_images table
-    if (bannerImagePath) {
-      await req.db.query("INSERT INTO property_images (property_id, image_url, is_primary) VALUES (?, ?, 1)", [propertyId, bannerImagePath]);
-    }
-    for (let img of imagesPaths) {
-      await req.db.query("INSERT INTO property_images (property_id, image_url, is_primary) VALUES (?, ?, 0)", [propertyId, img]);
+    // Insert banner image into property_images table
+    // if (bannerImagePath) {
+    //   await req.db.query(
+    //     "INSERT INTO property_images (property_id, image_url, is_primary) VALUES (?, ?, ?)",
+    //     [propertyId, bannerImagePath, 1]
+    //   );
+    // }
+
+    // Insert gallery images
+    const primaryIndex = parseInt(primary_image) || 0;
+    for (let i = 0; i < imagesPaths.length; i++) {
+      await req.db.query(
+        "INSERT INTO property_images (property_id, image_url, is_primary) VALUES (?, ?, ?)",
+        [propertyId, imagesPaths[i], i === primaryIndex ? 1 : 0]
+      );
     }
 
-    const [rows] = await req.db.query("SELECT * FROM properties WHERE id = ?", [
-      insertResult.insertId,
-    ]);
+    // Fetch the complete property
+    const [propertyRows] = await req.db.query(
+      "SELECT * FROM properties WHERE id = ?",
+      [propertyId]
+    );
+
+    // Fetch images separately
+    const [imageRows] = await req.db.query(
+      "SELECT id, image_url, is_primary FROM property_images WHERE property_id = ? ORDER BY is_primary DESC, id ASC",
+      [propertyId]
+    );
+
+    // Combine data
+    const property = propertyRows[0];
+    property.images = imageRows;
+
+    // Parse JSON fields
+    if (property.amenities) {
+      property.amenities = typeof property.amenities === 'string'
+        ? JSON.parse(property.amenities)
+        : property.amenities;
+    }
+    if (property.features) {
+      property.features = typeof property.features === 'string'
+        ? JSON.parse(property.features)
+        : property.features;
+    }
+
     res.status(200).json({
       message: "Property created successfully!",
-      data: rows[0],
+      data: property,
       status: 200,
+      success: true
     });
   } catch (error) {
     console.error("adminPropertiesController.store error:", error);
-    if (process.env.NODE_ENV === "production") {
-      res.status(404).json({ error: "Internal Server Error" });
-    } else {
-      res.status(404).json({
-        error: {
-          message: error.message || "Unknown error",
-          stack: error.stack,
-          sqlMessage: error.sqlMessage || null,
-          code: error.code || null,
-        },
-      });
-    }
+    res.status(500).json({
+      error: error.message || "Internal Server Error",
+      status: false
+    });
   }
 };
 
 const update = async (req, res) => {
   try {
     const { id } = req.params;
-    const { category_id, title, description, listing_type, price, bedrooms, bathrooms, area,
+    const {
+      category_id,
+      title,
+      description,
+      listing_type,
+      price,
+      bedrooms,
+      bathrooms,
+      area,
       area_unit,
       furnished,
       address,
@@ -290,9 +376,40 @@ const update = async (req, res) => {
       longitude,
       status,
       slug,
+      amenities,
+      features,
+      instalment_available,
+      down_payment,
+      monthly_installment,
+      installment_years,
+      processing_fee,
+      late_payment_fee,
+      primary_image
     } = req.body;
 
     const userId = req.user?.id;
+
+    // Parse amenities and features if they're JSON strings or arrays
+    let amenitiesJson = null;
+    let featuresJson = null;
+
+    if (amenities) {
+      try {
+        const amenitiesArray = typeof amenities === 'string' ? JSON.parse(amenities) : amenities;
+        amenitiesJson = JSON.stringify(amenitiesArray);
+      } catch (e) {
+        amenitiesJson = null;
+      }
+    }
+
+    if (features) {
+      try {
+        const featuresArray = typeof features === 'string' ? JSON.parse(features) : features;
+        featuresJson = JSON.stringify(featuresArray);
+      } catch (e) {
+        featuresJson = null;
+      }
+    }
 
     const finalSlug = slug
       ? slug
@@ -300,22 +417,36 @@ const update = async (req, res) => {
 
     // Handle file uploads
     let bannerImagePath = null;
-    const bannerFile = req.files.find(f => f.fieldname === 'banner_image');
+    const bannerFile = req.files?.find(f => f.fieldname === 'banner_image');
     if (bannerFile) {
       bannerImagePath = '/uploads/properties/' + path.basename(bannerFile.path);
     }
 
-    let imagesPaths = [];
-    const imageFiles = req.files.filter(f => f.fieldname === 'images');
-    if (imageFiles.length > 0) {
-      imagesPaths = imageFiles.map(file => '/uploads/properties/' + path.basename(file.path));
+    let newImagesPaths = [];
+    const imageFiles = req.files?.filter(f => f.fieldname === 'images[]' || f.fieldname === 'images');
+    if (imageFiles && imageFiles.length > 0) {
+      newImagesPaths = imageFiles.map(file => '/uploads/properties/' + path.basename(file.path));
+    }
+
+    // Check if property exists and user owns it
+    const [propertyCheck] = await req.db.query(
+      "SELECT * FROM properties WHERE id = ? AND user_id = ?",
+      [id, userId]
+    );
+
+    if (propertyCheck.length === 0) {
+      return res.status(404).json({
+        error: "Property not found or you don't have permission to update it",
+        status: false
+      });
     }
 
     // Check if slug or title already exists (excluding current property)
     const [existingSlug] = await req.db.query(
       "SELECT * FROM properties WHERE (slug = ? OR title = ?) AND id != ?",
-      [finalSlug, title, id],
+      [finalSlug, title, id]
     );
+
     if (existingSlug.length > 0) {
       const existing = existingSlug[0];
       let errorField = [];
@@ -329,96 +460,288 @@ const update = async (req, res) => {
 
       return res.status(400).json({
         error: `Property with this ${errorField.join(" and ")} already exists`,
+        status: false
       });
     }
 
+    // Build update query dynamically
+    let updateFields = `
+      category_id = ?,
+      title = ?,
+      description = ?,
+      listing_type = ?,
+      price = ?,
+      bedrooms = ?,
+      bathrooms = ?,
+      area = ?,
+      area_unit = ?,
+      furnished = ?,
+      address = ?,
+      city = ?,
+      state = ?,
+      country = ?,
+      latitude = ?,
+      longitude = ?,
+      status = ?,
+      slug = ?,
+      amenities = ?,
+      features = ?,
+      instalment_available = ?,
+      down_payment = ?,
+      monthly_installment = ?,
+      installment_years = ?,
+      processing_fee = ?,
+      late_payment_fee = ?,
+      updated_at = NOW()
+    `;
+
+    const updateValues = [
+      category_id,
+      title,
+      description || null,
+      listing_type,
+      price,
+      bedrooms || null,
+      bathrooms || null,
+      area || null,
+      area_unit || "sqft",
+      furnished || null,
+      address || null,
+      city || null,
+      state || null,
+      country || null,
+      latitude || null,
+      longitude || null,
+      status || "available",
+      finalSlug,
+      amenitiesJson,
+      featuresJson,
+      instalment_available === 'true' || instalment_available === true ? 1 : 0,
+      down_payment || null,
+      monthly_installment || null,
+      installment_years || null,
+      processing_fee || null,
+      late_payment_fee || null
+    ];
+
+    // Add banner image if provided
+    if (bannerImagePath) {
+      updateFields += `, banner_image = ?`;
+      updateValues.push(bannerImagePath);
+    }
+
+    updateValues.push(id, userId);
+
+    // Update property
     await req.db.query(
-      `
-      UPDATE properties SET
-        category_id = ?,
-        title = ?,
-        description = ?,
-        listing_type = ?,
-        price = ?,
-        bedrooms = ?,
-        bathrooms = ?,
-        area = ?,
-        area_unit = ?,
-        furnished = ?,
-        address = ?,
-        city = ?,
-        state = ?,
-        country = ?,
-        latitude = ?,
-        longitude = ?,
-        status = ?,
-        slug = ?,
-        ${bannerImagePath ? 'banner_image = ?,' : ''}
-        ${imagesPaths.length > 0 ? 'images = ?,' : ''}
-        updated_at = NOW()
-      WHERE id = ? AND user_id = ?
-      `,
-      [
-        category_id,
-        title,
-        description || null,
-        listing_type,
-        price,
-        bedrooms || null,
-        bathrooms || null,
-        area || null,
-        area_unit || "sqft",
-        furnished || null,
-        address || null,
-        city || null,
-        state || null,
-        country || null,
-        latitude || null,
-        longitude || null,
-        status || "available",
-        finalSlug,
-        ...(bannerImagePath ? [bannerImagePath] : []),
-        ...(imagesPaths.length > 0 ? [null] : []), // set images to null
-        id,
-        userId,
-      ]
+      `UPDATE properties SET ${updateFields} WHERE id = ? AND user_id = ?`,
+      updateValues
     );
 
-    // Delete old images and insert new
-    if (bannerImagePath) {
-      // Delete existing banner image
-      await req.db.query("DELETE FROM property_images WHERE property_id = ? AND is_primary = 1", [id]);
-      // Insert new banner
-      await req.db.query("INSERT INTO property_images (property_id, image_url, is_primary) VALUES (?, ?, 1)", [id, bannerImagePath]);
-    }
-    // Insert new images without deleting old ones
-    for (let img of imagesPaths) {
-      await req.db.query("INSERT INTO property_images (property_id, image_url, is_primary) VALUES (?, ?, 0)", [id, img]);
+    // Update banner image in property_images table
+    // if (bannerImagePath) {
+    //   const [existingBanner] = await req.db.query(
+    //     "SELECT id FROM property_images WHERE property_id = ? AND is_primary = 1",
+    //     [id]
+    //   );
+
+    //   if (existingBanner.length > 0) {
+    //     await req.db.query(
+    //       "UPDATE property_images SET image_url = ? WHERE property_id = ? AND is_primary = 1",
+    //       [bannerImagePath, id]
+    //     );
+    //   } else {
+    //     await req.db.query(
+    //       "INSERT INTO property_images (property_id, image_url, is_primary) VALUES (?, ?, 1)",
+    //       [id, bannerImagePath]
+    //     );
+    //   }
+    // }
+
+    // Add new gallery images
+    const primaryIndex = parseInt(primary_image) || 0;
+    for (let i = 0; i < newImagesPaths.length; i++) {
+      await req.db.query(
+        "INSERT INTO property_images (property_id, image_url, is_primary) VALUES (?, ?, ?)",
+        [id, newImagesPaths[i], i === primaryIndex ? 1 : 0]
+      );
     }
 
-    const [rows] = await req.db.query("SELECT * FROM properties WHERE id = ?", [id]);
+    // Update primary image flag if needed
+    if (primary_image !== undefined && newImagesPaths.length === 0) {
+      // Reset all primary flags
+      await req.db.query(
+        "UPDATE property_images SET is_primary = 0 WHERE property_id = ?",
+        [id]
+      );
+      // Set new primary image
+      await req.db.query(
+        "UPDATE property_images SET is_primary = 1 WHERE property_id = ? AND id = ?",
+        [id, primary_image]
+      );
+    }
+
+    // Fetch the updated property with images
+    const [rows] = await req.db.query(`
+      SELECT p.*, 
+        (SELECT JSON_ARRAYAGG(
+          JSON_OBJECT('id', pi.id, 'url', pi.image_url, 'is_primary', pi.is_primary)
+        ) FROM property_images pi WHERE pi.property_id = p.id) as images
+      FROM properties p
+      WHERE p.id = ?
+    `, [id]);
+
+    // Parse JSON fields for response
+    if (rows[0]) {
+      if (rows[0].amenities) {
+        rows[0].amenities = JSON.parse(rows[0].amenities);
+      }
+      if (rows[0].features) {
+        rows[0].features = JSON.parse(rows[0].features);
+      }
+      if (rows[0].images) {
+        rows[0].images = JSON.parse(rows[0].images);
+      }
+    }
+
     res.status(200).json({
       message: "Property updated successfully!",
       data: rows[0],
       status: 200,
+      success: true
     });
   } catch (error) {
     console.error("adminPropertiesController.update error:", error);
-    if (process.env.NODE_ENV === "production") {
-      res.status(500).json({ error: "Internal Server Error" });
-    } else {
-      res.status(500).json({
-        error: {
-          message: error.message || "Unknown error",
-          stack: error.stack,
-          sqlMessage: error.sqlMessage || null,
-          code: error.code || null,
-        },
-      });
-    }
+    res.status(500).json({
+      error: error.message || "Internal Server Error",
+      status: false
+    });
   }
 };
+const getPropertyById = async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    const [rows] = await req.db.query(`
+      SELECT p.*, 
+        GROUP_CONCAT(DISTINCT a.id) as amenity_ids,
+        GROUP_CONCAT(DISTINCT a.name) as amenity_names,
+        GROUP_CONCAT(DISTINCT f.id) as feature_ids,
+        GROUP_CONCAT(DISTINCT f.name) as feature_names,
+        (SELECT JSON_ARRAYAGG(
+          JSON_OBJECT('id', pi.id, 'url', pi.image_url, 'is_primary', pi.is_primary)
+        ) FROM property_images pi WHERE pi.property_id = p.id) as images
+      FROM properties p
+      LEFT JOIN property_amenities pa ON p.id = pa.property_id
+      LEFT JOIN amenities a ON pa.amenity_id = a.id
+      LEFT JOIN property_features pf ON p.id = pf.property_id
+      LEFT JOIN features f ON pf.feature_id = f.id
+      WHERE p.id = ?
+      GROUP BY p.id
+    `, [id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        error: "Property not found",
+        status: false
+      });
+    }
+
+    // Parse JSON arrays
+    const property = rows[0];
+    if (property.images) {
+      property.images = JSON.parse(property.images);
+    }
+    if (property.amenity_ids) {
+      property.amenities = property.amenity_ids.split(',').map(Number);
+    }
+    if (property.feature_ids) {
+      property.features = property.feature_ids.split(',').map(Number);
+    }
+
+    res.status(200).json({
+      data: property,
+      status: true
+    });
+  } catch (error) {
+    console.error("adminPropertiesController.getPropertyById error:", error);
+    res.status(500).json({
+      error: error.message || "Internal Server Error",
+      status: false
+    });
+  }
+};
+const deleteImage = async (req, res) => {
+  try {
+    const { propertyId, imageId } = req.params;
+    const userId = req.user?.id;
+
+    // Verify property ownership
+    const [property] = await req.db.query(
+      "SELECT id FROM properties WHERE id = ? AND user_id = ?",
+      [propertyId, userId]
+    );
+
+    if (property.length === 0) {
+      return res.status(404).json({
+        error: "Property not found or you don't have permission",
+        status: false
+      });
+    }
+
+    // Check if image exists
+    const [image] = await req.db.query(
+      "SELECT image_url, is_primary FROM property_images WHERE id = ? AND property_id = ?",
+      [imageId, propertyId]
+    );
+
+    if (image.length === 0) {
+      return res.status(404).json({
+        error: "Image not found",
+        status: false
+      });
+    }
+
+    // Delete image file from server
+    const fs = require('fs');
+    const imagePath = path.join(__dirname, '..', image[0].image_url);
+    if (fs.existsSync(imagePath)) {
+      fs.unlinkSync(imagePath);
+    }
+
+    // Delete from database
+    await req.db.query(
+      "DELETE FROM property_images WHERE id = ? AND property_id = ?",
+      [imageId, propertyId]
+    );
+
+    // If deleted image was primary, set another image as primary
+    if (image[0].is_primary === 1) {
+      const [nextImage] = await req.db.query(
+        "SELECT id FROM property_images WHERE property_id = ? LIMIT 1",
+        [propertyId]
+      );
+
+      if (nextImage.length > 0) {
+        await req.db.query(
+          "UPDATE property_images SET is_primary = 1 WHERE id = ?",
+          [nextImage[0].id]
+        );
+      }
+    }
+
+    res.status(200).json({
+      message: "Image deleted successfully",
+      status: true
+    });
+  } catch (error) {
+    console.error("adminPropertiesController.deleteImage error:", error);
+    res.status(500).json({
+      error: error.message || "Internal Server Error",
+      status: false
+    });
+  }
+};
 const destroy = async (req, res) => {
   try {
     const { id } = req.params;
