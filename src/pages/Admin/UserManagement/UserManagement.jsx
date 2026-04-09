@@ -1,9 +1,9 @@
 // src/components/Admin/UserManagement.jsx
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import { Row, Col, Card, Button, Badge, Modal, Form } from 'react-bootstrap';
+import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import { Row, Col, Card, Button, Badge, Modal, Form, Alert } from 'react-bootstrap';
 import './UserManagement.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUsers, fetchModulesAndFields, userStore, userUpdate } from '../../../redux/actions/UsersActions';
+import { fetchUsers, fetchModulesAndFields, userStore, userUpdate, userFieldPermissions, userModulesPermissions } from '../../../redux/actions/UsersActions';
 import CreateUpdateModal from '../../../components/CreateUpdateModal/CreateUpdateModal';
 import CustomPagination from '../../../components/Pagination/Pagination';
 import Filter from '../../../components/Filter/Filter';
@@ -17,31 +17,32 @@ import "./components/PermissionsModal.css";
 import { authSession } from '../../../services/authSession';
 import PageHeader from '../../../components/Breadcrumb/PageHeader';
 
+// Constants
+const USER_ROLES = {
+    USER: { id: 0, label: 'User', variant: 'info' },
+    AGENT: { id: 1, label: 'Agent', variant: 'warning' },
+    ADMIN: { id: 2, label: 'Admin', variant: 'danger' }
+};
+
+const USER_STATUS = {
+    ACTIVE: { id: 1, label: 'Active', variant: 'success' },
+    INACTIVE: { id: 0, label: 'Inactive', variant: 'secondary' }
+};
+
 const UserManagement = () => {
-    const user = authSession.getUser();
-
-    const hasPermission = useCallback((action, resource = 'users') => {
-        const perms = user?.permissions?.[resource] || [];
-        return perms.includes(action);
-    }, [user]);
-
-    // 🚨 Check read permission first
-    if (!user || !(user?.permissions?.['users']?.includes('read'))) {
-        return (
-            <div className="text-center py-5">
-                <h3>Access Not Allowed</h3>
-                <p>You do not have permission to view this resource.</p>
-            </div>
-        );
-    }
-
     const dispatch = useDispatch();
+    const isMounted = useRef(true);
+
+    // State declarations
     const [showModal, setShowModal] = useState(false);
     const [showPermissionsModal, setShowPermissionsModal] = useState(false);
     const [showFieldPermissionsModal, setShowFieldPermissionsModal] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
     const [selectedUser, setSelectedUser] = useState(null);
     const [showFilter, setShowFilter] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [formErrors, setFormErrors] = useState({});
     const [filterData, setFilterData] = useState({
         name: '',
         email: '',
@@ -49,21 +50,44 @@ const UserManagement = () => {
         role: ''
     });
 
+    console.log(loading ? "loading true" : "loading false")
+    // Redux selectors
     const users = useSelector(state => state.users.users) || [];
     const modulesAndFields = useSelector(state => state.users.modulesAndFields) || [];
     const pagination = useSelector(state => state.users.pagination) || {};
     const [currentPage, setCurrentPage] = useState(pagination?.page || 1);
 
+    // Form state
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         phone_number: '',
         role_id: '0',
         active_status: '1',
-        password: ''
+        password: '',
+        profile_image: null
     });
 
-    // Initialize permissions structures using useMemo
+    // Get user from session
+    const user = authSession.getUser();
+
+    // Custom hook for permissions
+    const usePermissions = (userData) => {
+        const hasPermission = useCallback((action, resource = 'users') => {
+            const perms = userData?.permissions?.[resource] || [];
+            return perms.includes(action);
+        }, [userData]);
+
+        const hasAnyPermission = useCallback((actions, resource = 'users') => {
+            return actions.some(action => hasPermission(action, resource));
+        }, [hasPermission]);
+
+        return { hasPermission, hasAnyPermission };
+    };
+
+    const { hasPermission, hasAnyPermission } = usePermissions(user);
+
+    // Initialize permissions structures
     const initializePermissions = useCallback(() => {
         const permissions = {};
         modulesAndFields.forEach(moduleData => {
@@ -101,8 +125,8 @@ const UserManagement = () => {
         return fieldPermissions;
     }, [modulesAndFields]);
 
-    const [permissions, setPermissions] = useState(initializePermissions());
-    const [fieldPermissions, setFieldPermissions] = useState(initializeFieldPermissions());
+    const [permissions, setPermissions] = useState({});
+    const [fieldPermissions, setFieldPermissions] = useState({});
 
     // Memoized filter configuration
     const filterFields = useMemo(() => [
@@ -133,27 +157,23 @@ const UserManagement = () => {
 
     // Memoized helper functions
     const getRoleVariant = useCallback((roleId) => {
-        switch (parseInt(roleId)) {
-            case 2: return 'danger';
-            case 1: return 'warning';
-            default: return 'info';
-        }
+        const role = Object.values(USER_ROLES).find(r => r.id === parseInt(roleId));
+        return role?.variant || 'info';
     }, []);
 
     const getRoleText = useCallback((roleId) => {
-        switch (parseInt(roleId)) {
-            case 2: return 'Admin';
-            case 1: return 'Agent';
-            default: return 'User';
-        }
+        const role = Object.values(USER_ROLES).find(r => r.id === parseInt(roleId));
+        return role?.label || 'User';
     }, []);
 
     const getStatusText = useCallback((status) => {
-        return status === 1 || status === '1' ? 'Active' : 'Inactive';
+        const statusObj = Object.values(USER_STATUS).find(s => s.id === (status === 1 || status === '1' ? 1 : 0));
+        return statusObj?.label || 'Inactive';
     }, []);
 
     const getStatusVariant = useCallback((status) => {
-        return status === 1 || status === '1' ? 'success' : 'secondary';
+        const statusObj = Object.values(USER_STATUS).find(s => s.id === (status === 1 || status === '1' ? 1 : 0));
+        return statusObj?.variant || 'secondary';
     }, []);
 
     // Permissions helper functions
@@ -195,52 +215,80 @@ const UserManagement = () => {
     }, []);
 
     // Modal handlers
-    const handleShowPermissionsModal = useCallback((user) => {
-        setSelectedUser(user);
-        const userPermissions = parsePermissions(user.permissions);
+    const convertToModulePermissions = useCallback((data, baseModules) => {
+        const result = { ...baseModules };
 
-        const mergedPermissions = initializePermissions();
-        Object.keys(userPermissions).forEach(module => {
-            if (mergedPermissions[module]) {
-                mergedPermissions[module] = {
-                    ...mergedPermissions[module],
-                    ...userPermissions[module]
-                };
-            }
+        Object.keys(data || {}).forEach(module => {
+            const permString = data[module] || "";
+            const permsArray = permString.split("|");
+
+            result[module] = {
+                read: permsArray.includes("read"),
+                create: permsArray.includes("create"),
+                update: permsArray.includes("update"),
+                delete: permsArray.includes("delete"),
+                all: permsArray.includes("read") &&
+                    permsArray.includes("create") &&
+                    permsArray.includes("update") &&
+                    permsArray.includes("delete")
+            };
         });
 
-        setPermissions(mergedPermissions);
+        return result;
+    }, []);
+
+    const handleShowPermissionsModal = useCallback((userData) => {
+        setSelectedUser(userData);
+        const parsed = parsePermissions(userData.permissions);
+        const base = initializePermissions();
+        const formatted = convertToModulePermissions(parsed, base);
+        setPermissions(formatted);
         setShowPermissionsModal(true);
-    }, [initializePermissions, parsePermissions]);
+    }, [initializePermissions, parsePermissions, convertToModulePermissions]);
 
-    const handleShowFieldPermissionsModal = useCallback((user) => {
-        setSelectedUser(user);
-        const userPermissions = parsePermissions(user.permissions);
+    const convertToFieldPermissions = useCallback((data, base) => {
+        const result = JSON.parse(JSON.stringify(base));
 
-        const mergedFieldPermissions = initializeFieldPermissions();
-        Object.keys(userPermissions).forEach(module => {
-            if (mergedFieldPermissions[module] && userPermissions[module]?.fields) {
-                mergedFieldPermissions[module].fields = {
-                    ...mergedFieldPermissions[module].fields,
-                    ...userPermissions[module].fields
-                };
+        Object.keys(data || {}).forEach(module => {
+            if (!result[module]) return;
 
-                // Calculate all flags
-                const moduleFields = mergedFieldPermissions[module].fields;
-                const fields = Object.keys(moduleFields);
+            Object.keys(data[module] || {}).forEach(field => {
+                const permString = data[module][field] || "";
+                const permsArray = permString.split("|");
 
-                if (fields.length > 0) {
-                    mergedFieldPermissions[module].allRead = fields.every(field => moduleFields[field].read);
-                    mergedFieldPermissions[module].allCreate = fields.every(field => moduleFields[field].create);
-                    mergedFieldPermissions[module].allUpdate = fields.every(field => moduleFields[field].update);
-                    mergedFieldPermissions[module].allDelete = fields.every(field => moduleFields[field].delete);
+                if (result[module].fields[field]) {
+                    result[module].fields[field] = {
+                        read: permsArray.includes("read"),
+                        create: permsArray.includes("create"),
+                        update: permsArray.includes("update"),
+                        delete: permsArray.includes("delete")
+                    };
                 }
+            });
+
+            // Set ALL flags
+            const fields = result[module].fields;
+            const keys = Object.keys(fields);
+
+            if (keys.length > 0) {
+                result[module].allRead = keys.every(f => fields[f].read);
+                result[module].allCreate = keys.every(f => fields[f].create);
+                result[module].allUpdate = keys.every(f => fields[f].update);
+                result[module].allDelete = keys.every(f => fields[f].delete);
             }
         });
 
-        setFieldPermissions(mergedFieldPermissions);
+        return result;
+    }, []);
+
+    const handleShowFieldPermissionsModal = useCallback((userData) => {
+        setSelectedUser(userData);
+        const parsed = parsePermissions(userData.permited_fields);
+        const base = initializeFieldPermissions();
+        const formatted = convertToFieldPermissions(parsed, base);
+        setFieldPermissions(formatted);
         setShowFieldPermissionsModal(true);
-    }, [initializeFieldPermissions, parsePermissions]);
+    }, [initializeFieldPermissions, parsePermissions, convertToFieldPermissions]);
 
     const handleClosePermissionsModal = useCallback(() => {
         setShowPermissionsModal(false);
@@ -257,29 +305,21 @@ const UserManagement = () => {
     // Field permission handlers with bulk operations
     const handleFieldPermissionChange = useCallback((module, field, permission, value) => {
         setFieldPermissions(prev => {
-            const updated = {
-                ...prev,
-                [module]: {
-                    ...prev[module],
-                    fields: {
-                        ...prev[module]?.fields,
-                        [field]: {
-                            ...prev[module]?.fields?.[field],
-                            [permission]: value
-                        }
-                    }
+            const updated = JSON.parse(JSON.stringify(prev));
+
+            if (updated[module]?.fields?.[field]) {
+                updated[module].fields[field][permission] = value;
+
+                // Recalculate all flags for the module
+                const moduleFields = updated[module].fields;
+                const fields = Object.keys(moduleFields);
+
+                if (fields.length > 0) {
+                    updated[module].allRead = fields.every(f => moduleFields[f].read);
+                    updated[module].allCreate = fields.every(f => moduleFields[f].create);
+                    updated[module].allUpdate = fields.every(f => moduleFields[f].update);
+                    updated[module].allDelete = fields.every(f => moduleFields[f].delete);
                 }
-            };
-
-            // Recalculate all flags for the module
-            const moduleFields = updated[module].fields;
-            const fields = Object.keys(moduleFields);
-
-            if (fields.length > 0) {
-                updated[module].allRead = fields.every(f => moduleFields[f].read);
-                updated[module].allCreate = fields.every(f => moduleFields[f].create);
-                updated[module].allUpdate = fields.every(f => moduleFields[f].update);
-                updated[module].allDelete = fields.every(f => moduleFields[f].delete);
             }
 
             return updated;
@@ -288,23 +328,15 @@ const UserManagement = () => {
 
     const handleAllFieldPermissionChange = useCallback((module, permission, value) => {
         setFieldPermissions(prev => {
-            const updated = { ...prev };
-            const moduleFields = prev[module]?.fields;
+            const updated = JSON.parse(JSON.stringify(prev));
+            const moduleFields = updated[module]?.fields;
 
             if (moduleFields) {
-                const updatedFields = {};
                 Object.keys(moduleFields).forEach(field => {
-                    updatedFields[field] = {
-                        ...moduleFields[field],
-                        [permission]: value
-                    };
+                    moduleFields[field][permission] = value;
                 });
 
-                updated[module] = {
-                    ...prev[module],
-                    fields: updatedFields,
-                    [`all${permission.charAt(0).toUpperCase() + permission.slice(1)}`]: value
-                };
+                updated[module][`all${permission.charAt(0).toUpperCase() + permission.slice(1)}`] = value;
             }
 
             return updated;
@@ -312,6 +344,9 @@ const UserManagement = () => {
     }, []);
 
     const handleSavePermissions = useCallback(async () => {
+        if (!selectedUser) return;
+
+        setError(null);
         try {
             const permissionsData = {};
             Object.keys(permissions).forEach(module => {
@@ -319,36 +354,65 @@ const UserManagement = () => {
                     read: permissions[module].read,
                     create: permissions[module].create,
                     update: permissions[module].update,
-                    delete: permissions[module].delete,
-                    all: permissions[module].all
+                    delete: permissions[module].delete
                 };
             });
 
-            console.log('Saving permissions for user:', selectedUser.id, permissionsData);
-            // await updateUserPermissionsAPI(selectedUser.id, permissionsData);
-
-            dispatch(fetchUsers(currentPage, filterData));
+            await dispatch(userModulesPermissions(selectedUser.id, permissionsData));
             handleClosePermissionsModal();
-            alert('Module permissions updated successfully!');
+
+            // Refresh user list to get updated permissions
+            await dispatch(fetchUsers(currentPage, filterData));
         } catch (error) {
             console.error('Error saving permissions:', error);
-            alert('Error updating permissions');
+            setError('Error updating permissions. Please try again.');
         }
-    }, [permissions, selectedUser, currentPage, filterData, dispatch, handleClosePermissionsModal]);
+    }, [permissions, selectedUser, dispatch, handleClosePermissionsModal, currentPage, filterData]);
 
     const handleSaveFieldPermissions = useCallback(async () => {
-        try {
-            console.log('Saving field permissions for user:', selectedUser.id, fieldPermissions);
-            // await updateUserFieldPermissionsAPI(selectedUser.id, fieldPermissions);
+        if (!selectedUser) return;
 
-            dispatch(fetchUsers(currentPage, filterData));
+        setError(null);
+        try {
+            await dispatch(userFieldPermissions(selectedUser.id, fieldPermissions));
             handleCloseFieldPermissionsModal();
-            alert('Field permissions updated successfully!');
+
+            // Refresh user list to get updated field permissions
+            await dispatch(fetchUsers(currentPage, filterData));
         } catch (error) {
             console.error('Error saving field permissions:', error);
-            alert('Error updating field permissions');
+            setError('Error updating field permissions. Please try again.');
         }
-    }, [fieldPermissions, selectedUser, currentPage, filterData, dispatch, handleCloseFieldPermissionsModal]);
+    }, [fieldPermissions, selectedUser, dispatch, handleCloseFieldPermissionsModal, currentPage, filterData]);
+
+    // Form validation
+    const validateForm = useCallback(() => {
+        const errors = {};
+
+        if (!formData.name?.trim()) {
+            errors.name = 'Name is required';
+        }
+
+        if (!formData.email?.trim()) {
+            errors.email = 'Email is required';
+        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            errors.email = 'Email is invalid';
+        }
+
+        if (!formData.phone_number?.trim()) {
+            errors.phone_number = 'Phone number is required';
+        } else if (!/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/.test(formData.phone_number)) {
+            errors.phone_number = 'Phone number is invalid';
+        }
+
+        if (!editingUser && !formData.password) {
+            errors.password = 'Password is required for new users';
+        } else if (formData.password && formData.password.length < 6) {
+            errors.password = 'Password must be at least 6 characters';
+        }
+
+        return errors;
+    }, [formData, editingUser]);
 
     // Other handlers
     const handleFilterChange = useCallback((e) => {
@@ -356,36 +420,62 @@ const UserManagement = () => {
         setFilterData(prev => ({ ...prev, [name]: value }));
     }, []);
 
-    const handleFilterSubmit = useCallback((data) => {
+    const handleFilterSubmit = useCallback(async (data) => {
         setCurrentPage(1);
-        dispatch(fetchUsers(1, data));
+        setLoading(true);
+        try {
+            await dispatch(fetchUsers(1, data));
+        } catch (error) {
+            console.error('Error filtering users:', error);
+            setError('Error filtering users. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     }, [dispatch]);
 
-    const handleFilterReset = useCallback((resetData) => {
+    const handleFilterReset = useCallback(async (resetData) => {
         setFilterData(resetData);
         setCurrentPage(1);
-        dispatch(fetchUsers(1, {}));
+        setLoading(true);
+        try {
+            await dispatch(fetchUsers(1, {}));
+        } catch (error) {
+            console.error('Error resetting filters:', error);
+            setError('Error resetting filters. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     }, [dispatch]);
 
-    const handlePageChange = useCallback((newPage) => {
+    const handlePageChange = useCallback(async (newPage) => {
         if (!newPage || newPage < 1) return;
         const totalPages = pagination?.total_pages || 1;
         if (newPage > totalPages) return;
 
         setCurrentPage(newPage);
-        dispatch(fetchUsers(newPage, filterData));
+        setLoading(true);
+        try {
+            await dispatch(fetchUsers(newPage, filterData));
+        } catch (error) {
+            console.error('Error changing page:', error);
+            setError('Error loading users. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     }, [pagination, filterData, dispatch]);
 
-    const handleShowModal = useCallback((user = null) => {
-        if (user) {
-            setEditingUser(user);
+    const handleShowModal = useCallback((userData = null) => {
+        setFormErrors({});
+        if (userData) {
+            setEditingUser(userData);
             setFormData({
-                name: user.name || '',
-                email: user.email || '',
-                phone_number: user.phone_number || '',
-                role_id: user.role_id?.toString() || '0',
-                active_status: user.active_status?.toString() || '1',
-                password: ''
+                name: userData.name || '',
+                email: userData.email || '',
+                phone_number: userData.phone_number || '',
+                role_id: userData.role_id?.toString() || '0',
+                active_status: userData.active_status?.toString() || '1',
+                password: '',
+                profile_image: null
             });
         } else {
             setEditingUser(null);
@@ -395,7 +485,8 @@ const UserManagement = () => {
                 phone_number: '',
                 role_id: '0',
                 active_status: '1',
-                password: ''
+                password: '',
+                profile_image: null
             });
         }
         setShowModal(true);
@@ -404,6 +495,7 @@ const UserManagement = () => {
     const handleCloseModal = useCallback(() => {
         setShowModal(false);
         setEditingUser(null);
+        setFormErrors({});
     }, []);
 
     const handleFormChange = useCallback((e) => {
@@ -412,17 +504,7 @@ const UserManagement = () => {
         if (type === 'file') {
             setFormData(prev => ({
                 ...prev,
-                [name]: files[0] // ✅ store file
-            }));
-        } else if (type === 'file-multiple') {
-            setFormData(prev => ({
-                ...prev,
-                [name]: value // already array
-            }));
-        } else if (type === 'file-single') {
-            setFormData(prev => ({
-                ...prev,
-                [name]: value
+                [name]: files[0]
             }));
         } else {
             setFormData(prev => ({
@@ -430,10 +512,25 @@ const UserManagement = () => {
                 [name]: value
             }));
         }
-    }, []);
+
+        // Clear error for this field when user starts typing
+        if (formErrors[name]) {
+            setFormErrors(prev => ({ ...prev, [name]: null }));
+        }
+    }, [formErrors]);
 
     const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
+
+        const errors = validateForm();
+        if (Object.keys(errors).length > 0) {
+            setFormErrors(errors);
+            return;
+        }
+
+        setLoading(true);
+        setError(null);
+
         try {
             const submitData = { ...formData };
 
@@ -446,38 +543,48 @@ const UserManagement = () => {
 
             let response;
             if (editingUser) {
-                console.log('Updating user:', editingUser.id, submitData);
+                console.log("form data console", submitData);
                 response = await dispatch(userUpdate(editingUser.id, submitData));
             } else {
-                console.log('Creating new user:', submitData);
                 response = await dispatch(userStore(submitData));
             }
 
             if (response?.success === true) {
                 handleCloseModal();
+                // Refresh user list
+                await dispatch(fetchUsers(currentPage, filterData));
+            } else if (response?.error) {
+                setError(response.error);
             }
-
-            console.log("view file response console", response);
         } catch (error) {
             console.error('Error saving user:', error);
+            setError(error.message || 'Error saving user. Please try again.');
+        } finally {
+            setLoading(false);
         }
-    }, [formData, editingUser, currentPage, filterData, dispatch]);
+    }, [formData, editingUser, dispatch, handleCloseModal, currentPage, filterData, validateForm]);
 
     const handleDelete = useCallback(async (userId) => {
         if (!window.confirm('Are you sure you want to delete this user?')) return;
 
+        setLoading(true);
+        setError(null);
+
         try {
-            console.log('Deleting user:', userId);
-            // await deleteUserAPI(userId);
+            // Assuming you have a delete action
+            // await dispatch(userDelete(userId));
 
             const remainingItems = users.length - 1;
             if (remainingItems === 0 && currentPage > 1) {
-                handlePageChange(currentPage - 1);
+                await handlePageChange(currentPage - 1);
             } else {
-                dispatch(fetchUsers(currentPage, filterData));
+                await dispatch(fetchUsers(currentPage, filterData));
             }
         } catch (error) {
             console.error('Error deleting user:', error);
+            setError('Error deleting user. Please try again.');
+        } finally {
+            setLoading(false);
         }
     }, [users.length, currentPage, handlePageChange, dispatch, filterData]);
 
@@ -488,7 +595,7 @@ const UserManagement = () => {
             label: "Profile Image",
             type: "profile-single",
             colSize: 12,
-            cropOptions: { width: 400, height: 400, aspect: 1 } // square for circular crop
+            cropOptions: { width: 400, height: 400, aspect: 1 }
         },
         {
             name: 'name',
@@ -496,7 +603,8 @@ const UserManagement = () => {
             type: 'text',
             placeholder: 'Enter full name',
             required: true,
-            colSize: 12
+            colSize: 12,
+            error: formErrors.name
         },
         {
             name: 'email',
@@ -504,7 +612,8 @@ const UserManagement = () => {
             type: 'email',
             placeholder: 'Enter email address',
             required: true,
-            colSize: 12
+            colSize: 12,
+            error: formErrors.email
         },
         {
             name: 'phone_number',
@@ -512,7 +621,8 @@ const UserManagement = () => {
             type: 'tel',
             placeholder: 'Enter phone number',
             required: true,
-            colSize: 12
+            colSize: 12,
+            error: formErrors.phone_number
         },
         {
             name: 'role_id',
@@ -544,14 +654,34 @@ const UserManagement = () => {
             placeholder: editingUser ? 'Leave blank to keep current' : 'Enter password',
             required: !editingUser,
             colSize: 12,
-            helpText: editingUser ? 'Leave password field blank to keep the current password' : 'Set a password for the new user'
+            helpText: editingUser ? 'Leave password field blank to keep the current password' : 'Set a password for the new user',
+            error: formErrors.password
         }
-    ], [editingUser]);
+    ], [editingUser, formErrors]);
 
     // Effects
     useEffect(() => {
-        dispatch(fetchUsers(1, {}));
-        dispatch(fetchModulesAndFields());
+        const loadInitialData = async () => {
+            setError(null);
+            try {
+                await Promise.all([
+                    dispatch(fetchUsers(1, {})),
+                    dispatch(fetchModulesAndFields())
+                ]);
+            } catch (error) {
+                console.error('Error loading initial data:', error);
+                setError('Error loading user data. Please refresh the page.');
+            } finally {
+                if (isMounted.current) {
+                }
+            }
+        };
+
+        loadInitialData();
+
+        return () => {
+            isMounted.current = false;
+        };
     }, [dispatch]);
 
     useEffect(() => {
@@ -561,9 +691,32 @@ const UserManagement = () => {
     }, [pagination]);
 
     useEffect(() => {
-        setPermissions(initializePermissions());
-        setFieldPermissions(initializeFieldPermissions());
-    }, [modulesAndFields, initializePermissions, initializeFieldPermissions]);
+        if (modulesAndFields.length > 0 && Object.keys(permissions).length === 0) {
+            setPermissions(initializePermissions());
+            setFieldPermissions(initializeFieldPermissions());
+        }
+    }, [modulesAndFields, initializePermissions, initializeFieldPermissions, permissions.length]);
+
+    // Permission check - moved after all hooks
+    if (!user || !hasPermission('read')) {
+        return (
+            <div className="text-center py-5">
+                <h3>Access Not Allowed</h3>
+                <p>You do not have permission to view this resource.</p>
+            </div>
+        );
+    }
+
+    if (loading && users.length === 0) {
+        return (
+            <div className="text-center py-5">
+                <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+                <p className="mt-3">Loading users...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="user-management">
@@ -576,10 +729,16 @@ const UserManagement = () => {
                 ]}
                 showFilter={showFilter}
                 setShowFilter={setShowFilter}
-                onAdd={handleShowModal}
+                onAdd={() => handleShowModal()}
                 canCreate={hasPermission('create')}
                 total={pagination?.total || 0}
             />
+
+            {error && (
+                <Alert variant="danger" onClose={() => setError(null)} dismissible>
+                    {error}
+                </Alert>
+            )}
 
             {showFilter && (
                 <Row className="mb-3">
@@ -599,13 +758,13 @@ const UserManagement = () => {
                 <Card.Body>
                     <div className="users-grid">
                         <Row>
-                            {users?.map((user, index) => {
-                                if (!user || !user.id) return null;
+                            {users?.map((userItem, index) => {
+                                if (!userItem || !userItem.id) return null;
 
                                 return (
-                                    <Col key={user.id} xl={3} lg={4} md={6} sm={6} className="mb-4">
+                                    <Col key={userItem.id} xl={3} lg={4} md={6} sm={6} className="mb-4">
                                         <UserCard
-                                            user={user}
+                                            user={userItem}
                                             onShowPermissions={handleShowPermissionsModal}
                                             onShowFieldPermissions={handleShowFieldPermissionsModal}
                                             onEdit={handleShowModal}
@@ -620,18 +779,25 @@ const UserManagement = () => {
                                 );
                             })}
                         </Row>
-                        {users.length === 0 && (
+                        {users.length === 0 && !loading && (
                             <div className="text-center py-5">
                                 <p className="text-muted">No users found</p>
+                                {hasPermission('create') && (
+                                    <Button variant="primary" onClick={() => handleShowModal()}>
+                                        Create your first user
+                                    </Button>
+                                )}
                             </div>
                         )}
                     </div>
 
-                    <CustomPagination
-                        pagination={pagination}
-                        onPageChange={handlePageChange}
-                        className="mt-4"
-                    />
+                    {pagination?.total_pages > 1 && (
+                        <CustomPagination
+                            pagination={pagination}
+                            onPageChange={handlePageChange}
+                            className="mt-4"
+                        />
+                    )}
                 </Card.Body>
             </Card>
 
@@ -647,6 +813,7 @@ const UserManagement = () => {
                 submitText={editingUser ? 'Update User' : 'Create User'}
                 cancelText="Cancel"
                 size="lg"
+                loading={loading}
             />
 
             {/* Module Permissions Modal */}

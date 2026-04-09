@@ -18,7 +18,7 @@ export const fetchUsers = (page = 1, filters = {}) => async (dispatch) => {
 }
 export const fetchModulesAndFields = () => async (dispatch) => {
     console.log("actions is calling correctly");
-    dispatch({ type: "FETCH_USERS_REQUEST" });
+    dispatch({ type: "FETCH_MODULES_FIELDS_REQUEST" });
     try {
         const response = await apiServices('/api/users/modules_fields', 'get', null, null);
         dispatch({ type: "FETCH_MODULES_FIELDS_SUCCESS", payload: response.data });
@@ -49,6 +49,26 @@ export const userStore = (data) => async (dispatch) => {
 export const userUpdate = (id, data) => async (dispatch) => {
     try {
         const response = await apiServices(`/api/user/update/${id}`, 'put', data);
+        dispatch({ type: "UPDATE_USER_SUCCESS", payload: response?.user });
+        return response;
+
+    } catch (error) {
+        dispatch({ type: "FETCH_USER_UPDATE_FAILURE" });
+    }
+}
+export const userFieldPermissions = (id, data) => async (dispatch) => {
+    try {
+        const response = await apiServices(`/api/user/fields_permissions/update/${id}`, 'put', data);
+        dispatch({ type: "UPDATE_USER_SUCCESS", payload: response?.user });
+        return response;
+
+    } catch (error) {
+        dispatch({ type: "FETCH_USER_UPDATE_FAILURE" });
+    }
+}
+export const userModulesPermissions = (id, data) => async (dispatch) => {
+    try {
+        const response = await apiServices(`/api/user/modules_permissions/update/${id}`, 'put', data);
         dispatch({ type: "UPDATE_USER_SUCCESS", payload: response?.user });
         return response;
 

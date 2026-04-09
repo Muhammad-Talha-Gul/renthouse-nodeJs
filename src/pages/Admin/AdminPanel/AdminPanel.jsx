@@ -79,7 +79,7 @@ const AdminPanel = () => {
                         </div>
 
                         <Nav className="flex-column sidebar-nav">
-                            {adminRoutes.map((route) => (
+                            {adminRoutes.filter(route => !route.hide).map((route) => (
                                 <Nav.Link
                                     key={route.path}
                                     as={NavLink}

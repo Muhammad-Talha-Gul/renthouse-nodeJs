@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import './UserCard.css';
 import './UserDetailsModal.css';
+import baseURL from '../../../../config/baseURL';
 
 const UserCard = ({
     user,
@@ -55,7 +56,7 @@ const UserCard = ({
                 {/* AVATAR */}
                 <div className="profile-avatar-wrapper">
                     {user.profile_image ? (
-                        <img src={user.profile_image} className="profile-avatar-img" alt="avatar" />
+                        <img src={`${baseURL}${user.profile_image}`} className="profile-avatar-img" alt="avatar" />
                     ) : (
                         <div className="profile-avatar-fallback">{getUserInitials()}</div>
                     )}
@@ -154,6 +155,7 @@ const UserCard = ({
                         <div className="profile-avatar-section">
                             <div className="profile-avatar-modern">
                                 {getUserInitials()}
+
                             </div>
                             <div className={`profile-status-badge ${user.active_status}`}>
                                 {getStatusText(user.active_status)}

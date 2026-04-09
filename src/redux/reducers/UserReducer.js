@@ -12,6 +12,7 @@ const usersReducer = (state = initialState, action) => {
         case 'FETCH_USERS_REQUEST':
             return { ...state, loading: true };
         case 'FETCH_USERS_SUCCESS':
+            console.log("after fetch payload", action.payload);
             return {
                 ...state, loading: false,
                 users: action.payload?.data || [],
@@ -21,9 +22,12 @@ const usersReducer = (state = initialState, action) => {
         case 'FETCH_USERS_FAILURE':
             return { ...state, loading: false, error: action.error };
 
+        case 'FETCH_MODULES_FIELDS_REQUEST':
+            return { ...state, loading: true };
+
         case 'FETCH_MODULES_FIELDS_SUCCESS':
             return {
-                ...state,
+                ...state, loading: false,
                 modulesAndFields: action.payload
             };
 

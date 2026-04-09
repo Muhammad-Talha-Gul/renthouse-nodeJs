@@ -51,7 +51,7 @@ exports.index = async (req, res) => {
     const total = countRows?.[0]?.total ?? 0;
 
     // --- Fetch Paginated Rows ---
-    const query = `SELECT * FROM users ${whereSql} ORDER BY id DESC LIMIT ? OFFSET ?`;
+    const query = `SELECT id, active_status, created_at, email, name, permissions, phone_number, profile_image, role_id, permissions, permited_fields FROM users ${whereSql} ORDER BY id DESC LIMIT ? OFFSET ?`;
     const [rows] = await pool.query(query, [...params, per_page, offset]);
 
     return res.status(200).json({

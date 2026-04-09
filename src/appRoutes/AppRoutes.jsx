@@ -22,7 +22,7 @@ export const adminRoutes = [
     { path: "categories", component: <CategoryManagement />, title: "Categories", icon: "🏷️" },
     { path: "users", component: <UserManagement />, title: "Users", icon: "🏷️" },
     { path: "properties", component: <PropertyManagement />, title: "Properties", icon: "🏷️" },
-    { path: "properties/create", component: <PropertyForm />, title: "Add Propert", icon: "🏷️" },
+    { path: "properties/create", component: <PropertyForm />, title: "Add Propert", icon: "🏷️", hide: true },
     // Add more admin routes here
 ];
 function AppRoutes() {

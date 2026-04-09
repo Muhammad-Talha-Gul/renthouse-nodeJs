@@ -12,6 +12,7 @@ import ImageModal from '../../../components/ImageModal/ImageModal';
 import { showErrorToast, showSuccessToast } from '../../../services/alertService';
 import { authSession } from '../../../services/authSession';
 import PageHeader from '../../../components/Breadcrumb/PageHeader';
+import { useNavigate } from 'react-router-dom';
 
 const PropertyManagement = () => {
 
@@ -35,6 +36,7 @@ const PropertyManagement = () => {
     }
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
     const [Record, setRecord] = useState(null);
     const [showFilter, setShowFilter] = useState(false);
@@ -559,7 +561,7 @@ const PropertyManagement = () => {
     // };
 
     const handleShowModal = (property = null) => {
-        navigate('/properties/create');
+        navigate('/admin/properties/create');
     }
     const handleCloseModal = () => {
         setShowModal(false);

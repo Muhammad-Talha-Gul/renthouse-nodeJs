@@ -67,6 +67,14 @@ router.put("/user/update/:id",
   authMiddleware("users"),
   adminUserController.update,
 );
+router.put("/user/fields_permissions/update/:id",
+  authMiddleware("users"),
+  adminUserController.fieldsPermissionUpdate,
+);
+router.put("/user/modules_permissions/update/:id",
+  authMiddleware("users"),
+  adminUserController.modulesPermissionUpdate,
+);
 
 // users
 router.get("/users/index", authMiddleware("users"), usersController.index);
