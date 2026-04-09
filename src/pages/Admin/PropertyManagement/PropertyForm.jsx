@@ -30,12 +30,13 @@ const PropertyForm = () => {
     const categories = useSelector(state => state.adminProperties.categories) || [];
     const amunities = useSelector(state => state.adminProperties.amunities) || [];
     const features = useSelector(state => state.adminProperties.features) || [];
+    const emenitiesFeature = useSelector(state => state.adminProperties.emenitiesFeature) || [];
 
 
 
     const [formData, setFormData] = useState({
         title: "",
-        category_id: "",
+        category_id: "1",
         listing_type: "rent",
         price: "",
         bedrooms: "",
@@ -56,6 +57,7 @@ const PropertyForm = () => {
         images: [],
         amenities: [],
         features: [],
+        emenitiesFeature: [],
         // Instalment Plan Fields
         instalment_available: false,
         down_payment: "",
@@ -240,6 +242,7 @@ const PropertyForm = () => {
             if (property) {
                 let amenitiesArray = [];
                 let featuresArray = [];
+                let emenitiesFeatureArray = [];
 
                 if (property.amenities) {
                     if (typeof property.amenities === 'string') {
@@ -262,6 +265,17 @@ const PropertyForm = () => {
                         }
                     } else if (Array.isArray(property.features)) {
                         featuresArray = property.features.map(f => typeof f === 'object' ? f.id : f);
+                    }
+                }
+                if (property.emenitiesFeature) {
+                    if (typeof property.emenitiesFeature === 'string') {
+                        try {
+                            emenitiesFeatureArray = JSON.parse(property.emenitiesFeature);
+                        } catch (e) {
+                            emenitiesFeatureArray = [];
+                        }
+                    } else if (Array.isArray(property.emenitiesFeature)) {
+                        emenitiesFeatureArray = property.emenitiesFeature.map(f => typeof f === 'object' ? f.id : f);
                     }
                 }
 
@@ -288,6 +302,7 @@ const PropertyForm = () => {
                     images: property.images || [],
                     amenities: amenitiesArray,
                     features: featuresArray,
+                    emenitiesFeature: emenitiesFeatureArray,
                     instalment_available: property.instalment_available || false,
                     down_payment: property.down_payment || "",
                     monthly_installment: property.monthly_installment || "",
@@ -464,7 +479,7 @@ const PropertyForm = () => {
         Object.keys(formData).forEach((key) => {
             const value = formData[key];
 
-            if (key === 'amenities' || key === 'features') {
+            if (key === 'amenities' || key === 'features' || key === 'emenitiesFeature') {
                 if (Array.isArray(value) && value.length > 0) {
                     submitData.append(key, JSON.stringify(value));
                 } else {
@@ -976,7 +991,7 @@ const PropertyForm = () => {
                         </div>
 
                         {/* Amenities - Card Style */}
-                        <div className="form-section">
+                        {/* <div className="form-section">
                             <div className="section-header">
                                 <div className="section-icon"><i className="bi bi-star"></i></div>
                                 <div>
@@ -998,10 +1013,10 @@ const PropertyForm = () => {
                             {formData.amenities.length > 0 && (
                                 <div className="selected-count"><Badge bg="success">{formData.amenities.length} Amenities Selected</Badge></div>
                             )}
-                        </div>
+                        </div> */}
 
                         {/* Features - Card Style */}
-                        <div className="form-section">
+                        {/* <div className="form-section">
                             <div className="section-header">
                                 <div className="section-icon"><i className="bi bi-gem"></i></div>
                                 <div>
@@ -1022,6 +1037,29 @@ const PropertyForm = () => {
                             </div>
                             {formData.features.length > 0 && (
                                 <div className="selected-count"><Badge bg="info">{formData.features.length} Features Selected</Badge></div>
+                            )}
+                        </div> */}
+                        <div className="form-section">
+                            <div className="section-header">
+                                <div className="section-icon"><i className="bi bi-gem"></i></div>
+                                <div>
+                                    <h3 className="section-title">Eminiteis And Features</h3>
+                                    <p className="section-subtitle">Special eminities and features that make your property unique</p>
+                                </div>
+                            </div>
+
+                            <div className="features-grid">
+                                {emenitiesFeature.map(item => (
+                                    <div key={item.id} className={`feature-card ${formData.emenitiesFeature.includes(item.id) ? 'selected' : ''}`}
+                                        onClick={() => toggleSelection('emenitiesFeature', item.id)}>
+                                        <div className="amenity-icon">{item.icon || '✓'}</div>
+                                        <div className="feature-name">{item.name}</div>
+                                        {formData.emenitiesFeature.includes(item.id) && <div className="check-mark"><i className="bi bi-check-circle-fill"></i></div>}
+                                    </div>
+                                ))}
+                            </div>
+                            {formData.emenitiesFeature.length > 0 && (
+                                <div className="selected-count"><Badge bg="info">{formData.emenitiesFeature.length} Emenities and Features Selected</Badge></div>
                             )}
                         </div>
 

@@ -93,6 +93,7 @@ async function initializeDatabase() {
     -- JSON columns for amenities and features
     amenities JSON DEFAULT NULL,
     features JSON DEFAULT NULL,
+    emenities_features JSON DEFAULT NULL,
     
     -- Instalment plan columns
     instalment_available TINYINT(1) DEFAULT 0,
@@ -172,34 +173,26 @@ async function initializeDatabase() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB;
     `);
+    await connection.query(`
+  CREATE TABLE IF NOT EXISTS emenities_features (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    icon VARCHAR(10),
+    description TEXT,
+    type ENUM('amenity', 'feature') NOT NULL,
+    active_status TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  ) ENGINE=InnoDB;
+`);
 
     // ===============================
     // 7️⃣ Property Amenities (Pivot)
     // ===============================
-    await connection.query(`
-      CREATE TABLE IF NOT EXISTS property_amenities (
-        property_id INT UNSIGNED,
-        amenity_id INT UNSIGNED,
-        PRIMARY KEY (property_id, amenity_id),
-
-        FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE,
-        FOREIGN KEY (amenity_id) REFERENCES amenities(id) ON DELETE CASCADE
-      ) ENGINE=InnoDB;
-    `);
 
     // ===============================
     // 8️⃣ Property Features (Pivot)
     // ===============================
-    await connection.query(`
-      CREATE TABLE IF NOT EXISTS property_features (
-        property_id INT UNSIGNED,
-        feature_id INT UNSIGNED,
-        PRIMARY KEY (property_id, feature_id),
 
-        FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE,
-        FOREIGN KEY (feature_id) REFERENCES features(id) ON DELETE CASCADE
-      ) ENGINE=InnoDB;
-    `);
 
     // ===============================
     // 🔥 Seed Amenities (if empty)
@@ -262,6 +255,54 @@ async function initializeDatabase() {
       for (const item of features) {
         await connection.query(
           `INSERT INTO features (name, icon, description, active_status) VALUES (?, ?, ?,?)`,
+          item
+        );
+      }
+    }
+
+
+
+    const [emenitiesFeatureRows] = await connection.query(`SELECT COUNT(*) as count FROM emenities_features`);
+    if (emenitiesFeatureRows[0].count === 0) {
+      console.log("🌱 Seeding features...");
+
+      const emenitiesFeature = [
+        ["Swimming Pool", "🏊", "recreation", 1, 'amenity'],
+        ["Gym", "💪", "fitness", 1, 'amenity'],
+        ["Parking", "🅿️", "parking", 1, 'amenity'],
+        ["Security", "🔒", "safety", 1, 'amenity'],
+        ["Elevator", "🛗", "convenience", 1, 'amenity'],
+        ["Central AC", "❄️", "climate", 1, 'amenity'],
+        ["Heating", "🔥", "climate", 1, 'amenity'],
+        ["Laundry", "🧺", "convenience", 1, 'amenity'],
+        ["Balcony", "🏠", "outdoor", 1, 'amenity'],
+        ["Garden", "🌺", "outdoor", 1, 'amenity'],
+        ["Children Play Area", "🎠", "family", 1, 'amenity'],
+        ["Pets Allowed", "🐕", "pets", 1, 'amenity'],
+        ["Furnished", "🛋️", "furnishing", 1, 'amenity'],
+        ["Internet", "🌐", "technology", 1, 'amenity'],
+        ["Cable TV", "📺", "entertainment", 1, 'amenity'],
+
+        ["Smart Home", "🏠", "Automated home systems", 1, 'feature'],
+        ["Solar Panels", "☀️", "Energy efficient", 1, 'feature'],
+        ["Rainwater Harvesting", "💧", "Water conservation", 1, 'feature'],
+        ["Waste Disposal", "🗑️", "Modern waste management", 1, 'feature'],
+        ["Wheelchair Access", "♿", "Accessibility feature", 1, 'feature'],
+        ["Smart Locks", "🔐", "Digital security", 1, 'feature'],
+        ["Video Doorbell", "📹", "Security feature", 1, 'feature'],
+        ["EV Charging", "🔋", "Electric vehicle ready", 1, 'feature'],
+        ["Sound Proof", "🔇", "Noise reduction", 1, 'feature'],
+        ["Wine Cellar", "🍷", "Premium storage", 1, 'feature'],
+        ["Home Theater", "🎬", "Entertainment system", 1, 'feature'],
+        ["Sauna", "🧖", "Wellness feature", 1, 'feature'],
+        ["Jacuzzi", "🛁", "Luxury bathing", 1, 'feature'],
+        ["Smart Irrigation", "💦", "Automated gardening", 1, 'feature'],
+        ["Backup Generator", "⚡", "Power backup", 1, 'feature']
+      ];
+
+      for (const item of emenitiesFeature) {
+        await connection.query(
+          `INSERT INTO emenities_features (name, icon, description, active_status, type) VALUES (?, ?, ?, ?, ?)`,
           item
         );
       }

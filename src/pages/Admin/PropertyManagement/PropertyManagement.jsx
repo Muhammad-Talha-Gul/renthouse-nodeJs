@@ -50,6 +50,7 @@ const PropertyManagement = () => {
     const categories = useSelector(state => state.adminProperties.categories) || [];
     const amunities = useSelector(state => state.adminProperties.amunities) || [];
     const features = useSelector(state => state.adminProperties.features) || [];
+    const emenitiesFeature = useSelector(state => state.adminProperties.emenitiesFeature) || [];
     const pagination = useSelector(state => state.adminProperties.pagination) || {};
     const [currentPage, setCurrentPage] = useState(pagination?.page || 1);
 
@@ -113,7 +114,8 @@ const PropertyManagement = () => {
         banner_image: null,
         images: [],
         amenities: [], // Array of selected amenity IDs
-        features: []   // Array of selected feature IDs
+        features: [],   // Array of selected feature IDs
+        emenitiesFeature: []   // Array of selected feature IDs
     });
 
     const fieldsConfig = useMemo(() => [
@@ -265,6 +267,17 @@ const PropertyManagement = () => {
             helpText: "Select special features of this property"
         },
         {
+            name: "emenitiesFeature",
+            label: "Emenities & Features",
+            type: "checkbox-group",
+            options: emenitiesFeature.map(item => ({
+                value: item.id,
+                label: `${item.icon || '✨'} ${item.name}`
+            })),
+            colSize: 12,
+            helpText: "Select special Emeneties and Features of this property"
+        },
+        {
             name: "latitude",
             label: "Latitude",
             type: "text",
@@ -304,7 +317,7 @@ const PropertyManagement = () => {
             helpText: "Upload multiple images.",
             cropOptions: { width: 800, height: 600, aspect: 4 / 3 }
         },
-    ], [categories, amunities, features]);
+    ], [categories, amunities, features, emenitiesFeature]);
 
     // ---- Filter handlers ----
     const filterFields = [
@@ -385,6 +398,28 @@ const PropertyManagement = () => {
             }
         },
         {
+            key: 'emenitiesFeature',
+            label: 'Emenities And Feature',
+            render: (value) => {
+                if (!value || value.length === 0) return <span className="text-muted">None</span>;
+                // If features are stored as IDs, map to names
+                const emenitiesFeature = Array.isArray(value) ? value.map(item => {
+                    if (typeof item === 'object') return item.name;
+                    const record = emenitiesFeature.find(f => f.id === item);
+                    return record ? record.name : item;
+                }) : [];
+
+                return (
+                    <div className="d-flex flex-wrap gap-1">
+                        {emenitiesFeature.slice(0, 3).map((item, idx) => (
+                            <span key={idx} className="badge bg-success">{item}</span>
+                        ))}
+                        {emenitiesFeature.length > 3 && <span className="badge bg-secondary">+{emenitiesFeature.length - 3}</span>}
+                    </div>
+                );
+            }
+        },
+        {
             key: 'user_id',
             label: 'Added By',
             render: (value, row) => (
@@ -422,10 +457,10 @@ const PropertyManagement = () => {
                 </Button>
             )
         },
-    ], [amunities, features]);
+    ], [amunities, features, emenitiesFeature]);
 
     const columnOrder = useMemo(() => [
-        'title', 'price', 'listing_type', 'status', 'amenities', 'features', 'user_id', 'banner_image', 'images',
+        'title', 'price', 'listing_type', 'status', 'amenities', 'features', 'emenities_feature', 'user_id', 'banner_image', 'images',
         'phone_number', 'email', 'address', 'city', 'state', 'country',
         'area', 'area_unit', 'bedrooms', 'bathrooms', 'furnished',
         'category_id', 'slug', 'description', 'latitude', 'longitude',
@@ -576,7 +611,7 @@ const PropertyManagement = () => {
             const config = fieldsConfig.find(field => field.name === key);
             const value = formData[key];
 
-            if (key === 'amenities' || key === 'features') {
+            if (key === 'amenities' || key === 'features' || 'emenitiesFeature') {
                 // Handle arrays - send as JSON string
                 if (Array.isArray(value) && value.length > 0) {
                     data.append(key, JSON.stringify(value));

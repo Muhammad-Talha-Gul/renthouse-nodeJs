@@ -107,6 +107,10 @@ const index = async (req, res) => {
       "SELECT * FROM features WHERE active_status = ?",
       [1]
     );
+    const [emenitiesFeature] = await db.query(
+      "SELECT * FROM emenities_features WHERE active_status = ?",
+      [1]
+    );
     res.status(200).json({
       success: true,
       message: "Properties fetched successfully",
@@ -114,6 +118,7 @@ const index = async (req, res) => {
       categories: categories,
       amunities: amunities,
       features: features,
+      emenitiesFeature: emenitiesFeature,
       pagination: {
         total,
         per_page,
@@ -155,6 +160,7 @@ const store = async (req, res) => {
       slug,
       amenities,
       features,
+      emenitiesFeature,
       instalment_available,
       down_payment,
       monthly_installment,
@@ -169,6 +175,7 @@ const store = async (req, res) => {
     // Parse amenities and features
     let amenitiesJson = null;
     let featuresJson = null;
+    let emenitiesFeatureJson = null;
 
     if (amenities) {
       try {
@@ -185,6 +192,14 @@ const store = async (req, res) => {
         featuresJson = JSON.stringify(featuresArray);
       } catch (e) {
         featuresJson = null;
+      }
+    }
+    if (emenitiesFeature) {
+      try {
+        const emenitiesFeatureArray = typeof emenitiesFeature === 'string' ? JSON.parse(emenitiesFeature) : emenitiesFeature;
+        emenitiesFeatureJson = JSON.stringify(emenitiesFeatureArray);
+      } catch (e) {
+        emenitiesFeatureJson = null;
       }
     }
 
@@ -253,13 +268,14 @@ const store = async (req, res) => {
         user_id,
         amenities,
         features,
+        emenities_features,
         instalment_available,
         down_payment,
         monthly_installment,
         installment_years,
         processing_fee,
         late_payment_fee
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         category_id,
         title,
@@ -283,6 +299,7 @@ const store = async (req, res) => {
         userId,
         amenitiesJson,
         featuresJson,
+        emenitiesFeatureJson,
         instalment_available === 'true' || instalment_available === true ? 1 : 0,
         down_payment || null,
         monthly_installment || null,
@@ -378,6 +395,7 @@ const update = async (req, res) => {
       slug,
       amenities,
       features,
+      emenitiesFeature,
       instalment_available,
       down_payment,
       monthly_installment,
@@ -392,6 +410,7 @@ const update = async (req, res) => {
     // Parse amenities and features if they're JSON strings or arrays
     let amenitiesJson = null;
     let featuresJson = null;
+    let emenitiesFeatureJson = null;
 
     if (amenities) {
       try {
@@ -408,6 +427,14 @@ const update = async (req, res) => {
         featuresJson = JSON.stringify(featuresArray);
       } catch (e) {
         featuresJson = null;
+      }
+    }
+    if (emenitiesFeature) {
+      try {
+        const femenitiesFeatureArray = typeof femenitiesFeature === 'string' ? JSON.parse(femenitiesFeature) : femenitiesFeature;
+        emenitiesFeatureJson = JSON.stringify(femenitiesFeatureArray);
+      } catch (e) {
+        emenitiesFeatureJson = null;
       }
     }
 
@@ -485,7 +512,8 @@ const update = async (req, res) => {
       status = ?,
       slug = ?,
       amenities = ?,
-      features = ?,
+      emenities_features = ?,
+      emenitiesFeature = ?,
       instalment_available = ?,
       down_payment = ?,
       monthly_installment = ?,
@@ -516,6 +544,7 @@ const update = async (req, res) => {
       finalSlug,
       amenitiesJson,
       featuresJson,
+      emenitiesFeatureJson,
       instalment_available === 'true' || instalment_available === true ? 1 : 0,
       down_payment || null,
       monthly_installment || null,

@@ -57,9 +57,9 @@ const PropertyDetails = ({ property }) => {
     const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
     const images = propertyData?.images || [];
-const videos = propertyData?.videos || [];
+    const videos = propertyData?.videos || [];
 
-const allMedia = [...images, ...videos];
+    const allMedia = [...images, ...videos];
     const isVideo = (index) => index >= images.length;
 
     // Main hero slider functions
@@ -87,7 +87,7 @@ const allMedia = [...images, ...videos];
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (!showGalleryModal) return;
-            
+
             if (e.key === 'ArrowLeft') {
                 prevModalMedia();
             } else if (e.key === 'ArrowRight') {
@@ -104,7 +104,7 @@ const allMedia = [...images, ...videos];
     // Auto-play functionality for main slider
     useEffect(() => {
         if (!isAutoPlaying || showGalleryModal) return;
-        
+
         const interval = setInterval(() => {
             nextMedia();
         }, 5000);
@@ -128,11 +128,9 @@ const allMedia = [...images, ...videos];
                         {allMedia.map((media, index) => (
                             <div
                                 key={index}
-                                className={`slider-slide ${index === currentMediaIndex ? 'active' : ''} ${
-                                    index === (currentMediaIndex - 1 + allMedia.length) % allMedia.length ? 'prev' : ''
-                                } ${
-                                    index === (currentMediaIndex + 1) % allMedia.length ? 'next' : ''
-                                }`}
+                                className={`slider-slide ${index === currentMediaIndex ? 'active' : ''} ${index === (currentMediaIndex - 1 + allMedia.length) % allMedia.length ? 'prev' : ''
+                                    } ${index === (currentMediaIndex + 1) % allMedia.length ? 'next' : ''
+                                    }`}
                             >
                                 {isVideo(index) ? (
                                     <video
@@ -153,7 +151,7 @@ const allMedia = [...images, ...videos];
                             </div>
                         ))}
                     </div>
-                    
+
                     <button className="slider-nav prev-btn" onClick={prevMedia} aria-label="Previous media">
                         <span className="nav-icon">‹</span>
                     </button>
@@ -162,7 +160,7 @@ const allMedia = [...images, ...videos];
                     </button>
 
                     <div className="slider-controls">
-                        <button 
+                        <button
                             className={`auto-play-btn ${isAutoPlaying ? 'playing' : ''}`}
                             onClick={() => setIsAutoPlaying(!isAutoPlaying)}
                         >
@@ -221,7 +219,7 @@ const allMedia = [...images, ...videos];
                                 <p className="property-description-modern">{propertyData.description}</p>
                             </div>
 
-                            <div className="info-card">
+                            {/* <div className="info-card">
                                 <h3 className="subsection-title">Key Features</h3>
                                 <div className="features-grid">
                                     {(propertyData?.features || []).map((feature, index) => (
@@ -231,12 +229,12 @@ const allMedia = [...images, ...videos];
                                         </div>
                                     ))}
                                 </div>
-                            </div>
+                            </div> */}
 
                             <div className="info-card">
                                 <h3 className="subsection-title">Amenities</h3>
                                 <div className="amenities-grid-modern">
-                                    {(propertyData?.amenities|| []).map((amenity, index) => (
+                                    {(propertyData?.amenities || []).map((amenity, index) => (
                                         <div key={index} className="amenity-card">
                                             <div className="amenity-icon">⭐</div>
                                             <span>{amenity}</span>
@@ -314,10 +312,10 @@ const allMedia = [...images, ...videos];
             </section>
 
             {/* Gallery Modal Slider */}
-            <Modal 
-                show={showGalleryModal} 
-                onHide={closeGalleryModal} 
-                centered 
+            <Modal
+                show={showGalleryModal}
+                onHide={closeGalleryModal}
+                centered
                 size="xl"
                 className="gallery-modal"
                 fullscreen="lg-down"
@@ -333,11 +331,9 @@ const allMedia = [...images, ...videos];
                             {allMedia.map((media, index) => (
                                 <div
                                     key={index}
-                                    className={`modal-slider-slide ${index === modalMediaIndex ? 'active' : ''} ${
-                                        index === (modalMediaIndex - 1 + allMedia.length) % allMedia.length ? 'prev' : ''
-                                    } ${
-                                        index === (modalMediaIndex + 1) % allMedia.length ? 'next' : ''
-                                    }`}
+                                    className={`modal-slider-slide ${index === modalMediaIndex ? 'active' : ''} ${index === (modalMediaIndex - 1 + allMedia.length) % allMedia.length ? 'prev' : ''
+                                        } ${index === (modalMediaIndex + 1) % allMedia.length ? 'next' : ''
+                                        }`}
                                 >
                                     {isVideo(index) ? (
                                         <video
@@ -356,7 +352,7 @@ const allMedia = [...images, ...videos];
                                 </div>
                             ))}
                         </div>
-                        
+
                         <button className="modal-slider-nav modal-prev-btn" onClick={prevModalMedia} aria-label="Previous media">
                             <span className="modal-nav-icon">‹</span>
                         </button>

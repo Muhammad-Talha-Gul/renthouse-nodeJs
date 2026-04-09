@@ -22,7 +22,8 @@ const adminPropertiesController = require("../controllers/adminPropertiesControl
 const authController = require("../controllers/authController");
 const adminUserController = require("../controllers/adminUserController");
 const usersController = require("../controllers/usersController");
-router.get("/index", indexController);
+router.get("/index", indexController.index);
+router.get("/properties/details/:id", indexController.details);
 
 // categories routes
 router.get(

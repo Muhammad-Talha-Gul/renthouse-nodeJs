@@ -4,6 +4,7 @@ const initialState = {
     categories: [],
     amunities: [],
     features: [],
+    emenitiesFeature: [],
     pagination: [],
     searchResults: [],
     searchPagination: {},
@@ -24,6 +25,7 @@ const adminPropertiesReducer = (state = initialState, action) => {
                 categories: action.payload?.categories || [],
                 amunities: action.payload?.amunities || [],
                 features: action.payload?.features || [],
+                emenitiesFeature: action.payload?.emenitiesFeature || [],
                 pagination: action.payload?.pagination || [],
 
             };
