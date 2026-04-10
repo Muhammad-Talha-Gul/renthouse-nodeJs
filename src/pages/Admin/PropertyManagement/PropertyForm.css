@@ -316,8 +316,8 @@ textarea.form-control.modern {
 }
 
 /* Amenities & Features Grids */
-.amenities-grid,
-.features-grid {
+.form-section .amenities-grid,
+.form-section .features-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 12px;

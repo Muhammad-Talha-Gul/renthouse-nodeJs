@@ -119,6 +119,7 @@ const PropertyDetails = ({ property }) => {
         setContactForm({ name: "", email: "", message: "" });
     };
 
+
     return (
         <div className="property-details-modern">
             {/* Hero Section */}
@@ -232,12 +233,12 @@ const PropertyDetails = ({ property }) => {
                             </div> */}
 
                             <div className="info-card">
-                                <h3 className="subsection-title">Amenities</h3>
+                                <h3 className="subsection-title">Amenities And Features</h3>
                                 <div className="amenities-grid-modern">
                                     {(propertyData?.amenities || []).map((amenity, index) => (
                                         <div key={index} className="amenity-card">
-                                            <div className="amenity-icon">⭐</div>
-                                            <span>{amenity}</span>
+                                            <div className="amenity-icon">{amenity?.icon}</div>
+                                            <span>{amenity?.name}</span>
                                         </div>
                                     ))}
                                 </div>

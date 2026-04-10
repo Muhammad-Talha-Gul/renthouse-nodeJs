@@ -1,5 +1,3 @@
-
-
 .search-page {
     padding: 2rem 0;
     background: linear-gradient(135deg, var(--cream) 0%, var(--white) 100%);
@@ -169,8 +167,13 @@
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .loading-state p {
@@ -232,20 +235,20 @@
     .search-page {
         padding: 1rem 0;
     }
-    
+
     .page-title {
         font-size: 2rem;
     }
-    
+
     .main-search-bar {
         padding: 1.5rem;
     }
-    
+
     .results-header {
         flex-direction: column;
         align-items: flex-start;
     }
-    
+
     .active-filters {
         justify-content: flex-start;
     }
@@ -256,7 +259,7 @@
     .main-search-bar {
         padding: 1.5rem;
     }
-    
+
     .results-header {
         flex-direction: column;
         align-items: flex-start;
@@ -306,13 +309,13 @@
         background: white;
         padding: 0;
     }
-    
+
     .main-search-bar,
     .filters-toggle,
     .advanced-filters {
         display: none;
     }
-    
+
     .property-card {
         break-inside: avoid;
         box-shadow: none;

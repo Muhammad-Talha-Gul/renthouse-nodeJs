@@ -313,7 +313,7 @@
     box-shadow: var(--shadow-medium);
 }
 
-.section-title {
+.info-card .section-title {
     font-size: 2rem;
     font-weight: 800;
     color: var(--text-dark);
@@ -648,7 +648,7 @@
 }
 
 .agent-card {
-    display: flex;
+    /* display: flex; */
     align-items: center;
     gap: 1.5rem;
     padding: 2rem;

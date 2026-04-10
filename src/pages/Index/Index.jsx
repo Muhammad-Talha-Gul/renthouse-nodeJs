@@ -298,7 +298,7 @@ const Index = () => {
                 <Container>
                     <Row className="mb-5">
                         <Col>
-                            <div className="section-header text-center">
+                            <div className="section-header text-center front-page-header">
                                 <h2 className="section-title">Featured Properties</h2>
                                 <p className="section-subtitle">Discover exclusive homes curated just for you</p>
                             </div>

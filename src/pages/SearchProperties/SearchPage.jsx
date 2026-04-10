@@ -71,27 +71,27 @@ const SearchPage = () => {
     ];
 
     // Search and filter properties
-const handleSearchProperties = async () => {
-    const filters = {
-        q: searchTerm,
-        type: propertyType,
-        transaction: transactionType,
-        minPrice: priceRange.min,
-        maxPrice: priceRange.max,
-        bedrooms,
-        bathrooms,
-        location,
-        sort: sortBy,
-        page: 1
+    const handleSearchProperties = async () => {
+        const filters = {
+            q: searchTerm,
+            type: propertyType,
+            transaction: transactionType,
+            minPrice: priceRange.min,
+            maxPrice: priceRange.max,
+            bedrooms,
+            bathrooms,
+            location,
+            sort: sortBy,
+            page: 1
+        };
+
+        Object.keys(filters).forEach(key => {
+            if (!filters[key]) delete filters[key];
+        });
+
+        await dispatch(searchProperties(filters)); // Redux action
+        updateURL();
     };
-
-    Object.keys(filters).forEach(key => {
-        if (!filters[key]) delete filters[key];
-    });
-
-    await dispatch(searchProperties(filters)); // Redux action
-    updateURL();
-};
 
     // Update URL with search parameters
     const updateURL = () => {

@@ -23,8 +23,10 @@
     top: 100px;
 }
 
-.sidebar-header {
-    margin-bottom: 3rem;
+.features-sidebar .sidebar-header {
+    display: block;
+    margin-bottom: 3rem !important;
+
 }
 
 .sidebar-header h1 {
@@ -84,6 +86,7 @@
     font-weight: 600;
     margin-bottom: 0.5rem;
     color: var(--text-dark);
+    text-align: left;
 }
 
 .feature-content p {
@@ -312,9 +315,9 @@
 }
 
 /* ===== Contact Methods ===== */
-.contact-methods {
+.form-main .contact-methods {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
 }
 
@@ -380,13 +383,16 @@
 .trust-badge {
     text-align: center;
     padding: 1.5rem;
+    box-shadow: var(--shadow-light)
 }
 
-.badge-number {
+.trust-badge .badge-number {
     font-size: 2rem;
     font-weight: 800;
     color: var(--accent);
     margin-bottom: 0.5rem;
+    border: none;
+    background: transparent;
 }
 
 .badge-label {
@@ -402,46 +408,46 @@
     .contact-container {
         padding: 1rem 0;
     }
-    
+
     .contact-layout {
         grid-template-columns: 1fr;
         gap: 2rem;
     }
-    
+
     .features-sidebar {
         position: static;
     }
-    
+
     .form-container {
         padding: 1.5rem;
     }
-    
+
     .input-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
-    
+
     .contact-methods {
         grid-template-columns: 1fr;
     }
-    
+
     .badges-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .sidebar-header h1 {
         font-size: 2rem;
     }
-    
+
     .feature-card,
     .contact-method {
         padding: 1.25rem;
     }
-    
+
     .trust-badge {
         padding: 1rem;
     }
-    
+
     .badge-number {
         font-size: 1.5rem;
     }
@@ -453,15 +459,15 @@
         grid-template-columns: 1fr;
         gap: 3rem;
     }
-    
+
     .features-sidebar {
         position: static;
     }
-    
+
     .contact-methods {
         grid-template-columns: repeat(2, 1fr);
     }
-    
+
     .badges-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -473,11 +479,11 @@
         grid-template-columns: 1fr;
         gap: 3rem;
     }
-    
+
     .features-sidebar {
         position: static;
     }
-    
+
     .input-grid {
         grid-template-columns: 1fr 1fr;
     }
@@ -541,6 +547,7 @@ textarea:focus-visible {
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -548,9 +555,26 @@ textarea:focus-visible {
 }
 
 /* Staggered animations for better visual flow */
-.feature-card:nth-child(1) { animation-delay: 0.1s; }
-.feature-card:nth-child(2) { animation-delay: 0.2s; }
-.feature-card:nth-child(3) { animation-delay: 0.3s; }
-.contact-method:nth-child(1) { animation-delay: 0.4s; }
-.contact-method:nth-child(2) { animation-delay: 0.5s; }
-.contact-method:nth-child(3) { animation-delay: 0.6s; }
+.feature-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.feature-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.feature-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.contact-method:nth-child(1) {
+    animation-delay: 0.4s;
+}
+
+.contact-method:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+.contact-method:nth-child(3) {
+    animation-delay: 0.6s;
+}

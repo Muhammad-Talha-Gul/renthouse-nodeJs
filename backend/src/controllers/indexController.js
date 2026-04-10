@@ -101,6 +101,7 @@ const details = async (req, res) => {
         p.*,
         c.name as category_name,
         u.name as agent_name,
+        u.profile_image as profile_image,
         u.email as agent_email,
         u.phone_number as agent_phone
       FROM properties p
@@ -158,13 +159,13 @@ const details = async (req, res) => {
       description: property.description,
       features,
       amenities,
-      images: images.map(img => `http://localhost:5000${img.image_url}`),
+      images: images.map(img => `${process.env.baseURL}${img.image_url}`),
       videos: [],
       agent: {
         name: property.agent_name || 'Agent',
         phone: property.agent_phone || '',
         email: property.agent_email || '',
-        avatar: 'https://via.placeholder.com/100x100'
+        avatar: `${process.env.baseURL}${property.profile_image}`
       },
       category: property.category_name,
       listing_type: property.listing_type,
